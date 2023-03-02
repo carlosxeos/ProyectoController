@@ -1,20 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { MqttModule } from './mqtt/mqtt.module';
 
 @Module({
-  imports: [
-    ClientsModule.register([
-      {
-        name: 'MATH_SERVICE',
-        transport: Transport.MQTT,
-        options: {
-          url: 'mqtt://192.168.0.10:1883',
-        },
-      },
-    ]),
-  ],
+  imports: [MqttModule],
   controllers: [AppController],
   providers: [AppService],
 })
