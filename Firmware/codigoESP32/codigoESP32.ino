@@ -1,6 +1,8 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <Client.h>
+#include <ArduinoJson.h>
+
 // Replace the next variables with your SSID/Password combination
 const char* ssid = "IzziWiFiN";
 const char* password = "JvnS9L3BAZY9";
@@ -14,13 +16,15 @@ PubSubClient client(espClient);
 long lastMsg = 0;
 char msg[50];
 int value = 0;
-
+int pin_led = 23;
+DynamicJsonDocument doc(1024);
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  IPAddress ipAddress(192,168,0,10);
+  IPAddress ipAddress(192,168,0,18);
   client.setServer(ipAddress, 1883);
   client.setCallback(callback);
+  pinMode(pin_led, OUTPUT);
 }
 
 void setup_wifi() {
@@ -46,11 +50,11 @@ void callback(char* topic, byte* message, unsigned int length) {
   Serial.print(topic);
   Serial.print(". Message: ");  
   String messageTemp;
-  
   for (int i = 0; i < length; i++) {
     Serial.print((char)message[i]);
     messageTemp += (char)message[i];
   }
+  deserializeJson(doc, messageTemp);
   Serial.println();
 }
 
@@ -63,7 +67,7 @@ void reconnect() {
     if (client.connect("MQTT_SERVICE")) {
       Serial.println("connected");
       // Subscribe
-      client.subscribe("notification_channel");
+      client.subscribe("get/door");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());

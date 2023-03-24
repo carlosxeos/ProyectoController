@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { MqttModule } from './mqtt/mqtt.module';
+import { MqttModule } from './minisplit/mqtt/mqtt.module';
+import { ChatGateway } from './minisplit/websockets/chat.gateway';
 
 @Module({
   imports: [MqttModule],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [ChatGateway],
 })
 export class AppModule {}
