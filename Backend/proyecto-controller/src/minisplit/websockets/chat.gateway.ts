@@ -32,11 +32,11 @@ export class ChatGateway
     console.log('desconexion de cliente');
   }
 
-  @SubscribeMessage('set/sensors/temperature')
+  @SubscribeMessage('set/ac_controller')
   handleRoomLeave(client: Socket, payLoad: string) {
     console.log(`payLoad `, payLoad);
     // client.leave(`room_${room}`);    
-    TestLinker.callLinker('get/sensors/temperature',payLoad);
+    TestLinker.callLinker('get/ac_controller',payLoad);
   }
 
   @SubscribeMessage('set/door')

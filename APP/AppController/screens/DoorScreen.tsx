@@ -2,8 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, ScrollView, StyleSheet, SafeAreaView} from 'react-native';
 import socketClient from '../resources/socketClient';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {faClose, faLock, faLockOpen} from '@fortawesome/free-solid-svg-icons';
+import {faLock, faLockOpen} from '@fortawesome/free-solid-svg-icons';
 import {appStyles, colores} from '../resources/globalStyles';
 import ImageButton from '../components/ImageButton';
 
@@ -65,7 +64,7 @@ function DoorScreen({navigation}) {
     </SafeAreaView>
   );
 }
-export const estilos = StyleSheet.create({
+const estilos = StyleSheet.create({
   textStatus: {
     fontSize: 14,
     fontFamily: 'Poppins-Bold',

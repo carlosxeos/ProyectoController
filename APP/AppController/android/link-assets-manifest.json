@@ -2,6 +2,14 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "assets/fonts/Play-Bold.ttf",
+      "sha1": "394247c9a5eeded939cf9d78b30687495b36f0dd"
+    },
+    {
+      "path": "assets/fonts/Play-Regular.ttf",
+      "sha1": "1597823ffd9c3a555b5081c7394ff0347adfbdbc"
+    },
+    {
       "path": "assets/fonts/Poppins-Bold.ttf",
       "sha1": "b9b65c039a1f10a5cb5e0726c6e7e18e98a8e517"
     }

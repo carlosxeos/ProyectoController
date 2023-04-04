@@ -11,6 +11,7 @@ import React from 'react';
 import Login from './screens/Login';
 import {colores} from './resources/globalStyles';
 import DoorScreen from './screens/DoorScreen';
+import AControllerScreen from './screens/AControllerScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,18 @@ function App(): JSX.Element {
             headerTintColor: colores.white,
           }}
         />
+        <Stack.Screen
+          name="AControllerScreen"
+          component={AControllerScreen}
+          options={{
+            title: 'AC Control',
+            headerLargeTitle: false,
+            headerStyle: {
+              backgroundColor: colores.PrimaryDark,
+            },
+            headerTintColor: colores.white,
+          }}
+        />        
       </Stack.Navigator>
     </NavigationContainer>
   );

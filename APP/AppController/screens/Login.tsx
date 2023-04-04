@@ -14,7 +14,9 @@ function Login({navigation}) {
       text: 'AC Control',
       faIcon: faFan,
       color: colores.PrimaryDark,
-      onClick: () => {},
+      onClick: () => {
+        navigation.navigate('AControllerScreen');
+      },
     },
     {
       /** boton de ver horario registrado */

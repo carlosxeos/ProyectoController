@@ -8,6 +8,10 @@ export const colores = Object.freeze({
   white: '#FFFFFFFF',
   irexcoreDegradadoNegro: '#353434', //Color para degradado tipo sombra
   warningColor: '#eb7149',
+  grayLite: 'rgba(249, 249, 249,1)',
+  blueLite: 'rgba(197, 216, 226,1)',
+  redButton: '#e62222',
+  greenButton: '#58a12b',
 });
 
 export const appStyles = StyleSheet.create({
@@ -34,5 +38,5 @@ export const appStyles = StyleSheet.create({
   itemsCenter: {
     justifyContent: 'center', //Centered vertically
     alignItems: 'center', // Centered horizontally
-  },  
+  },
 });

@@ -15,10 +15,10 @@ export class MqttController {
     TestLinker.clientMQTT = client;
   }
 
-  @MessagePattern('set/sensors/temperature')
+  @MessagePattern('set/ac_controller')
   getProcessClientData(@Payload() data, @Ctx() context: MqttContext) {
     console.log('Client data in getProcessClientData for process', data);
-    TestLinker.callLinker('get/sensors/temperature', data);
+    TestLinker.callLinker('get/ac_controller', data);
   }
 
   @MessagePattern('set/door')
