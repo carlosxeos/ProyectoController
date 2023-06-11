@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-empty-function */
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -9,18 +9,21 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { TestLinker } from 'src/linkers/WsMqttLinker';
+import { MqttWSLinker } from 'src/utils/mqtt.ws.linker';
+import { WSDoorService } from './door/ws.door.service';
 
 @WebSocketGateway(80, {
   cors: { origin: '*' },
 })
-export class ChatGateway
+export class WSGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  constructor(private readonly doorService: WSDoorService) {}
   @WebSocketServer() server: Server;
 
   afterInit(socket: any) { // server
-    TestLinker.clientWS = this.server;
+    MqttWSLinker.clientWS = this.server;
+    console.log("encendiendo server")
   }
 
   handleConnection(client: any, ...args: any[]) { 
@@ -31,18 +34,28 @@ export class ChatGateway
   handleDisconnect(client: any) { 
     console.log('desconexion de cliente');
   }
-
+  //================================
+  //====== Climas
+  //================================
   @SubscribeMessage('set/ac_controller')
   handleRoomLeave(client: Socket, payLoad: string) {
     console.log(`payLoad `, payLoad);
     // client.leave(`room_${room}`);    
-    TestLinker.callLinker('get/ac_controller',payLoad);
+    MqttWSLinker.callLinker('get/ac_controller',payLoad);
+  }
+
+  //================================
+  //====== Puertas
+  //================================
+  @SubscribeMessage('testend/door')
+  testDoor(client: Socket, payLoad: string) {
+    this.doorService.testDoor();
   }
 
   @SubscribeMessage('set/door')
   setDoorValue(client: Socket, payLoad: string) {
     console.log(`payLoad `, payLoad);
-    // client.leave(`room_${room}`);    
-    TestLinker.callLinker('get/door',payLoad);
-  }
+    // client.leave(`room_${room}`);
+    MqttWSLinker.callLinker('get/door', payLoad);
+  }  
 }

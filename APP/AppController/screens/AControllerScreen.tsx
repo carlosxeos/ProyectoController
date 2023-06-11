@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/react-in-jsx-scope */
 import {View, Text, SafeAreaView, StyleSheet} from 'react-native';
@@ -54,8 +55,8 @@ function AControllerScreen({navigation}) {
     socketClient.emit(setterAController, requestBody);
   };
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={{flex: 0.3}}>
+    <SafeAreaView style={{flex: 1.1}}>
+      <View style={{flex: 0.4}}>
         <View style={estilos.centerGray}>
           <View style={estilos.centerBlue}>
             <Text style={estilos.textAC}>AC Controller</Text>

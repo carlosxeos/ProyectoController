@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/react-in-jsx-scope */
 import {ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
@@ -40,7 +41,11 @@ function Login({navigation}) {
       <View style={{marginBottom: 20}}>
         <Text style={appStyles.headerStyle}>App Controller</Text>
       </View>
-      <ScrollView style={{backgroundColor: colores.white, paddingTop: 20}}>
+      <ScrollView
+        style={{
+          backgroundColor: colores.white,
+          paddingTop: DeviceiOS ? 20 : 0,
+        }}>
         {!DeviceiOS && (
           <View style={{backgroundColor: colores.PrimaryDark}}>
             <Text

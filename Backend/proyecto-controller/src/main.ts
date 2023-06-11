@@ -1,19 +1,23 @@
+/* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
-import { Transport, MicroserviceOptions } from '@nestjs/microservices';
-import { AppModule } from './app.module';
+import { MicroserviceOptions } from '@nestjs/microservices';
+import { MqttModule } from './mqtt/mqtt.module';
+import { mqttConfig } from './utils/common';
+import { AppModule } from './http/app.module';
+import { WsModule } from './ws/ws.module';
 
 async function bootstrap() {
   // configuracion para mqtt
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.MQTT,
-      options: {
-        url: 'mqtt://localhost:1883',
-        protocol: 'mqtt',
-      },
-    },
+  const mqtt = await NestFactory.createMicroservice<MicroserviceOptions>(
+    MqttModule,
+    mqttConfig,
   );
-  app.listen();
+  await mqtt.listen();
+  // https
+  const app = await NestFactory.create(AppModule);
+  await app.listen(3000);
+  // websocket
+  const ws = await NestFactory.createMicroservice(WsModule);
+  await ws.listen();
 }
 bootstrap();
