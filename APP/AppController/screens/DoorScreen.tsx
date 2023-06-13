@@ -1,10 +1,11 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {View, Text, ScrollView, StyleSheet, SafeAreaView} from 'react-native';
 import socketClient from '../resources/socketClient';
-import {faLock, faLockOpen} from '@fortawesome/free-solid-svg-icons';
 import {appStyles, colores} from '../resources/globalStyles';
 import ImageButton from '../components/ImageButton';
+import { faCircle } from '@fortawesome/free-solid-svg-icons';
 
 //👇🏻 Import socket from the socket.js file in utils folder
 function DoorScreen({navigation}) {
@@ -29,12 +30,13 @@ function DoorScreen({navigation}) {
     <SafeAreaView style={{flex: 1}}>
       <View style={[appStyles.itemsCenter, {flex: 0.4, marginTop: 0}]}>
         <ImageButton
-          buttonColor={open ? colores.warningColor : colores.Primary}
-          text={open ? 'Abierto ' : 'Cerrado'}
-          faIcon={open ? faLockOpen : faLock}
+          buttonColor={colores.irexcoreDegradadoNegro}
+          text={'Activo'}
+          faIcon={faCircle}
+          iconColor={colores.irexcoreDegradadoNegro}
           onClick={() => {
             setopen(prev => {
-              socketClient.emit(setDoorEndpoint, !prev ? 'open' : 'close');
+              socketClient.emit(setDoorEndpoint, '1');
               return !prev;
             });
           }}

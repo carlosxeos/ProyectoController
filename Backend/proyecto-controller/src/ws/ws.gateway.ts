@@ -54,7 +54,7 @@ export class WSGateway
 
   @SubscribeMessage('set/door')
   setDoorValue(client: Socket, payLoad: string) {
-    console.log(`payLoad `, payLoad);
+    console.log(`set door `, payLoad);
     // client.leave(`room_${room}`);
     MqttWSLinker.callLinker('get/door', payLoad);
   }  

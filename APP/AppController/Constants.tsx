@@ -4,5 +4,5 @@ export const DeviceiOS = Platform.OS === 'ios';
 
 const testingURL = false;
 export const getApiURL = () => {
-  return 'http://192.168.0.18:80';
+  return 'http://192.168.0.12:80';
 };
