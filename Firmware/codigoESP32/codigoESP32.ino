@@ -9,21 +9,21 @@ const char* password = "JvnS9L3BAZY9";
 
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.1.144";
-const char* mqtt_server = "192.168.0.10";
+//const char* mqtt_server = "192.168.0.12";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
 char msg[50];
 int value = 0;
-int pin_led = 23;
+int pin_led = 2;
 DynamicJsonDocument doc(1024);
 const char* const doorEndpoint = "get/door";
 const char* const acControllerEndpoint = "get/ac_controller";
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  IPAddress ipAddress(192, 168, 0, 18);
+  IPAddress ipAddress(192, 168, 0, 12);
   client.setServer(ipAddress, 1883);
   client.setCallback(callback);
   pinMode(pin_led, OUTPUT);
@@ -93,11 +93,13 @@ void loop() {
 }
 
 void doorTopicHandler() {
-  if (doc["data"] == "open") {
-    digitalWrite(pin_led, HIGH);
-  }
-  if (doc["data"] == "close") {
-    digitalWrite(pin_led, LOW);
+  if (doc["data"] == "1") {
+    // aqui se va a hacer la logica correspondiente al sistema
+    if (digitalRead(pin_led) == LOW) {
+      digitalWrite(pin_led, HIGH);
+    } else {
+      digitalWrite(pin_led, LOW);
+    }
   }
 }
 
