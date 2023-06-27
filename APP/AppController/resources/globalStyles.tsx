@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import {StyleSheet} from 'react-native';
-import {DeviceiOS} from '../Constants';
+import { StyleSheet } from 'react-native';
+import { DeviceiOS } from '../Constants';
 
 export const colores = Object.freeze({
   PrimaryDark: 'rgba(62, 107, 182,1)', // Colores principales aplicacion 62, 107, 182
@@ -13,6 +13,7 @@ export const colores = Object.freeze({
   blueLite: 'rgba(197, 216, 226,1)',
   redButton: '#e62222',
   greenButton: '#58a12b',
+  redDotech: '#a62527',
 });
 
 export const appStyles = StyleSheet.create({
@@ -25,7 +26,7 @@ export const appStyles = StyleSheet.create({
   cardView: {
     //card effect
     shadowColor: colores.irexcoreDegradadoNegro,
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     elevation: 2,
     // fin card effect
@@ -39,5 +40,33 @@ export const appStyles = StyleSheet.create({
   itemsCenter: {
     justifyContent: 'center', //Centered vertically
     alignItems: 'center', // Centered horizontally
+  },
+  textHeader: {
+    fontSize: DeviceiOS ? 32 : 24,
+    fontFamily: 'RobotoSlab-Regular',
+    color: colores.irexcoreDegradadoNegro,
+    paddingVertical: '8%',
+  },
+  textInput: {
+    marginVertical: 10,
+    color: colores.irexcoreDegradadoNegro,
+  },
+  bodyView: {
+    paddingHorizontal: 20,
+  },
+  buttonRound: {
+    marginVertical: 5,
+    alignItems: 'center',
+    borderRadius: 7,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    backgroundColor: colores.PrimaryDark,
+    paddingVertical: 15,
+  },
+  textButtonLogin: {
+    color: colores.white,
+    fontSize: 18,
+    fontFamily: 'RobotoSlab-Regular',
+
   },
 });

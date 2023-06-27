@@ -17,6 +17,10 @@
 		E720EACE5E56484CA504499C /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 36299584592345799DB23597 /* Poppins-Bold.ttf */; };
 		50DC85CAEF974FE7B68BB85B /* Play-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 362AD8B11A74453BABC5B39D /* Play-Regular.ttf */; };
 		74C9B94031F44E7C8F3EE543 /* Play-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5EEA2EEEDB4D40379CB89320 /* Play-Bold.ttf */; };
+		DBDFF1CEAC674574BB58A9EE /* RobotoSlab-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 006D5CBF2A2C46948A86BDE2 /* RobotoSlab-Black.ttf */; };
+		542ED877299240EBBF9940D3 /* RobotoSlab-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5B05D5D06C994A0896C66359 /* RobotoSlab-Bold.ttf */; };
+		82F1BFD7C62146CEBFC20479 /* RobotoSlab-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 394CFC21299B44C9AD948D66 /* RobotoSlab-Medium.ttf */; };
+		50F2E6704C214FAF9D8B227C /* RobotoSlab-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DCB9E1F7C329449B9D3864B8 /* RobotoSlab-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +54,10 @@
 		FD96FC941EA96558566AEF3A /* libPods-AppController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AppController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		362AD8B11A74453BABC5B39D /* Play-Regular.ttf */ = {isa = PBXFileReference; name = "Play-Regular.ttf"; path = "../assets/fonts/Play-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		5EEA2EEEDB4D40379CB89320 /* Play-Bold.ttf */ = {isa = PBXFileReference; name = "Play-Bold.ttf"; path = "../assets/fonts/Play-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		006D5CBF2A2C46948A86BDE2 /* RobotoSlab-Black.ttf */ = {isa = PBXFileReference; name = "RobotoSlab-Black.ttf"; path = "../assets/fonts/RobotoSlab-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5B05D5D06C994A0896C66359 /* RobotoSlab-Bold.ttf */ = {isa = PBXFileReference; name = "RobotoSlab-Bold.ttf"; path = "../assets/fonts/RobotoSlab-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		394CFC21299B44C9AD948D66 /* RobotoSlab-Medium.ttf */ = {isa = PBXFileReference; name = "RobotoSlab-Medium.ttf"; path = "../assets/fonts/RobotoSlab-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		DCB9E1F7C329449B9D3864B8 /* RobotoSlab-Regular.ttf */ = {isa = PBXFileReference; name = "RobotoSlab-Regular.ttf"; path = "../assets/fonts/RobotoSlab-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,6 +169,10 @@
 				36299584592345799DB23597 /* Poppins-Bold.ttf */,
 				362AD8B11A74453BABC5B39D /* Play-Regular.ttf */,
 				5EEA2EEEDB4D40379CB89320 /* Play-Bold.ttf */,
+				006D5CBF2A2C46948A86BDE2 /* RobotoSlab-Black.ttf */,
+				5B05D5D06C994A0896C66359 /* RobotoSlab-Bold.ttf */,
+				394CFC21299B44C9AD948D66 /* RobotoSlab-Medium.ttf */,
+				DCB9E1F7C329449B9D3864B8 /* RobotoSlab-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -264,6 +276,10 @@
 				E720EACE5E56484CA504499C /* Poppins-Bold.ttf in Resources */,
 				50DC85CAEF974FE7B68BB85B /* Play-Regular.ttf in Resources */,
 				74C9B94031F44E7C8F3EE543 /* Play-Bold.ttf in Resources */,
+				DBDFF1CEAC674574BB58A9EE /* RobotoSlab-Black.ttf in Resources */,
+				542ED877299240EBBF9940D3 /* RobotoSlab-Bold.ttf in Resources */,
+				82F1BFD7C62146CEBFC20479 /* RobotoSlab-Medium.ttf in Resources */,
+				50F2E6704C214FAF9D8B227C /* RobotoSlab-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
