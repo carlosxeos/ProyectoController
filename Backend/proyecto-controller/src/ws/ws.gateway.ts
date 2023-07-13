@@ -12,7 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { MqttWSLinker } from 'src/utils/mqtt.ws.linker';
 import { WSDoorService } from './door/ws.door.service';
 
-@WebSocketGateway(80, {
+@WebSocketGateway(81, {
   cors: { origin: '*' },
 })
 export class WSGateway

@@ -15,7 +15,7 @@ async function bootstrap() {
   await mqtt.listen();
   // https
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  await app.listen(3001);
   // websocket
   const ws = await NestFactory.createMicroservice(WsModule);
   await ws.listen();
