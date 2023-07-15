@@ -23,7 +23,7 @@ const char* const acControllerEndpoint = "get/ac_controller";
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  IPAddress ipAddress(192, 168, 0, 12);
+  IPAddress ipAddress(13, 68, 134, 198); // 13.68.134.198
   client.setServer(ipAddress, 1883);
   client.setCallback(callback);
   pinMode(pin_led, OUTPUT);
