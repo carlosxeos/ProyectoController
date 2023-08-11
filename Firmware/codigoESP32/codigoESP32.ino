@@ -2,10 +2,13 @@
 #include <PubSubClient.h>
 #include <Client.h>
 #include <ArduinoJson.h>
+#include <Wire.h>
+
+//// 25/07/23
 
 // Replace the next variables with your SSID/Password combination
-const char* ssid = "IzziWiFiN";
-const char* password = "JvnS9L3BAZY9";
+const char* ssid = "IZZI-00FC";
+const char* password = "G9TJJhtEJFLkksXFnr";
 
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.1.144";
@@ -27,6 +30,8 @@ void setup() {
   client.setServer(ipAddress, 1883);
   client.setCallback(callback);
   pinMode(pin_led, OUTPUT);
+  pinMode(25,OUTPUT);
+  Wire.begin();
 }
 
 void setup_wifi() {
@@ -45,6 +50,7 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+
 }
 
 void callback(char* topic, byte* message, unsigned int length) {
@@ -90,16 +96,32 @@ void loop() {
     reconnect();
   }
   client.loop();
+
+  
 }
 
 void doorTopicHandler() {
   if (doc["data"] == "1") {
     // aqui se va a hacer la logica correspondiente al sistema
-    if (digitalRead(pin_led) == LOW) {
-      digitalWrite(pin_led, HIGH);
-    } else {
-      digitalWrite(pin_led, LOW);
-    }
+    Wire.beginTransmission(0x20);
+    Wire.write(0);
+    Wire.endTransmission();
+
+    delay(350);
+
+    Wire.beginTransmission(0x20);
+    Wire.write(255);
+    Wire.endTransmission();
+
+    Wire.beginTransmission(0x20);
+    Wire.write(255);
+    Wire.endTransmission();
+
+    Wire.beginTransmission(0x20);
+    Wire.write(255);
+    Wire.endTransmission();
+
+    digitalWrite(25,HIGH);
   }
 }
 
