@@ -2,7 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/react-in-jsx-scope */
 import {View, Text, SafeAreaView, StyleSheet} from 'react-native';
-import {appStyles, colores} from '../resources/globalStyles';
+import {appStyles, colores} from '../../resources/globalStyles';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {
   faBars,
@@ -12,9 +12,9 @@ import {
   faSignal5,
 } from '@fortawesome/free-solid-svg-icons';
 import {faSnowflake} from '@fortawesome/free-regular-svg-icons';
-import ImageButton from '../components/ImageButton';
+import ImageButton from '../../components/ImageButton';
 import {useState} from 'react';
-import socketClient from '../resources/socketClient';
+import socketClient from '../../resources/socketClient';
 
 function AControllerScreen({navigation}) {
   // const getterAController = 'get/ac_controller';
@@ -133,7 +133,7 @@ function AControllerScreen({navigation}) {
   );
 }
 
-export const estilos = StyleSheet.create({
+const estilos = StyleSheet.create({
   centerGray: {
     backgroundColor: colores.grayLite,
   },

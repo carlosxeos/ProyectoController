@@ -5,11 +5,12 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { appStyles, colores } from '../resources/globalStyles';
 import { TextInput } from 'react-native-paper';
 
-function Login({ }) {
+function Login({navigation }) {
     const [usuario, setusuario] = useState('');
     const [password, setpassword] = useState('');
     function onLogin() {
         console.log('logeando..');
+        navigation.replace('Menu');
     }
     return (
         <View style={appStyles.bodyView}>
@@ -24,6 +25,7 @@ function Login({ }) {
             <TextInput
                 label="Contraseña" value={password}
                 style={appStyles.textInput} autoCorrect={false} autoCapitalize={'none'}
+                secureTextEntry
                 onChangeText={setpassword}
                 left={<TextInput.Icon icon={'lock'} iconColor={colores.Primary} />}
                 mode="outlined" outlineColor={colores.irexcoreDegradadoNegro}

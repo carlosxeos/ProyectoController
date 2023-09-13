@@ -6,65 +6,93 @@
  * @format
  */
 
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { NativeStackNavigationOptions, createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import Menu from './screens/Menu';
-import {colores} from './resources/globalStyles';
-import DoorScreen from './screens/DoorScreen';
-import AControllerScreen from './screens/AControllerScreen';
+import { colores } from './resources/globalStyles';
+import DoorScreen from './screens/Door/DoorScreen';
+import AControllerScreen from './screens/AC/AControllerScreen';
 import Login from './screens/Login';
+import DoorsList from './screens/Door/DoorsList';
+import { DoorHistory } from './screens/Door/DoorHistory';
+import { ListUsers } from './screens/Users/ListUsers';
 
 const Stack = createNativeStackNavigator();
-
+const defaultOptions: NativeStackNavigationOptions = {
+  headerLargeTitle: false,
+  statusBarColor: colores.PrimaryDark,
+  headerStyle: {
+    backgroundColor: colores.PrimaryDark,
+  },
+  headerTintColor: colores.white,
+};
 function App(): JSX.Element {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Menu">
-      <Stack.Screen
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen
           name="Login"
           component={Login}
           options={{
-            title: 'Sistema',
+            title: 'Iniciar Sesión',
             headerTintColor: 'white',
-            statusBarColor: colores.redDotech,
+            statusBarColor: colores.PrimaryDark,
             headerShadowVisible: false,
-            headerStyle: {backgroundColor: colores.redDotech},
+            headerShown: true,
+            headerStyle: { backgroundColor: colores.PrimaryDark },
           }}
         />
         <Stack.Screen
           name="Menu"
           component={Menu}
-          options={{
-            title: '',
-            headerShadowVisible: false,
-            headerStyle: {backgroundColor: colores.redDotech},
+          options={() => {
+            const opts = defaultOptions;
+            opts.title = 'Inicio';
+            return defaultOptions;
           }}
         />
         <Stack.Screen
           name="DoorScreen"
           component={DoorScreen}
-          options={{
-            title: 'Door',
-            headerLargeTitle: true,
-            headerStyle: {
-              backgroundColor: colores.redDotech,
-            },
-            headerTintColor: colores.white,
+          options={() => {
+            const opts = defaultOptions;
+            opts.title = 'Puertas';
+            return defaultOptions;
           }}
         />
         <Stack.Screen
           name="AControllerScreen"
           component={AControllerScreen}
-          options={{
-            title: 'AC Control',
-            headerLargeTitle: false,
-            headerStyle: {
-              backgroundColor: colores.redDotech,
-            },
-            headerTintColor: colores.white,
-          }}
-        />
+          options={() => {
+            const opts = defaultOptions;
+            opts.title = 'AC Control';
+            return defaultOptions;
+          }} />
+        <Stack.Screen
+          name="DoorsList"
+          component={DoorsList}
+          options={() => {
+            const opts = defaultOptions;
+            opts.title = 'Lista de Puertas';
+            return defaultOptions;
+          }} />
+        <Stack.Screen
+          name="DoorHistory"
+          component={DoorHistory}
+          options={({route}) => {
+            const opts = defaultOptions;
+            opts.title = route.params?.name || 'Historial';
+            return defaultOptions;
+          }} />
+        <Stack.Screen
+          name="ListUsers"
+          component={ListUsers}
+          options={() => {
+            const opts = defaultOptions;
+            opts.title = 'Lista de usuarios';
+            return defaultOptions;
+          }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

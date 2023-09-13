@@ -12,7 +12,8 @@ export default function ImageButton({
   buttonColor = 'blue',
   text = '',
   textStyle = {},
-  onClick,
+  onClick = () => {},
+  borderColor = '',
   buttonSize = 100,
 }): JSX.Element {
   textStyle = textStyle ? [estilos.textStyle, textStyle] : estilos.textStyle;
@@ -24,7 +25,8 @@ export default function ImageButton({
         style={[estilos.itemsCenter, {width: buttonSize}]}
         onPress={onClick}>
         <Svg height={buttonSize} width={buttonSize} viewBox="0 0 100 100">
-          <Circle cx="50" cy="50" r="45" fill={buttonColor} />
+          <Circle cx="50" cy="50" r="45" fill={borderColor || buttonColor} />
+          { borderColor && <Circle cx="50" cy="50" r="38" fill={buttonColor} />}
         </Svg>
         <View style={estilos.cameraIcon}>
           <FontAwesomeIcon icon={faIcon} size={iconSize} color={iconColor} />

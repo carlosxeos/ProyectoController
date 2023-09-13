@@ -1,13 +1,14 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/react-in-jsx-scope */
-import {ScrollView, StatusBar, StyleSheet, Text, View} from 'react-native';
-import ImageButton from '../components/ImageButton';
-import {DeviceiOS} from '../Constants';
-import {faDoorClosed, faFan} from '@fortawesome/free-solid-svg-icons';
-import {appStyles, colores} from '../resources/globalStyles';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { faDoorClosed, faFan } from '@fortawesome/free-solid-svg-icons';
+import { appStyles, colores } from '../resources/globalStyles';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import Svg, { Circle } from 'react-native-svg';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
 
-function Menu({navigation}) {
+function Menu({ navigation }) {
   const userOptions = [
     {
       /** boton de informacion de usuario */
@@ -26,60 +27,65 @@ function Menu({navigation}) {
       faIcon: faDoorClosed,
       color: colores.Primary,
       onClick: () => {
-        navigation.navigate('DoorScreen');
+        if (true) { // si hay mas de una puerta, entra al list, si no abre directamente la que hay
+          navigation.navigate('DoorsList');
+        } else {
+          navigation.navigate('DoorScreen');
+        }
+      },
+    },
+    {
+      /** boton de ver horario registrado */
+      id: 3,
+      text: 'Lista Usuarios',
+      faIcon: faUser,
+      color: colores.greenButton,
+      onClick: () => {
+        navigation.navigate('ListUsers');
       },
     },
   ];
-  return (
-    <View style={{flex: 1, backgroundColor: colores.PrimaryDark}}>
-      <StatusBar
-        animated
-        backgroundColor={colores.PrimaryDark}
-        barStyle={'light-content'}
-        showHideTransition={'slide'}
-      />
-      <View style={{marginBottom: 20}}>
-        <Text style={appStyles.headerStyle}>App Controller</Text>
-      </View>
-      <ScrollView
-        style={{
-          backgroundColor: colores.white,
-          paddingTop: DeviceiOS ? 20 : 0,
-        }}>
-        {!DeviceiOS && (
-          <View style={{backgroundColor: colores.PrimaryDark}}>
-            <Text
-              style={[
-                appStyles.headerStyle,
-                {marginTop: 20, marginBottom: 0, color: colores.white},
-              ]}>
-              {'HOME'}
-            </Text>
-          </View>
-        )}
-        <View style={[appStyles.cardView, estilos.cardFlex]}>
-          {userOptions.map(e => (
-            <View
-              style={[estilos.itemsCenter, {minWidth: '40%', maxWidth: '50%'}]}
-              key={e.id}>
-              <ImageButton
-                text={e.text}
-                faIcon={e.faIcon}
-                buttonColor={e.color}
-                buttonSize={75}
-                iconColor={colores.white}
-                onClick={e.onClick}
-                textStyle={{color: colores.irexcoreDegradadoNegro}}
-              />
+  const size = 60;
+  const cardOption = ({ item }) => {
+    const { color, text, faIcon } = item;
+    return (
+      <View style={appStyles.cardView}>
+        <TouchableOpacity activeOpacity={0.8} style={[{ flexDirection: 'row' }]} onPress={item.onClick}>
+          <View style={[estilos.itemsCenter, { width: size }]}>
+            <Svg height={size} width={size} viewBox="0 0 100 100">
+              <Circle cx="50" cy="50" r="45" fill={color} />
+            </Svg>
+            <View style={estilos.cameraIcon}>
+              <FontAwesomeIcon icon={faIcon} size={20} color={'white'} />
             </View>
-          ))}
-        </View>
-      </ScrollView>
+          </View>
+          <Text style={appStyles.itemListView}>{text}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+  return (
+    <View style={estilos.rootView}>
+      <Text style={[appStyles.textHeader, estilos.headerStyle]}>Menú</Text>
+      <FlatList data={userOptions} renderItem={cardOption} />
     </View>
   );
 }
 
 const estilos = StyleSheet.create({
+  rootView: {
+    flex: 1,
+    backgroundColor: colores.grayBackgrounds,
+  },
+  headerStyle: {
+    marginHorizontal: 20,
+    paddingVertical: 15,
+  },
+  cameraIcon: {
+    zIndex: 2,
+    elevation: 2,
+    position: 'absolute',
+  },
   waveImage: {
     width: '100%',
     height: 100,

@@ -14,9 +14,21 @@ export const colores = Object.freeze({
   redButton: '#e62222',
   greenButton: '#58a12b',
   redDotech: '#a62527',
+  grayBackgrounds: '#ebecf2',
+  cardBlackBackground: 'rgba(81, 81, 81,1)',
+  greenLite: '#29E18B',
+  blackLight: '#8a8686', //Color para degradado tipo sombra
+
 });
 
 export const appStyles = StyleSheet.create({
+  textView: {
+    marginTop: 5,
+    color: colores.white,
+    fontSize: 16,
+    textAlign: 'center',
+    fontFamily: 'Signika-Medium',
+  },
   headerStyle: {
     fontSize: DeviceiOS ? 32 : 24,
     fontFamily: 'Poppins-Bold',
@@ -67,6 +79,64 @@ export const appStyles = StyleSheet.create({
     color: colores.white,
     fontSize: 18,
     fontFamily: 'RobotoSlab-Regular',
-
+  },
+  itemListView: {
+    color: colores.irexcoreDegradadoNegro,
+    fontSize: 18,
+    fontFamily: 'RobotoSlab-Regular',
+    textAlignVertical: 'center',
+    marginHorizontal: 20,
+  },
+  itemSelection: {
+    fontFamily: 'Signika-Medium',
+    fontSize: DeviceiOS ? 14 : 11,
+    margin: DeviceiOS ? 4 : 2,
+  },
+  mediumTextView: {
+    marginTop: 5,
+    color: colores.cardBlackBackground,
+    fontSize: 18,
+    fontFamily: 'RobotoSlab-Regular',
+  },
+  smallTextView: {
+    marginTop: 2,
+    color: colores.cardBlackBackground,
+    fontSize: 12,
+    fontFamily: 'RobotoSlab-Regular',
+  },
+  flexRowCenter: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center', //Centered vertically
+    alignItems: 'center', // Centered horizontally
+  },
+  titleView: {
+    marginTop: 5,
+    color: colores.white,
+    fontSize: 30,
+    textAlign: 'center',
+    fontFamily: 'Signika-Medium',
+  },
+  screen: {
+    backgroundColor: colores.grayBackgrounds,
+    flex: 1,
+  },
+  imageRound: {
+    borderRadius: 120 / 2,
+    overflow: 'hidden',
+    borderWidth: 3,
+    borderColor: colores.irexcoreDegradadoNegro,
   },
 });
+
+
+export const usuariosDummy = [
+  {
+      id: 0, name: 'Luis Huerta', type: 'Admin',
+      phone: '8183091232', permission: [1, 2],
+  },
+  {
+      id: 1, name: 'Carlos Gzz', type: 'user',
+      phone: '8110262869', permission: [2],
+  }
+];
