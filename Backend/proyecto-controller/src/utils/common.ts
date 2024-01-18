@@ -23,3 +23,17 @@ export const mqttClientRegistrer: ClientsModuleOptions = [
     },
   },
 ];
+
+export const jwtConstants = {
+  secret: 'secretKey',
+};
+
+// prd
+export const dataBaseConstants = {
+  user: 'sa',
+  password: '123',
+  server: 'localhost',
+  database: 'DotechProyectSystem',
+  port: 1433,
+  encrypt: false,
+};

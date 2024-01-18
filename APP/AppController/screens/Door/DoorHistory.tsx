@@ -4,50 +4,39 @@
 import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { colores, appStyles } from '../../resources/globalStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DeviceiOS } from '../../Constants';
-import { faDoorClosed, faDoorOpen } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useEffect, useState } from 'react';
+import Request from '../../networks/request';
+import { History } from '../../objects/history';
+import moment from 'moment';
 
-export function DoorHistory({ navigation }) {
-    const messageText = ['Abrir puerta', 'Cerrar puerta', 'Agregar usuario'];
-    const history = [
-        {
-            id: 1,
-            type: 1,
-            username: 'luis.lucio',
-            date: '01/09/23 07:54 PM',
-        },
-        {
-            id: 2,
-            type: 2,
-            username: 'carlos.gzz',
-            date: '11/07/23 11:00 PM',
-        },
-        {
-            id: 3,
-            type: 1,
-            username: 'luis.lucio',
-            date: '19/08/23 08:16 PM',
-        },
-    ];
-    const dataList = ({ item }: any) => {
+export function DoorHistory({ route }: any) {
+    const messageText = ['Abrir puerta', 'Cerrar puerta'];
+    const [history, sethistory] = useState<History[]>([]);
+    const { uuid } = route?.params;
+    useEffect(() => {
+        const request = new Request();
+        request.getHistory(uuid).then((response: History[]) => {
+            console.log('resp ', response);
+            sethistory(response);
+        });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+    const getDateTimeString = (date: string) => {
+        return moment(date).format('DD/MM/YY hh:mm:ss A');
+      };
+    const dataList = ({item}: any) => {
         return (
-            <TouchableOpacity activeOpacity={1} key={item.id}>
-                <View style={[estilos.cardStyle, { marginBottom: 0 }]}>
+            <TouchableOpacity activeOpacity={1} key={item.idHistorial}>
+                <View style={[estilos.cardStyle, { marginBottom: 0, backgroundColor: colores.white}]}>
                     <View style={[estilos.formularioStyle]}>
-                        <Text style={[appStyles.itemSelection, { flex: 0.6 }, appStyles.mediumTextView]}>{item.username}</Text>
-                        <Text style={[appStyles.itemSelection, estilos.dateText]}>{item.date}</Text>
+                        <Text style={[appStyles.itemSelection, { flex: 0.6 }, appStyles.mediumTextView]}>{item.userName}</Text>
+                        <Text style={[appStyles.itemSelection, estilos.dateText]}>{getDateTimeString(item.fecha)}</Text>
                     </View>
                     <View style={estilos.textViews}>
-                        <Text style={[appStyles.itemSelection, appStyles.mediumTextView, { color: colores.PrimaryDark }]}>{typeof item?.type !== 'undefined' ? messageText[item?.type - 1] : 'Sin comentarios'}</Text>
+                        <Text style={[appStyles.itemSelection, appStyles.mediumTextView, { color: colores.PrimaryDark }]}>{typeof item?.idTipoMovimiento !== 'undefined' ? messageText[item?.idTipoMovimiento - 1] : 'Sin comentarios'}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
-        );
-    };
-    const separadorItem = () => {
-        return (
-            <View style={{ height: 0.5, backgroundColor: colores.blackLight }} />
         );
     };
     const headerComponent = () => {
@@ -59,7 +48,7 @@ export function DoorHistory({ navigation }) {
     };
     return (
         <SafeAreaView style={estilos.rootView}>
-            <FlatList data={history} ListHeaderComponent={headerComponent} renderItem={dataList} ItemSeparatorComponent={separadorItem} />
+            <FlatList data={history} ListHeaderComponent={headerComponent} renderItem={dataList}/>
         </SafeAreaView>
     );
 }

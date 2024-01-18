@@ -1,18 +1,24 @@
 /* eslint-disable prettier/prettier */
-import {Platform} from 'react-native';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { Platform } from 'react-native';
+import { colores } from './resources/globalStyles';
 
 export const DeviceiOS = Platform.OS === 'ios';
-
-const testingURL = false;
+export const tokenKey = 'tokenUser';
+const testingURL = true;
 export const getApiURL = () => {
-  return '';//'http://13.68.134.198:81';
+  if (testingURL) {
+    return 'http://192.168.56.1:3001/api/';
+  }
+  return '';
+};
+
+export const getWsURL = () => {
+  return 'http://192.168.56.1:81';
+  //'http://13.68.134.198:81 // no usar porque es productivo';
 };
 
 export const wsEvents = Object.freeze({
-  door: 'gfr',
-});
-
-export const mqttEvents = Object.freeze({
   get: {
     door: 'get/door',
   },
@@ -20,3 +26,39 @@ export const mqttEvents = Object.freeze({
     door: 'set/door',
   },
 });
+
+
+
+export const WorkerInputs = [ // 0 a 6
+  {
+    id: 0, hint: 'Llene los siguientes campos', type: 'title', icon: faUser, color: colores.Primary,
+  },
+  {
+    id: 1, hint: 'Nombre',
+    maxLength: 50, type: 'input',
+    error: 'Ingrese un nombre válido', minLength: 3,
+  },
+  {
+    id: 2, hint: 'Apellido',
+    maxLength: 50, type: 'input',
+    error: 'Ingrese un apellido válido', minLength: 3,
+  },
+  {
+    id: 3, hint: 'Teléfono', icon: 'phone',
+    maxLength: 13, type: 'input', inputType: 'number-pad',
+    error: 'Ingrese un número de teléfono', minLength: 5,
+  },
+  {
+    id: 4, hint: 'Nombre de usuario',
+    maxLength: 13, type: 'input', icon: 'account-key',
+    error: 'Ingrese un nombre de usuario', minLength: 5,
+  },
+  {
+    id: 5, hint: '¿Es Administrador?', type: 'switch',
+    child: [],
+  },
+];
+
+
+//
+

@@ -11,6 +11,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { MqttWSLinker } from 'src/utils/mqtt.ws.linker';
 import { WSDoorService } from './door/ws.door.service';
+import { JwtWSGuard } from 'guard/jwt-ws-guard';
+import { AppService } from 'src/http/app.service';
 
 @WebSocketGateway(81, {
   cors: { origin: '*' },
@@ -18,20 +20,26 @@ import { WSDoorService } from './door/ws.door.service';
 export class WSGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private readonly doorService: WSDoorService) {}
+  constructor(
+    private readonly doorService: WSDoorService,
+    private guardWS: JwtWSGuard,
+    private appService: AppService,
+  ) {}
   @WebSocketServer() server: Server;
-
-  afterInit(socket: any) { // server
+  private timeStamp = 0;
+  afterInit(socket: any) {
+    // server
     MqttWSLinker.clientWS = this.server;
-    console.log("encendiendo server")
+    console.log('encendiendo server');
   }
 
-  handleConnection(client: any, ...args: any[]) { 
+  handleConnection(client: Socket, ...args: any[]) {
+    //client.join('');
+    console.log('args ', args);
     console.log('nuevo cliente conectadp');
-    
   }
 
-  handleDisconnect(client: any) { 
+  handleDisconnect(client: any) {
     console.log('desconexion de cliente');
   }
   //================================
@@ -40,22 +48,94 @@ export class WSGateway
   @SubscribeMessage('set/ac_controller')
   handleRoomLeave(client: Socket, payLoad: string) {
     console.log(`payLoad `, payLoad);
-    // client.leave(`room_${room}`);    
-    MqttWSLinker.callLinker('get/ac_controller',payLoad);
+    // client.leave(`room_${room}`);
+    // MqttWSLinker.callLinker('get/ac_controller', payLoad);
   }
 
   //================================
   //====== Puertas
   //================================
-  @SubscribeMessage('testend/door')
-  testDoor(client: Socket, payLoad: string) {
-    this.doorService.testDoor();
+  /**
+   * suscribes el usuario a la puerta
+   * @param client cliente
+   * @param payLoad datos
+   * @returns
+   */
+  @SubscribeMessage('join/door')
+  async joinDoor(
+    client: Socket,
+    payLoad: {
+      uuid: string;
+      token: string;
+      socketId: string;
+    },
+  ) {
+    try {
+      const response = await this.guardWS.checkToken(payLoad.token); // validas que el token sirva
+      //client.join(`${payLoad.uuid}`);
+      this.server.in(payLoad.socketId).socketsJoin(payLoad.uuid);
+      // enviamos la informacion especificamente al usuario cuando recien se una al room
+      const data = await this.appService.getPortonUuid(
+        response.idUsuario,
+        response.idTipoUsuario,
+        payLoad.uuid,
+      );
+      client.emit('roomDoor', data.length > 0 ? data[0] : []);
+    } catch (e) {
+      console.error('joinDoor Err: ', e);
+      return [];
+    }
   }
 
   @SubscribeMessage('set/door')
-  setDoorValue(client: Socket, payLoad: string) {
-    console.log(`set door `, payLoad);
-    // client.leave(`room_${room}`);
-    MqttWSLinker.callLinker('get/door', payLoad);
-  }  
+  setDoorValue(client: Socket, payLoad: any) {
+    if (this.timeStamp > Date.now()) {
+      console.log('todavia no puedes mandar una señal');
+      return;
+    }
+    this.guardWS
+      .checkToken(payLoad.token)
+      .then(async (response) => {
+        console.log(`set door `, response);
+        this.timeStamp = Date.now() + 10000; // ponemos timestamp
+        // vamos a llamar al mqtt para que el micro reciba la señal de abrir o cerrar
+        MqttWSLinker.callMqtt(`get/door/${payLoad.uuid}`, {
+          type: payLoad.type,
+          idUsuario: response.idUsuario,
+        });
+        const data = await this.doorService.updateDoor(
+          payLoad.uuid,
+          response.idUsuario,
+          payLoad.type,
+        );
+        console.log('data update door ', data);        
+        this.server.to(payLoad.uuid).emit('roomDoor', data.length > 0 ? data[0] : []);
+      })
+      .catch((e) => {
+        console.log('set door err: ', e);
+      });
+  }
+
+  /**
+   * suscripcion de actualizacion de la puerta
+   * @param payload payload
+   * @returns   
+  @SubscribeMessage('updateDoor')
+  async handleRoomEvent(
+    @MessageBody()
+    payLoad: {
+      uuid: string;
+      token: string;
+      type: string;
+    },
+  ): Promise<any> {
+    console.log('recibiendo ', payLoad);
+    this.guardWS.checkToken(payLoad.token).then(async (response) => {
+      const data = await this.doorService.updateDoor(
+        response.idUsuario,
+        payLoad.type,
+      );
+      this.server.to(payLoad.uuid).emit('roomDoor', data && []);
+    });
+  } */
 }

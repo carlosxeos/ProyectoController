@@ -17,6 +17,7 @@ import Login from './screens/Login';
 import DoorsList from './screens/Door/DoorsList';
 import { DoorHistory } from './screens/Door/DoorHistory';
 import { ListUsers } from './screens/Users/ListUsers';
+import { AddUser } from './screens/Users/AddUser';
 
 const Stack = createNativeStackNavigator();
 const defaultOptions: NativeStackNavigationOptions = {
@@ -91,6 +92,14 @@ function App(): JSX.Element {
           options={() => {
             const opts = defaultOptions;
             opts.title = 'Lista de usuarios';
+            return defaultOptions;
+          }} />
+        <Stack.Screen
+          name="AddUser"
+          component={AddUser}
+          options={() => {
+            const opts = defaultOptions;
+            opts.title = 'Agregar usuario';
             return defaultOptions;
           }} />
       </Stack.Navigator>

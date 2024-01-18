@@ -7,38 +7,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeviceiOS } from '../../Constants';
 import { faDoorClosed, faDoorOpen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-
-export default function DoorsList({ navigation }) {
-    const doorClick = (name: string, id: number) => {
-        navigation.navigate('DoorScreen', {name, id});
+export default function DoorsList({ navigation, route }: any) {
+    const portones = route?.params?.portones; // id
+    const token = route?.params?.token;
+    const doorClick = (item: any) => {
+        navigation.navigate('DoorScreen', { porton: item, token });
     };
-    const portones = [
-        {
-            id: 1,
-            name: 'Porton principal',
-            status: true,
-            lastUpdate: '01/09/23 07:54 PM',
-            allow: true,
-        },
-        {
-            id: 2,
-            name: 'Porto Carros',
-            status: false,
-            lastUpdate: '11/07/23 11:00 PM',
-            allow: true,
-        },
-        {
-            id: 3,
-            name: 'Arquitecto',
-            status: true,
-            lastUpdate: '19/08/23 08:16 PM',
-            allow: false,
-        },
-    ];
-    const dataList = ({ item }: any) => {
+    const dataList = ({ item }) => {
         let icon;
         let colorIcon;
-        if (item.status) {
+        console.log('data ', item);
+        if (item.idtipomodificacion === 1) { // 1 si esta abierto, 2 si se encuentra cerrado
             icon = faDoorOpen;
             colorIcon = colores.redButton;
         } else {
@@ -46,15 +25,15 @@ export default function DoorsList({ navigation }) {
             colorIcon = colores.greenButton;
         }
         return (
-            <TouchableOpacity activeOpacity={0.7} key={item.id} onPress={() => doorClick(item.name, item.id)}>
+            <TouchableOpacity activeOpacity={0.7} key={item.uuid} onPress={() => doorClick(item)}>
                 <View style={[estilos.cardStyle, appStyles.cardView, { marginBottom: 0 }]}>
                     <View style={[estilos.formularioStyle]}>
-                        <Text style={[appStyles.itemSelection, { flex: 0.6 }, appStyles.mediumTextView]}>{item.name}</Text>
-                        <Text style={[appStyles.itemSelection, estilos.dateText]}>{item.lastUpdate}</Text>
+                        <Text style={[appStyles.itemSelection, { flex: 0.6 }, appStyles.mediumTextView]}>{item.descripcion}</Text>
+                        <Text style={[appStyles.itemSelection, estilos.dateText]}>{item.ultmodificacion}</Text>
                     </View>
                     <View style={[estilos.formularioStyle]}>
                         <View style={estilos.textViews}>
-                            <Text style={[appStyles.itemSelection, appStyles.mediumTextView, { color: colorIcon }]}>{item?.status ? 'Abierto' : 'Cerrado'}</Text>
+                            <Text style={[appStyles.itemSelection, appStyles.mediumTextView, { color: colorIcon }]}>{item?.idtipomodificacion === 1 ? 'Abierto' : 'Cerrado'}</Text>
                         </View>
                         <View style={[appStyles.itemsCenter, { alignItems: 'center', flex: 0.3 }]}>
                             <FontAwesomeIcon size={DeviceiOS ? 25 : 22} icon={icon} color={colorIcon} />

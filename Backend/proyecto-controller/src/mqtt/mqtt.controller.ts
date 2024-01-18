@@ -29,11 +29,15 @@ export class MqttController {
     MqttWSLinker.callLinker('get/ac_controller', data);
   }
 
-  //%############################################
+  // %############################################
   // ############ DOOR
-  //%############################################
-  @MessagePattern('set/door')
+  // %############################################
+  @MessagePattern('set/door/+')
   setDoor(@Payload() data, @Ctx() context: MqttContext) {
-    this.doorService.openCloseDoor(data);
+    const splitFunc = context.getTopic().split('/');
+    const uuid = splitFunc.length == 3 ? splitFunc[2] : "";
+    console.log('uuid ', uuid);   
+    console.log('context ', context);
+    // this.doorService.openCloseDoor(uuid, data['data']);
   }
 }

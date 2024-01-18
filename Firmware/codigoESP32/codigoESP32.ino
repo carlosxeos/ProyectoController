@@ -3,12 +3,11 @@
 #include <Client.h>
 #include <ArduinoJson.h>
 #include <Wire.h>
-
 //// 25/07/23
 
 // Replace the next variables with your SSID/Password combination
-const char* ssid = "IZZI-00FC";
-const char* password = "G9TJJhtEJFLkksXFnr";
+const char* ssid = "IZZI-C79C";
+const char* password = "DAEU9eHv";
 
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.1.144";
@@ -21,16 +20,29 @@ char msg[50];
 int value = 0;
 int pin_led = 2;
 DynamicJsonDocument doc(1024);
-const char* const doorEndpoint = "get/door";
-const char* const acControllerEndpoint = "get/ac_controller";
+const String enterpriseId = "1c8ac7aa-de9b-4daf-92f5-dc48d4da89d6";
+const byte doorSizeUuid = 1;
+const String doorUuid[doorSizeUuid] = {
+  "af04b978-e4e7-4cbf-a31f-9ea50c3d6744",  // puerta principal
+};
+const int pinDoor[doorSizeUuid] = {
+  25 // puerta principal
+};
+const String getDoorKey = "get/door/";
+const String setDoorKey = "set/door/";
+//const char* const acControllerEndpoint = "get/ac_controllerjiogrejasgiojiowofjirejiofer";
+const String MQTT_CLIENT_NAME = "sys-" + enterpriseId;
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  IPAddress ipAddress(13, 68, 134, 198); // 13.68.134.198
+  IPAddress ipAddress(192, 168, 1, 11);  // 13.68.134.198
   client.setServer(ipAddress, 1883);
   client.setCallback(callback);
   pinMode(pin_led, OUTPUT);
-  pinMode(25,OUTPUT);
+  //for (int i = 0; i < doorSizeUuid; i++) {
+  //  pinMode(pinDoor[i], OUTPUT);
+  //}
+  pinMode(25, OUTPUT);
   Wire.begin();
 }
 
@@ -50,14 +62,13 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-
 }
 
+String messageTemp;
 void callback(char* topic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.print(topic);
   Serial.print(". Message: ");
-  String messageTemp;
   for (int i = 0; i < length; i++) {
     Serial.print((char)message[i]);
     messageTemp += (char)message[i];
@@ -65,12 +76,12 @@ void callback(char* topic, byte* message, unsigned int length) {
   // convertir a json
   deserializeJson(doc, messageTemp);
   Serial.println();
-  if (strncmp(topic, doorEndpoint, 8) == 0) {  // door
-    doorTopicHandler();
+  if (strncmp(topic, getDoorKey.c_str(), getDoorKey.length()) == 0) {  // door
+    doorTopicHandler(String(topic).substring(getDoorKey.length()));
   }
-  if (strncmp(topic, acControllerEndpoint, 17) == 0) {  // ac Controller
-    acControllerTopicHandler();
-  }
+  // if (strncmp(topic, acControllerEndpoint, 17) == 0) {  // ac Controller
+  //   acControllerTopicHandler();
+  // }
 }
 
 void reconnect() {
@@ -78,11 +89,14 @@ void reconnect() {
   Serial.println("");
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
-    if (client.connect("MQTT_SERVICE")) {  // Attempt to connect
+    if (client.connect(MQTT_CLIENT_NAME.c_str())) {  // Attempt to connect
       Serial.println("connected");
       // Subscriptions
-      client.subscribe(doorEndpoint);
-      client.subscribe(acControllerEndpoint);
+      // suscribimos todos los portones disponibles
+      for (int i = 0; i < doorSizeUuid; i++) {
+        client.subscribe(String(getDoorKey + doorUuid[i]).c_str());
+      }
+      //client.subscribe(acControllerEndpoint);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -96,32 +110,51 @@ void loop() {
     reconnect();
   }
   client.loop();
-
-  
 }
 
-void doorTopicHandler() {
-  if (doc["data"] == "1") {
-    // aqui se va a hacer la logica correspondiente al sistema
-    Wire.beginTransmission(0x20);
-    Wire.write(0);
-    Wire.endTransmission();
+void doorTopicHandler(String uuid) {
+  Serial.print("UUID ");
+  Serial.println(uuid);
+  if (doc["data"]["type"].isNull() || doc["data"]["idUsuario"].isNull()) {
+    // sin esta info no podemos ejecutar
+    return;
+  }
+  for (int i = 0; i < doorSizeUuid; i++) {
+    if (doorUuid[i].equals(uuid)) {  // encuentra que porton es, por ahora va a hacer lo mismo para todos los portones
+                                     //if (doc["data"]["type"] == "1") {
+      // aqui se va a hacer la logica correspondiente al sistema
+      Wire.beginTransmission(0x20);
+      Wire.write(0);
+      Wire.endTransmission();
 
-    delay(350);
+      delay(350);
 
-    Wire.beginTransmission(0x20);
-    Wire.write(255);
-    Wire.endTransmission();
+      Wire.beginTransmission(0x20);
+      Wire.write(255);
+      Wire.endTransmission();
 
-    Wire.beginTransmission(0x20);
-    Wire.write(255);
-    Wire.endTransmission();
+      Wire.beginTransmission(0x20);
+      Wire.write(255);
+      Wire.endTransmission();
 
-    Wire.beginTransmission(0x20);
-    Wire.write(255);
-    Wire.endTransmission();
+      Wire.beginTransmission(0x20);
+      Wire.write(255);
+      Wire.endTransmission();
 
-    digitalWrite(25,HIGH);
+      digitalWrite(25, HIGH);
+      digitalWrite(pin_led, HIGH);
+      Serial.println("Abriendo puerta");
+      // digitalWrite(pinDoor[i], HIGH);
+      // delay(250);
+      // digitalWrite(pinDoor[i], LOW);
+
+
+      //client.publish(String(setDoorKey + uuid).c_str(), messageTemp.c_str());
+      // client.publish()
+      // } else if (doc["data"]["type"] == "0") {
+      //   Serial.println("Aqui cerraria el porton");
+      // }
+    }
   }
 }
 

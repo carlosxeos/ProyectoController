@@ -4,9 +4,9 @@ import { MqttWSLinker } from 'src/utils/mqtt.ws.linker';
 
 @Controller()
 class MqttDoorService {
-  openCloseDoor(data) {
+  openCloseDoor(uuid: string, data: { idUsuario: number; type: string }) {
     console.log('Client data in getProcessClientData for process', data);
-    MqttWSLinker.callLinker('get/door', data);
+    // MqttWSLinker.callWSRoom(uuid, 'updateDoor', { ...data, uuid: uuid });
   }
 }
 

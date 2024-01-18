@@ -20,7 +20,7 @@ import Usuario from '../../objects/Usuario';
 import { SearchBar } from 'react-native-elements';
 import { FAB } from 'react-native-paper';
 
-export function ListUsers({ }) {
+export function ListUsers({ navigation}) {
     const [search, setSearch] = useState('');
     const [users] = useState(usuariosDummy);
     const [userFiltered, setuserFiltered] = useState(usuariosDummy);
@@ -75,6 +75,7 @@ export function ListUsers({ }) {
 
     const handleAdd = () => {
         console.log('open');
+        navigation.navigate('AddUser');
     };
     return (
         <SafeAreaView style={appStyles.screen}>

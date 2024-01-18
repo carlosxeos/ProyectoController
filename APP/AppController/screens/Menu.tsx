@@ -7,8 +7,66 @@ import { appStyles, colores } from '../resources/globalStyles';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Svg, { Circle } from 'react-native-svg';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
+import { useEffect, useState } from 'react';
+import { Session } from '../objects/session';
+import Request from '../networks/request';
+import AlertDialog from '../components/AlertDialog';
+import Snackbar from 'react-native-snackbar';
+import { Porton } from '../objects/porton';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { tokenKey } from '../Constants';
 
 function Menu({ navigation }) {
+  const [sessionUser, setsessionUser] = useState<Session | null>();
+  const [idOpciones, setidOpciones] = useState([0]);
+  const [loading, setloading] = useState(false)
+  useEffect(() => {
+    handleData();
+  }, []);
+
+  const handleData = async () => {
+    const localSessionUser = await (new Session()).getSession();
+    setsessionUser(localSessionUser);
+    setidOpciones(() => {
+      const array: number[] = [];
+      if (localSessionUser) {
+        if (localSessionUser.accionesClima !== 0) {
+          array.push(1);
+        }
+        if (localSessionUser.accionesPorton !== 0) {
+          array.push(2);
+        }
+        if (localSessionUser.agregarUsuario === 1) {
+          array.push(3);
+        }
+      }
+      return array;
+    });
+  };
+  const handlePuerta = async () => {
+    // TODO: hacer request a bd para saber los portones
+    setloading(true);
+    const request = new Request();
+    request.getPorton(sessionUser?.token).then(async(porton: Porton[]) => {
+      console.log('porton data ', porton);
+      const token = await AsyncStorage.getItem(tokenKey);
+      if (porton.length === 1) { // si hay mas de una puerta, entra al list, si no abre directamente la que hay
+        navigation.navigate('DoorScreen', {porton: porton[0], token});
+      } else {
+        navigation.navigate('DoorsList', {portones: porton, token});
+      }
+    }).catch((e) => {
+      Snackbar.show({
+        text: 'Hubo un error al obtener los portones, intente más tarde',
+        duration: Snackbar.LENGTH_LONG,
+      });
+      console.error('error puerta ', e);
+
+    }).finally(() => {
+      setloading(false);
+    });
+  };
+
   const userOptions = [
     {
       /** boton de informacion de usuario */
@@ -26,13 +84,7 @@ function Menu({ navigation }) {
       text: 'Puerta',
       faIcon: faDoorClosed,
       color: colores.Primary,
-      onClick: () => {
-        if (true) { // si hay mas de una puerta, entra al list, si no abre directamente la que hay
-          navigation.navigate('DoorsList');
-        } else {
-          navigation.navigate('DoorScreen');
-        }
-      },
+      onClick: handlePuerta,
     },
     {
       /** boton de ver horario registrado */
@@ -67,7 +119,13 @@ function Menu({ navigation }) {
   return (
     <View style={estilos.rootView}>
       <Text style={[appStyles.textHeader, estilos.headerStyle]}>Menú</Text>
-      <FlatList data={userOptions} renderItem={cardOption} />
+      <FlatList data={
+        userOptions.filter(v => idOpciones.findIndex(a => a === v.id) !== -1)
+      } renderItem={cardOption} />
+      <AlertDialog
+        setVisible={setloading} visible={loading}
+        alertColor={colores.redDotech}
+        loading />
     </View>
   );
 }

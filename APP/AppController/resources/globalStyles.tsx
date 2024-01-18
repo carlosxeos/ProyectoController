@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { StyleSheet } from 'react-native';
-import { DeviceiOS } from '../Constants';
+import { StyleSheet, Platform } from 'react-native';
 
 export const colores = Object.freeze({
   PrimaryDark: 'rgba(62, 107, 182,1)', // Colores principales aplicacion 62, 107, 182
@@ -18,10 +17,19 @@ export const colores = Object.freeze({
   cardBlackBackground: 'rgba(81, 81, 81,1)',
   greenLite: '#29E18B',
   blackLight: '#8a8686', //Color para degradado tipo sombra
+  irexcoreTransparente: 'rgba(0, 0, 0, 0.5)', // color transparente
+  irexcoreTextgraycolor: '#979494', //Color para textos
+  black: '#000000',
+  blackBackground: 'rgba(47, 48, 51,1)',
+
 
 });
 
 export const appStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+  },
   textView: {
     marginTop: 5,
     color: colores.white,
@@ -30,7 +38,7 @@ export const appStyles = StyleSheet.create({
     fontFamily: 'Signika-Medium',
   },
   headerStyle: {
-    fontSize: DeviceiOS ? 32 : 24,
+    fontSize: Platform.OS === 'ios' ? 32 : 24,
     fontFamily: 'Poppins-Bold',
     color: colores.white,
     paddingHorizontal: 20,
@@ -54,7 +62,7 @@ export const appStyles = StyleSheet.create({
     alignItems: 'center', // Centered horizontally
   },
   textHeader: {
-    fontSize: DeviceiOS ? 32 : 24,
+    fontSize: Platform.OS === 'ios' ? 32 : 24,
     fontFamily: 'RobotoSlab-Regular',
     color: colores.irexcoreDegradadoNegro,
     paddingVertical: '8%',
@@ -89,8 +97,8 @@ export const appStyles = StyleSheet.create({
   },
   itemSelection: {
     fontFamily: 'Signika-Medium',
-    fontSize: DeviceiOS ? 14 : 11,
-    margin: DeviceiOS ? 4 : 2,
+    fontSize: Platform.OS === 'ios' ? 14 : 11,
+    margin: Platform.OS === 'ios' ? 4 : 2,
   },
   mediumTextView: {
     marginTop: 5,
@@ -121,22 +129,33 @@ export const appStyles = StyleSheet.create({
     backgroundColor: colores.grayBackgrounds,
     flex: 1,
   },
-  imageRound: {
-    borderRadius: 120 / 2,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: colores.irexcoreDegradadoNegro,
+  shadowEffect: {
+    shadowColor: colores.PrimaryDark,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    elevation: 2,
+  },
+  smallText: {
+    marginTop: 2,
+    marginBottom: -5,
+    color: colores.irexcoreTextgraycolor,
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  buttonLogin: {
+    width: '100%',
+    backgroundColor: colores.PrimaryDark,
   },
 });
 
 
 export const usuariosDummy = [
   {
-      id: 0, name: 'Luis Huerta', type: 'Admin',
-      phone: '8183091232', permission: [1, 2],
+    id: 0, name: 'Luis Huerta', type: 'Admin',
+    phone: '8183091232', permission: [1, 2],
   },
   {
-      id: 1, name: 'Carlos Gzz', type: 'user',
-      phone: '8110262869', permission: [2],
-  }
+    id: 1, name: 'Carlos Gzz', type: 'user',
+    phone: '8110262869', permission: [2],
+  },
 ];

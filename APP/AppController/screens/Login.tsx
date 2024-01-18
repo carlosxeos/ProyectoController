@@ -1,16 +1,55 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/react-in-jsx-scope */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { appStyles, colores } from '../resources/globalStyles';
 import { TextInput } from 'react-native-paper';
+import Request from '../networks/request';
+import AlertDialog from '../components/AlertDialog';
+import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
+import { ConnectDB } from '../db/ConectDB';
+import { Session } from '../objects/session';
 
-function Login({navigation }) {
-    const [usuario, setusuario] = useState('');
-    const [password, setpassword] = useState('');
+function Login({ navigation }) {
+    const [usuario, setusuario] = useState('usr.dotech');
+    const [password, setpassword] = useState('Password01');
+    const [alertVisible, setalertVisible] = useState(false);
+    const [loading, setloading] = useState(false);
+    const [errorMessage, seterrorMessage] = useState('');
+    const request = new Request();
+    const onPosListener = () => {
+        seterrorMessage('');
+        setalertVisible(false);
+    };
+
+    useEffect(() => {
+        const conDB = new ConnectDB();
+        conDB.checkConnection();
+    }, []);
+
+    const onOkey = { onClick: onPosListener, text: 'OK' };
     function onLogin() {
-        console.log('logeando..');
-        navigation.replace('Menu');
+        if (!usuario || !password) {
+            setalertVisible(true);
+            seterrorMessage('Ingrese un usuario y una contraseña');
+            return;
+        }
+        setloading(true);
+        setalertVisible(true);
+        request.loginUser(usuario, password).then(async (response) => {
+            if (response.auth) {
+                const session = new Session();
+                await session.addSession(response);
+                navigation.replace('Menu');
+            } else {
+                seterrorMessage(response.error || 'Usuario o contraseña incorrectos');
+            }
+        }).catch(e => {
+            console.log('error ', e);
+            seterrorMessage('Usuario o contraseña incorrectos');
+        }).finally(() => {
+            setloading(false);
+        });
     }
     return (
         <View style={appStyles.bodyView}>
@@ -34,6 +73,12 @@ function Login({navigation }) {
                 onPress={onLogin}>
                 <Text style={appStyles.textButtonLogin}>{'Ingresar'}</Text>
             </TouchableOpacity>
+            <AlertDialog
+                setVisible={setalertVisible} visible={alertVisible}
+                alertColor={colores.redDotech}
+                handleNegative={onOkey}
+                handleNeutral={undefined} text={errorMessage}
+                loading={loading} faIcon={faTimesCircle} />
         </View>
     );
 }
