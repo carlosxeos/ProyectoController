@@ -10,6 +10,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { wsEvents } from '../../Constants';
 import Snackbar from 'react-native-snackbar';
 import moment from 'moment';
+import Usuario from '../../objects/Usuario';
+import { Session } from '../../objects/session';
 
 //👇🏻 Import socket from the socket.js file in utils folder
 function DoorScreen({ navigation, route }: any) {
@@ -38,6 +40,15 @@ function DoorScreen({ navigation, route }: any) {
   }, [token]);
 
   const handleButtonDoor = async () => {
+    const session = new Session();
+    const data = await session.getSession();
+    if (data?.accionesPorton !== 1) {
+      Snackbar.show({
+        text: 'No tiene los permisos para abrir o cerrar portones',
+        duration: Snackbar.LENGTH_LONG,
+      });
+      return;
+    }
     let timer = await AsyncStorage.getItem(timeKey);
     if (!timer) {
       timer = '0';
@@ -49,7 +60,7 @@ function DoorScreen({ navigation, route }: any) {
         socketClient.emit(`${wsEvents.set.door}`, {
           uuid: porton.uuid,
           token: token,
-          type: open ? '0' : '1', // abrir(1) o cerrar(0)
+          type: porton.idtipomodificacion === 1 ? '0' : '1', // abrir(1) o cerrar(0)
         });
         return !prev;
       });

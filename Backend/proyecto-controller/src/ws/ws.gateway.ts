@@ -80,7 +80,9 @@ export class WSGateway
         response.idTipoUsuario,
         payLoad.uuid,
       );
-      client.emit('roomDoor', data.length > 0 ? data[0] : []);
+      if (data && data?.length > 0) {
+        client.emit('roomDoor', data[0]);
+      }
     } catch (e) {
       console.error('joinDoor Err: ', e);
       return [];
@@ -93,6 +95,8 @@ export class WSGateway
       console.log('todavia no puedes mandar una señal');
       return;
     }
+    console.log('payload ', payLoad);
+
     this.guardWS
       .checkToken(payLoad.token)
       .then(async (response) => {
@@ -108,8 +112,10 @@ export class WSGateway
           response.idUsuario,
           payLoad.type,
         );
-        console.log('data update door ', data);        
-        this.server.to(payLoad.uuid).emit('roomDoor', data.length > 0 ? data[0] : []);
+        console.log('data update door ', data);
+        if (data && data?.length > 0) {
+          this.server.to(payLoad.uuid).emit('roomDoor', data[0]);
+        }
       })
       .catch((e) => {
         console.log('set door err: ', e);

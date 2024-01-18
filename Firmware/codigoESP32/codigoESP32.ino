@@ -21,21 +21,25 @@ int value = 0;
 int pin_led = 2;
 DynamicJsonDocument doc(1024);
 const String enterpriseId = "1c8ac7aa-de9b-4daf-92f5-dc48d4da89d6";
-const byte doorSizeUuid = 1;
+const byte doorSizeUuid = 2;
 const String doorUuid[doorSizeUuid] = {
   "af04b978-e4e7-4cbf-a31f-9ea50c3d6744",  // puerta principal
+  "ae70c7a2-7756-43cf-a34c-39bcee021e38"   // interior dtch
 };
 const int pinDoor[doorSizeUuid] = {
-  25 // puerta principal
+  25,  // puerta principal
+  26
 };
 const String getDoorKey = "get/door/";
 const String setDoorKey = "set/door/";
 //const char* const acControllerEndpoint = "get/ac_controllerjiogrejasgiojiowofjirejiofer";
 const String MQTT_CLIENT_NAME = "sys-" + enterpriseId;
+
+byte stateled;
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  IPAddress ipAddress(192, 168, 1, 11);  // 13.68.134.198
+  IPAddress ipAddress(192, 168, 1, 10);  // 13.68.134.198
   client.setServer(ipAddress, 1883);
   client.setCallback(callback);
   pinMode(pin_led, OUTPUT);
@@ -123,27 +127,14 @@ void doorTopicHandler(String uuid) {
     if (doorUuid[i].equals(uuid)) {  // encuentra que porton es, por ahora va a hacer lo mismo para todos los portones
                                      //if (doc["data"]["type"] == "1") {
       // aqui se va a hacer la logica correspondiente al sistema
-      Wire.beginTransmission(0x20);
-      Wire.write(0);
-      Wire.endTransmission();
-
-      delay(350);
-
-      Wire.beginTransmission(0x20);
-      Wire.write(255);
-      Wire.endTransmission();
-
-      Wire.beginTransmission(0x20);
-      Wire.write(255);
-      Wire.endTransmission();
-
-      Wire.beginTransmission(0x20);
-      Wire.write(255);
-      Wire.endTransmission();
-
-      digitalWrite(25, HIGH);
-      digitalWrite(pin_led, HIGH);
-      Serial.println("Abriendo puerta");
+      if (i == 0) {
+        Serial.println("Abriendo puerta 1");
+        stateled = !stateled;
+        digitalWrite(2, stateled);
+      }
+      if (i == 1) {
+        Serial.println("Abriendo el porton interior");
+      }
       // digitalWrite(pinDoor[i], HIGH);
       // delay(250);
       // digitalWrite(pinDoor[i], LOW);

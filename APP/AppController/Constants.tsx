@@ -8,13 +8,13 @@ export const tokenKey = 'tokenUser';
 const testingURL = true;
 export const getApiURL = () => {
   if (testingURL) {
-    return 'http://192.168.56.1:3001/api/';
+    return 'http://192.168.1.10:3001/api/';
   }
   return '';
 };
 
 export const getWsURL = () => {
-  return 'http://192.168.56.1:81';
+  return 'http://192.168.1.10:81';
   //'http://13.68.134.198:81 // no usar porque es productivo';
 };
 
