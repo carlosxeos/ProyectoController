@@ -18,6 +18,8 @@ import DoorsList from './screens/Door/DoorsList';
 import { DoorHistory } from './screens/Door/DoorHistory';
 import { ListUsers } from './screens/Users/ListUsers';
 import { AddUser } from './screens/Users/AddUser';
+import { isDebugApp } from './Constants';
+import IpConfig from './screens/ip-config';
 
 const Stack = createNativeStackNavigator();
 const defaultOptions: NativeStackNavigationOptions = {
@@ -31,7 +33,7 @@ const defaultOptions: NativeStackNavigationOptions = {
 function App(): JSX.Element {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName={isDebugApp ? 'IpConfig' : 'Login'}>
         <Stack.Screen
           name="Login"
           component={Login}
@@ -44,6 +46,9 @@ function App(): JSX.Element {
             headerStyle: { backgroundColor: colores.PrimaryDark },
           }}
         />
+        <Stack.Screen
+          name="IpConfig"
+          component={IpConfig} />
         <Stack.Screen
           name="Menu"
           component={Menu}
@@ -81,7 +86,7 @@ function App(): JSX.Element {
         <Stack.Screen
           name="DoorHistory"
           component={DoorHistory}
-          options={({route}) => {
+          options={({ route }) => {
             const opts = defaultOptions;
             opts.title = route.params?.name || 'Historial';
             return defaultOptions;

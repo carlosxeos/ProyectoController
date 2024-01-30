@@ -1,18 +1,19 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable react/react-in-jsx-scope */
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { appStyles, colores } from '../resources/globalStyles';
-import { TextInput } from 'react-native-paper';
 import Request from '../networks/request';
 import AlertDialog from '../components/AlertDialog';
 import { faTimesCircle } from '@fortawesome/free-regular-svg-icons';
 import { ConnectDB } from '../db/ConectDB';
 import { Session } from '../objects/session';
+import React from 'react';
+import { TextInput } from 'react-native-paper';
+import { isDebugApp } from '../Constants';
 
 function Login({ navigation }) {
-    const [usuario, setusuario] = useState('usr.dotech');
-    const [password, setpassword] = useState('Password01');
+    const [usuario, setusuario] = useState(isDebugApp ? 'usr.dotech' : '');
+    const [password, setpassword] = useState(isDebugApp ? 'Password01' : '');
     const [alertVisible, setalertVisible] = useState(false);
     const [loading, setloading] = useState(false);
     const [errorMessage, seterrorMessage] = useState('');
@@ -58,7 +59,7 @@ function Login({ navigation }) {
                 label="Usuario" value={usuario}
                 style={appStyles.textInput} autoCorrect={false} autoCapitalize={'none'}
                 onChangeText={setusuario}
-                left={<TextInput.Icon icon={'account'} iconColor={colores.Primary} />}
+                //left={<TextInput.Icon icon={'account'} color={colores.Primary} />}
                 mode="outlined" outlineColor={colores.irexcoreDegradadoNegro}
                 activeOutlineColor={colores.Primary} />
             <TextInput
@@ -66,7 +67,7 @@ function Login({ navigation }) {
                 style={appStyles.textInput} autoCorrect={false} autoCapitalize={'none'}
                 secureTextEntry
                 onChangeText={setpassword}
-                left={<TextInput.Icon icon={'lock'} iconColor={colores.Primary} />}
+                //left={<TextInput.Icon icon={'magnify'} color={colores.Primary} />}
                 mode="outlined" outlineColor={colores.irexcoreDegradadoNegro}
                 activeOutlineColor={colores.Primary} />
             <TouchableOpacity style={[appStyles.buttonRound]}

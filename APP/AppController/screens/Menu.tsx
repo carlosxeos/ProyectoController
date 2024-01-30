@@ -15,6 +15,7 @@ import Snackbar from 'react-native-snackbar';
 import { Porton } from '../objects/porton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { tokenKey } from '../Constants';
+import React from 'react';
 
 function Menu({ navigation }) {
   const [sessionUser, setsessionUser] = useState<Session | null>();
@@ -30,15 +31,15 @@ function Menu({ navigation }) {
     setidOpciones(() => {
       const array: number[] = [];
       if (localSessionUser) {
-        if (localSessionUser.accionesClima !== 0) {
-          array.push(1);
-        }
+        //if (localSessionUser.accionesClima !== 0) {
+        //  array.push(1);
+        //}
         if (localSessionUser.accionesPorton !== 0) {
           array.push(2);
         }
-        if (localSessionUser.agregarUsuario === 1) {
-          array.push(3);
-        }
+        // if (localSessionUser.agregarUsuario === 1) {
+        //   array.push(3);
+        // }
       }
       return array;
     });

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { createConnection, getConnection } from 'typeorm-react-native';
+import { createConnection, getConnection } from 'typeorm';
 import { Session } from '../objects/session';
 export class ConnectDB {
     async checkConnection() {

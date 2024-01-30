@@ -2,19 +2,22 @@
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { Platform } from 'react-native';
 import { colores } from './resources/globalStyles';
+import moment from 'moment';
 
 export const DeviceiOS = Platform.OS === 'ios';
 export const tokenKey = 'tokenUser';
 const testingURL = true;
+export const isDebugApp = true;
+const ipAddressConfigRemote = '192.168.0.2';
 export const getApiURL = () => {
   if (testingURL) {
-    return 'http://192.168.1.10:3001/api/';
+    return `http://${ipAddressConfigRemote}:3001/api/`;
   }
   return '';
 };
 
 export const getWsURL = () => {
-  return 'http://192.168.1.10:81';
+  return `http://${ipAddressConfigRemote}:81`;
   //'http://13.68.134.198:81 // no usar porque es productivo';
 };
 
@@ -59,6 +62,8 @@ export const WorkerInputs = [ // 0 a 6
   },
 ];
 
-
+export const getDateFormatLocal = (date: string) => {
+  return moment(date).format('DD/MM/YY hh:mm:ss A');
+};
 //
 

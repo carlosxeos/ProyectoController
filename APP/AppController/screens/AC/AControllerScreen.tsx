@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/react-in-jsx-scope */
+
 import {View, Text, SafeAreaView, StyleSheet} from 'react-native';
 import {appStyles, colores} from '../../resources/globalStyles';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
@@ -15,6 +15,7 @@ import {faSnowflake} from '@fortawesome/free-regular-svg-icons';
 import ImageButton from '../../components/ImageButton';
 import {useState} from 'react';
 import socketClient from '../../resources/socketClient';
+import React from 'react';
 
 function AControllerScreen({navigation}) {
   // const getterAController = 'get/ac_controller';

@@ -4,7 +4,7 @@
 import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { colores, appStyles } from '../../resources/globalStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DeviceiOS } from '../../Constants';
+import { DeviceiOS, getDateFormatLocal } from '../../Constants';
 import { faDoorClosed, faDoorOpen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 export default function DoorsList({ navigation, route }: any) {
@@ -29,7 +29,7 @@ export default function DoorsList({ navigation, route }: any) {
                 <View style={[estilos.cardStyle, appStyles.cardView, { marginBottom: 0 }]}>
                     <View style={[estilos.formularioStyle]}>
                         <Text style={[appStyles.itemSelection, { flex: 0.6 }, appStyles.mediumTextView]}>{item.descripcion}</Text>
-                        <Text style={[appStyles.itemSelection, estilos.dateText]}>{item.ultmodificacion}</Text>
+                        <Text style={[appStyles.itemSelection, estilos.dateText]}>{getDateFormatLocal(item.ultmodificacion)}</Text>
                     </View>
                     <View style={[estilos.formularioStyle]}>
                         <View style={estilos.textViews}>

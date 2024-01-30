@@ -1,11 +1,7 @@
 /* eslint-disable prettier/prettier */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  PrimaryColumn,
-  getConnection,
-  getRepository,
-} from 'typeorm-react-native';
-import {Entity, Column} from 'typeorm-react-native/browser';
+import {Entity, Column, PrimaryColumn, getRepository, getConnection} from 'typeorm';
+
 import {tokenKey} from '../Constants';
 @Entity('tbSession')
 export class Session {

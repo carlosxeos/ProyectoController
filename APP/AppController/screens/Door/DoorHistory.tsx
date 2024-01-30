@@ -16,7 +16,6 @@ export function DoorHistory({ route }: any) {
     useEffect(() => {
         const request = new Request();
         request.getHistory(uuid).then((response: History[]) => {
-            console.log('resp ', response);
             sethistory(response);
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
