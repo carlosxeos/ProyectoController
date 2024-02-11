@@ -103,7 +103,7 @@ void reconnect() {
   Serial.println("");
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
-    if (client.connect(MQTT_CLIENT_NAME.c_str())) {  // Attempt to connect
+    if (client.connect(MQTT_CLIENT_NAME.c_str(), "espsys", "VWxoT2QwMTZTbFJsV0U1dldrZG9lZz09")) {  // Attempt to connect
       Serial.println("connected");
       // Subscriptions
       // suscribimos todos los portones disponibles
