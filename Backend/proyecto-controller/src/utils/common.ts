@@ -10,6 +10,8 @@ export const mqttConfig: MicroserviceOptions = {
   options: {
     url: 'mqtt://localhost:1883',
     protocol: 'mqtt',
+    username: 'espsys',
+    password: "VWxoT2QwMTZTbFJsV0U1dldrZG9lZz09"
   },
 };
 
@@ -20,6 +22,8 @@ export const mqttClientRegistrer: ClientsModuleOptions = [
     options: {
       url: 'mqtt://localhost:1883',
       protocol: 'mqtt',
+      username: 'espsys',
+      password: "VWxoT2QwMTZTbFJsV0U1dldrZG9lZz09"
     },
   },
 ];

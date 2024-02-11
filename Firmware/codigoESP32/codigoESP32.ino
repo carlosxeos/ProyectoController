@@ -39,7 +39,7 @@ byte stateled;
 void setup() {
   Serial.begin(115200);
   setup_wifi();
-  IPAddress ipAddress(192, 168, 1, 10);  // 13.68.134.198
+  IPAddress ipAddress(13, 68, 134, 198);//ipAddress(192, 168, 1, 10);  // 13.68.134.198
   client.setServer(ipAddress, 1883);
   client.setCallback(callback);
   pinMode(pin_led, OUTPUT);

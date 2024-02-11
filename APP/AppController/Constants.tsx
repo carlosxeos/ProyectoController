@@ -7,8 +7,8 @@ import moment from 'moment';
 export const DeviceiOS = Platform.OS === 'ios';
 export const tokenKey = 'tokenUser';
 const testingURL = true;
-export const isDebugApp = true;
-const ipAddressConfigRemote = '192.168.0.2';
+export const isDebugApp = false;
+const ipAddressConfigRemote = '13.68.134.198';//'192.168.0.2';
 export const getApiURL = () => {
   if (testingURL) {
     return `http://${ipAddressConfigRemote}:3001/api/`;
