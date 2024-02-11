@@ -6,8 +6,8 @@
 //// 25/07/23
 
 // Replace the next variables with your SSID/Password combination
-const char* ssid = "IZZI-C79C";
-const char* password = "DAEU9eHv";
+const char* ssid = "IZZI-3AB1";
+const char* password = "509551243AB1";
 
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.1.144";
@@ -26,9 +26,11 @@ const String doorUuid[doorSizeUuid] = {
   "af04b978-e4e7-4cbf-a31f-9ea50c3d6744",  // puerta principal
   "ae70c7a2-7756-43cf-a34c-39bcee021e38"   // interior dtch
 };
-const int pinDoor[doorSizeUuid] = {
-  25,  // puerta principal
-  26
+const int pinDoor[4] = {
+  4,  // puerta principal
+  16,
+  17,
+  5
 };
 const String getDoorKey = "get/door/";
 const String setDoorKey = "set/door/";
@@ -43,6 +45,14 @@ void setup() {
   client.setServer(ipAddress, 1883);
   client.setCallback(callback);
   pinMode(pin_led, OUTPUT);
+
+  pinMode(4,OUTPUT);
+  pinMode(16,OUTPUT);
+  pinMode(17,OUTPUT);
+  pinMode(5,OUTPUT);
+
+  pinMode(15,INPUT);
+
   //for (int i = 0; i < doorSizeUuid; i++) {
   //  pinMode(pinDoor[i], OUTPUT);
   //}
@@ -114,6 +124,12 @@ void loop() {
     reconnect();
   }
   client.loop();
+
+  if(digitalRead(15)==LOW){
+        digitalWrite(4,HIGH);
+        delay(100);
+        digitalWrite(4,LOW);
+  }
 }
 
 void doorTopicHandler(String uuid) {
@@ -127,19 +143,21 @@ void doorTopicHandler(String uuid) {
     if (doorUuid[i].equals(uuid)) {  // encuentra que porton es, por ahora va a hacer lo mismo para todos los portones
                                      //if (doc["data"]["type"] == "1") {
       // aqui se va a hacer la logica correspondiente al sistema
+      doorActivationHardware(i);
+/*
       if (i == 0) {
         Serial.println("Abriendo puerta 1");
-        stateled = !stateled;
-        digitalWrite(2, stateled);
+        doorActivationHardware();
       }
       if (i == 1) {
-        Serial.println("Abriendo el porton interior");
+        Serial.println("Abriendo puerta 2");
+
+        digitalWrite(4,HIGH);
+        delay(100);
+        digitalWrite(4,LOW);
+
       }
-      // digitalWrite(pinDoor[i], HIGH);
-      // delay(250);
-      // digitalWrite(pinDoor[i], LOW);
-
-
+*/
       //client.publish(String(setDoorKey + uuid).c_str(), messageTemp.c_str());
       // client.publish()
       // } else if (doc["data"]["type"] == "0") {
@@ -176,4 +194,10 @@ void acControllerTopicHandler() {
   } else {
     Serial.println("Datos no encontrados");
   }
+}
+
+void doorActivationHardware(int i){
+        digitalWrite(pinDoor[i],HIGH);
+        delay(250);
+        digitalWrite(pinDoor[i],LOW);
 }
