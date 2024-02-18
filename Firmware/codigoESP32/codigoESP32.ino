@@ -6,8 +6,8 @@
 //// 25/07/23
 
 // Replace the next variables with your SSID/Password combination
-const char* ssid = "IZZI-3AB1";
-const char* password = "509551243AB1";
+const char* ssid = "INFINITUM620F_2.4";//"IZZI-3AB1";
+const char* password = "1585973336";
 
 // Add your MQTT Broker IP address, example:
 //const char* mqtt_server = "192.168.1.144";
@@ -28,7 +28,7 @@ const String doorUuid[doorSizeUuid] = {
 };
 const int pinDoor[4] = {
   4,  // puerta principal
-  16,
+  16, // interior dtch
   17,
   5
 };
@@ -198,6 +198,6 @@ void acControllerTopicHandler() {
 
 void doorActivationHardware(int i){
         digitalWrite(pinDoor[i],HIGH);
-        delay(250);
+        delay(350);
         digitalWrite(pinDoor[i],LOW);
 }
