@@ -9,7 +9,8 @@ import { ConnectDB } from '../db/ConectDB';
 import { Session } from '../objects/session';
 import React from 'react';
 import { TextInput } from 'react-native-paper';
-import { isDebugApp } from '../Constants';
+import { isDebugApp, keyStorage } from '../Constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Login({ navigation }) {
     const [usuario, setusuario] = useState(isDebugApp ? 'usr.dotech' : '');
@@ -26,7 +27,12 @@ function Login({ navigation }) {
     useEffect(() => {
         const conDB = new ConnectDB();
         conDB.checkConnection();
+        getUser();
     }, []);
+
+    const getUser = async () => {
+        setusuario(await AsyncStorage.getItem(keyStorage.user) || '');
+    };
 
     const onOkey = { onClick: onPosListener, text: 'OK' };
     function onLogin() {
@@ -39,6 +45,7 @@ function Login({ navigation }) {
         setalertVisible(true);
         request.loginUser(usuario, password).then(async (response) => {
             if (response.auth) {
+                await AsyncStorage.setItem(keyStorage.user, usuario);
                 const session = new Session();
                 await session.addSession(response);
                 navigation.replace('Menu');

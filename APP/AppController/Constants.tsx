@@ -6,6 +6,9 @@ import moment from 'moment';
 
 export const DeviceiOS = Platform.OS === 'ios';
 export const tokenKey = 'tokenUser';
+export const keyStorage = {
+  user: 'username',
+}
 const testingURL = true;
 export const isDebugApp = false;
 const ipAddressConfigRemote = '13.68.134.198';//'192.168.0.2';

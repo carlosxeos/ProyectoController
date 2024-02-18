@@ -19,10 +19,10 @@ export default function DoorsList({ navigation, route }: any) {
         console.log('data ', item);
         if (item.idtipomodificacion === 1) { // 1 si esta abierto, 2 si se encuentra cerrado
             icon = faDoorOpen;
-            colorIcon = colores.redButton;
+            colorIcon = colores.greenButton;
         } else {
             icon = faDoorClosed;
-            colorIcon = colores.greenButton;
+            colorIcon = colores.redDotech;
         }
         return (
             <TouchableOpacity activeOpacity={0.7} key={item.uuid} onPress={() => doorClick(item)}>

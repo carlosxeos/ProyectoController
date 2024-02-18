@@ -98,7 +98,7 @@ function DoorScreen({ navigation, route }: any) {
             iconColor={colores.irexcoreDegradadoNegro}
             onClick={handleButtonDoor}
             buttonSize={140}
-            borderColor={porton.idtipomodificacion === 1 ? colores.redButton : colores.greenLite}
+            borderColor={porton.idtipomodificacion === 1 ? colores.greenLite : colores.redButton}
             textStyle={{ fontSize: 20 }} />
           <View style={[appStyles.flexRowCenter, { marginTop: 30 }]}>
             <View style={estilos.optionsCenter}>
