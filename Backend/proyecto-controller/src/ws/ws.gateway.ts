@@ -13,6 +13,7 @@ import { MqttWSLinker } from 'src/utils/mqtt.ws.linker';
 import { WSDoorService } from './door/ws.door.service';
 import { JwtWSGuard } from 'guard/jwt-ws-guard';
 import { AppService } from 'src/http/app.service';
+import { HttpException } from '@nestjs/common';
 
 @WebSocketGateway(81, {
   cors: { origin: '*' },
@@ -116,6 +117,17 @@ export class WSGateway
         if (data && data?.length > 0) {
           this.server.to(payLoad.uuid).emit('roomDoor', data[0]);
         }
+        // finalmente enviamos el sms
+        const usuarios = await AppService.getUserById(response.idUsuario, true);
+        let username = '';
+        console.log('usuarios ', usuarios);
+        if (usuarios?.length == 0) {
+          username = 'user not found';
+        } else {
+          const usuario = usuarios[0];
+          username = usuario.userName;
+        }
+        this.doorService.sendSMS(username);
       })
       .catch((e) => {
         console.log('set door err: ', e);

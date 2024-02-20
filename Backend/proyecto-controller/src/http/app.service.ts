@@ -28,13 +28,14 @@ export class AppService {
     return resultadoSP['recordset'];
   }
 
-  private async getUserById(idUsuario: number) {
+  public static async getUserById(idUsuario: number, requireUserName: Boolean = false) {
     const conn = new ConnectionPool(dataBaseConstants);
     let resultadoSP = { recordset: [] };
     try {
       await conn.connect();
       const request = new Request(conn);
       request.input('idUsuario', Numeric(), idUsuario);
+      request.input('getUsr', Numeric(), requireUserName ? 1 : 0);
       resultadoSP = await request.execute('sp_get_user_id');
     } catch (error) {
       console.error('err getUserById ', error);
@@ -69,7 +70,7 @@ export class AppService {
     idUsuario: number,
     idTipoUsuario: number,
   ): Promise<any[]> {
-    const usuarios = await this.getUserById(idUsuario);
+    const usuarios = await AppService.getUserById(idUsuario);
     if (usuarios?.length == 0) {
       throw new HttpException('Usuario no registrado', HttpStatus.BAD_REQUEST, {
         cause: new Error('Usuario no registrado'),

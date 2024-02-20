@@ -15,7 +15,9 @@ import { JwtAuthGuard } from 'guard/jwt-auth-guard';
 
 @Controller('api')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+  ) {}
 
   @Get('prueba')
   async getNivel(): Promise<string> {
@@ -51,4 +53,4 @@ export class AppController {
     }
     return this.appService.getHistory(data.idUsuario, uuid);
   }
-}
+}// 
