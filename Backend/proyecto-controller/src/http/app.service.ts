@@ -28,7 +28,7 @@ export class AppService {
     return resultadoSP['recordset'];
   }
 
-  public static async getUserById(idUsuario: number, requireUserName: Boolean = false) {
+  public static async getUserById(idUsuario: number, requireUserName = false) {
     const conn = new ConnectionPool(dataBaseConstants);
     let resultadoSP = { recordset: [] };
     try {
