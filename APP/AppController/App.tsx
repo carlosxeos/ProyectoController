@@ -30,10 +30,10 @@ const defaultOptions: NativeStackNavigationOptions = {
   },
   headerTintColor: colores.white,
 };
-function App(): JSX.Element {
+function App(): JSX.Element {// isDebugApp ? 'IpConfig' : 'Login'
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={isDebugApp ? 'IpConfig' : 'Login'}>
+      <Stack.Navigator initialRouteName={'Login'}>
         <Stack.Screen
           name="Login"
           component={Login}

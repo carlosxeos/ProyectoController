@@ -26,6 +26,8 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
 			<key>localhost</key>
@@ -46,10 +48,24 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Play-Bold.ttf</string>
+		<string>Play-Regular.ttf</string>
+		<string>Poppins-Bold.ttf</string>
+		<string>RobotoSlab-Black.ttf</string>
+		<string>RobotoSlab-Bold.ttf</string>
+		<string>RobotoSlab-Medium.ttf</string>
+		<string>RobotoSlab-Regular.ttf</string>
+	</array>
 </dict>
 </plist>

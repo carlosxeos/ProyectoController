@@ -44,16 +44,19 @@ function Login({ navigation }) {
         setloading(true);
         setalertVisible(true);
         request.loginUser(usuario, password).then(async (response) => {
+            setalertVisible(false);
             if (response.auth) {
+                console.log('inicia sesion');
                 await AsyncStorage.setItem(keyStorage.user, usuario);
                 const session = new Session();
                 await session.addSession(response);
                 navigation.replace('Menu');
             } else {
+                console.error('err');
                 seterrorMessage(response.error || 'Usuario o contraseña incorrectos');
             }
         }).catch(e => {
-            console.log('error ', e);
+            console.error('error ', e);
             seterrorMessage('Usuario o contraseña incorrectos');
         }).finally(() => {
             setloading(false);

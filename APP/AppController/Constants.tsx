@@ -9,14 +9,14 @@ export const tokenKey = 'tokenUser';
 export const keyStorage = {
   user: 'username',
 }
-const testingURL = true;
+//const testingURL = false;
 export const isDebugApp = false;
 const ipAddressConfigRemote = '13.68.134.198';//'192.168.0.2';
 export const getApiURL = () => {
-  if (testingURL) {
+  //if (testingURL) {
     return `http://${ipAddressConfigRemote}:3001/api/`;
-  }
-  return '';
+  //}
+  //return '';
 };
 
 export const getWsURL = () => {
