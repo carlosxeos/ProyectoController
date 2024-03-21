@@ -44,8 +44,8 @@ function Login({ navigation }) {
         setloading(true);
         setalertVisible(true);
         request.loginUser(usuario, password).then(async (response) => {
-            setalertVisible(false);
             if (response.auth) {
+                setalertVisible(false);
                 console.log('inicia sesion');
                 await AsyncStorage.setItem(keyStorage.user, usuario);
                 const session = new Session();
