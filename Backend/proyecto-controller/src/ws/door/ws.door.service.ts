@@ -24,10 +24,10 @@ export class WSDoorService {
     return resultadoSP['recordset'];
   }
 
-  async sendSMS(username: string) {
+  async sendSMS(username: string, doorName: string) {
     const dateString = new Date(new Date().toLocaleString('en', {timeZone: 'America/Mexico_City'}))
     // TODO: por ahora solo se le va a enviar mensaje al numero de omar por cualquier tipo de alerta
     // cambiar a que se obtengan los contactos por bd
-    return await sendSMSToClient(`${username} ha solicitado abrir/cerrar el porton de subida. ${dateString}`, ['+528112558479']);
+    return await sendSMSToClient(`${username} ha solicitado abrir/cerrar el porton ${doorName}. ${dateString}`, ['+528183097162']);
   }
 }

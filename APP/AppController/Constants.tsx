@@ -11,17 +11,15 @@ export const keyStorage = {
 }
 const testingURL = true;
 export const isDebugApp = false;
-const ipAddressConfigRemote = '13.68.134.198';//'192.168.0.2';
+const ipAddressConfigRemote = testingURL ?
+  '192.168.1.10' // ip local
+  : '13.68.134.198'; // ip del servidor de omar
 export const getApiURL = () => {
-  if (testingURL) {
-    return `http://${ipAddressConfigRemote}:3001/api/`;
-  }
-  return '';
+  return `http://${ipAddressConfigRemote}:3001/api/`;
 };
 
 export const getWsURL = () => {
   return `http://${ipAddressConfigRemote}:81`;
-  //'http://13.68.134.198:81 // no usar porque es productivo';
 };
 
 export const wsEvents = Object.freeze({

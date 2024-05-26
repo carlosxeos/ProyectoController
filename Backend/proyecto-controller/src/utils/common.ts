@@ -5,6 +5,9 @@ import {
   Transport,
 } from '@nestjs/microservices';
 
+/**
+ * informacion de modo server de mqtt
+ */
 export const mqttConfig: MicroserviceOptions = {
   transport: Transport.MQTT,
   options: {
@@ -15,6 +18,9 @@ export const mqttConfig: MicroserviceOptions = {
   },
 };
 
+/**
+ * informacion del modo cliente del server mqtt
+ */
 export const mqttClientRegistrer: ClientsModuleOptions = [
   {
     name: 'MQ_CLIENT',

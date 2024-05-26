@@ -118,16 +118,19 @@ export class WSGateway
           this.server.to(payLoad.uuid).emit('roomDoor', data[0]);
         }
         // finalmente enviamos el sms
-        const usuarios = await AppService.getUserById(response.idUsuario, true);
+        const usuarios = await this.appService.getDataSmsById(response.idUsuario, payLoad.uuid);
         let username = '';
+        let doorName = '';
         console.log('usuarios ', usuarios);
         if (usuarios?.length == 0) {
           username = 'user not found';
+          doorName = 'D N/A';
         } else {
           const usuario = usuarios[0];
           username = usuario.userName;
+          doorName = usuario.descripcion;
         }
-        this.doorService.sendSMS(username);
+        this.doorService.sendSMS(username, doorName);
       })
       .catch((e) => {
         console.log('set door err: ', e);

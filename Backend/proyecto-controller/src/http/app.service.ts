@@ -28,7 +28,7 @@ export class AppService {
     return resultadoSP['recordset'];
   }
 
-  public static async getUserById(idUsuario: number, requireUserName = false) {
+  public async getUserById(idUsuario: number, requireUserName = false) {
     const conn = new ConnectionPool(dataBaseConstants);
     let resultadoSP = { recordset: [] };
     try {
@@ -44,6 +44,7 @@ export class AppService {
     }
     return resultadoSP['recordset'];
   }
+
   public async getPortonUuid(
     idUsuario: number,
     idTipoUsuario: number,
@@ -70,7 +71,7 @@ export class AppService {
     idUsuario: number,
     idTipoUsuario: number,
   ): Promise<any[]> {
-    const usuarios = await AppService.getUserById(idUsuario);
+    const usuarios = await this.getUserById(idUsuario);
     if (usuarios?.length == 0) {
       throw new HttpException('Usuario no registrado', HttpStatus.BAD_REQUEST, {
         cause: new Error('Usuario no registrado'),
@@ -139,7 +140,7 @@ export class AppService {
       const request = new Request(conn);
       request.input('idUsuario', Numeric(), idUsuario);
       request.input('uuid', VarChar(), uuid);
-      resultadoSP = await request.execute('sp_get_history');      
+      resultadoSP = await request.execute('sp_get_history');
     } catch (error) {
       console.error('error getHistory ', error);
     } finally {
@@ -147,4 +148,21 @@ export class AppService {
     }
     return resultadoSP['recordset'];
   }
+
+  public async getDataSmsById(idUsuario: number, uuid: string) {
+    const conn = new ConnectionPool(dataBaseConstants);
+    let resultadoSP = { recordset: [] };
+    try {
+      await conn.connect();
+      const request = new Request(conn);
+      request.input('idUsuario', Numeric(), idUsuario);
+      request.input('uuid', VarChar(), uuid);
+      resultadoSP = await request.execute('sp_get_data_sms');
+    } catch (error) {
+      console.error('err getDataSmsById ', error);
+    } finally {
+      conn.close();
+    }
+    return resultadoSP['recordset'];
+  }  
 }
