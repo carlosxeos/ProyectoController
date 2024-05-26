@@ -12,8 +12,15 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1C0BF1543926446EADD08AF1 /* RobotoSlab-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2F122EA470A94DEE8811A90E /* RobotoSlab-Regular.ttf */; };
+		44605384B72E41938A94D2BA /* RobotoSlab-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D88454BE2B5649469AF0E95E /* RobotoSlab-Bold.ttf */; };
+		60EF8017C5E14C61A75BC18A /* RobotoSlab-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0D90CC838234666BA99D1C8 /* RobotoSlab-Medium.ttf */; };
+		6CB4B112F33C44B39657EF10 /* RobotoSlab-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B64E5B3D1A674C1088366CD7 /* RobotoSlab-Black.ttf */; };
 		7699B88040F8A987B510C191 /* libPods-AppController-AppControllerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-AppController-AppControllerTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8C9DDB01270545CAA72D3D77 /* Poppins-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 707C65BF167149C486169F07 /* Poppins-Bold.ttf */; };
+		AC2AC3A2ED534D5EBC8C0710 /* Play-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 731638E5D8C249B7B3AE2F3D /* Play-Regular.ttf */; };
+		D6EBB00298AC44BABCE15FE8 /* Play-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 60D42F51760D4C9E84E939C4 /* Play-Bold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,12 +44,19 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AppController/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AppController/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-AppController-AppControllerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AppController-AppControllerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F122EA470A94DEE8811A90E /* RobotoSlab-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoSlab-Regular.ttf"; path = "../assets/fonts/RobotoSlab-Regular.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-AppController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppController.debug.xcconfig"; path = "Target Support Files/Pods-AppController/Pods-AppController.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-AppController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppController.release.xcconfig"; path = "Target Support Files/Pods-AppController/Pods-AppController.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-AppController-AppControllerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppController-AppControllerTests.debug.xcconfig"; path = "Target Support Files/Pods-AppController-AppControllerTests/Pods-AppController-AppControllerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-AppController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AppController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		60D42F51760D4C9E84E939C4 /* Play-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Play-Bold.ttf"; path = "../assets/fonts/Play-Bold.ttf"; sourceTree = "<group>"; };
+		707C65BF167149C486169F07 /* Poppins-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Poppins-Bold.ttf"; path = "../assets/fonts/Poppins-Bold.ttf"; sourceTree = "<group>"; };
+		731638E5D8C249B7B3AE2F3D /* Play-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Play-Regular.ttf"; path = "../assets/fonts/Play-Regular.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = AppController/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-AppController-AppControllerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppController-AppControllerTests.release.xcconfig"; path = "Target Support Files/Pods-AppController-AppControllerTests/Pods-AppController-AppControllerTests.release.xcconfig"; sourceTree = "<group>"; };
+		B64E5B3D1A674C1088366CD7 /* RobotoSlab-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoSlab-Black.ttf"; path = "../assets/fonts/RobotoSlab-Black.ttf"; sourceTree = "<group>"; };
+		C0D90CC838234666BA99D1C8 /* RobotoSlab-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoSlab-Medium.ttf"; path = "../assets/fonts/RobotoSlab-Medium.ttf"; sourceTree = "<group>"; };
+		D88454BE2B5649469AF0E95E /* RobotoSlab-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoSlab-Bold.ttf"; path = "../assets/fonts/RobotoSlab-Bold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -122,6 +136,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				F71FD572EA5D4A5BBEBB62F1 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -146,6 +161,20 @@
 				89C6BE57DB24E9ADA2F236DE /* Pods-AppController-AppControllerTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		F71FD572EA5D4A5BBEBB62F1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				60D42F51760D4C9E84E939C4 /* Play-Bold.ttf */,
+				731638E5D8C249B7B3AE2F3D /* Play-Regular.ttf */,
+				707C65BF167149C486169F07 /* Poppins-Bold.ttf */,
+				B64E5B3D1A674C1088366CD7 /* RobotoSlab-Black.ttf */,
+				D88454BE2B5649469AF0E95E /* RobotoSlab-Bold.ttf */,
+				C0D90CC838234666BA99D1C8 /* RobotoSlab-Medium.ttf */,
+				2F122EA470A94DEE8811A90E /* RobotoSlab-Regular.ttf */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -200,7 +229,8 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1210;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1520;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
@@ -244,6 +274,13 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				D6EBB00298AC44BABCE15FE8 /* Play-Bold.ttf in Resources */,
+				AC2AC3A2ED534D5EBC8C0710 /* Play-Regular.ttf in Resources */,
+				8C9DDB01270545CAA72D3D77 /* Poppins-Bold.ttf in Resources */,
+				6CB4B112F33C44B39657EF10 /* RobotoSlab-Black.ttf in Resources */,
+				44605384B72E41938A94D2BA /* RobotoSlab-Bold.ttf in Resources */,
+				60EF8017C5E14C61A75BC18A /* RobotoSlab-Medium.ttf in Resources */,
+				1C0BF1543926446EADD08AF1 /* RobotoSlab-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,23 +469,31 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-AppController-AppControllerTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEAD_CODE_STRIPPING = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = AppControllerTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
+					"$(inherited)",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
 					"$(inherited)",
 				);
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppController.app/AppController";
@@ -459,20 +504,28 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-AppController-AppControllerTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = AppControllerTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
+					"$(inherited)",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
 					"$(inherited)",
 				);
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppController.app/AppController";
@@ -485,12 +538,22 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 53823HJR4S;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = AppController/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AppController;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
+					"$(inherited)",
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
@@ -498,10 +561,16 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dotech.app.controller;
 				PRODUCT_NAME = AppController;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -512,11 +581,21 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 53823HJR4S;
 				INFOPLIST_FILE = AppController/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AppController;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SDKROOT)/usr/lib/swift",
+					"$(SDKROOT)/System/iOSSupport/usr/lib/swift",
+					"$(inherited)",
 				);
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
@@ -524,9 +603,15 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dotech.app.controller;
 				PRODUCT_NAME = AppController;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -535,6 +620,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -564,7 +650,8 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -580,7 +667,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -598,6 +685,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -606,6 +694,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -635,7 +724,8 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -644,7 +734,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -661,6 +751,7 @@
 					"-DFOLLY_MOBILE=1",
 					"-DFOLLY_USE_LIBCPP=1",
 				);
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};

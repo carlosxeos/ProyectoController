@@ -8,6 +8,7 @@ import {
 /**
  * informacion de modo server de mqtt
  */
+import fetch, { Headers } from 'node-fetch';
 export const mqttConfig: MicroserviceOptions = {
   transport: Transport.MQTT,
   options: {
@@ -39,6 +40,7 @@ export const jwtConstants = {
 };
 
 // localhost
+/*
 export const dataBaseConstants = {
   user: 'sa',
   password: '123',
@@ -47,9 +49,9 @@ export const dataBaseConstants = {
   port: 1433,
   encrypt: false,
 };
-
+*/
 // prd
-/*export const dataBaseConstants = {
+export const dataBaseConstants = {
   user: 'lucio',
   password: 'sosaGOD',
   server: '13.68.134.198',
@@ -59,7 +61,7 @@ export const dataBaseConstants = {
   options: {
     useUTC: true,
   },
-};*/
+};
 export const sendSMSToClient = (
   message: string,
   phones: string[],
