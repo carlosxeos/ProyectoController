@@ -9,7 +9,7 @@ export const tokenKey = 'tokenUser';
 export const keyStorage = {
   user: 'username',
 }
-//const testingURL = false;
+const testingURL = true;
 export const isDebugApp = false;
 const ipAddressConfigRemote = testingURL ?
   '192.168.1.10' // ip local
