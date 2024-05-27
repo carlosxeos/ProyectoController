@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConnectionPool, Request, VarChar, Numeric } from 'mssql';
@@ -7,6 +7,7 @@ import { MetaData } from 'src/objects/meta-data';
 import { dataBaseConstants } from 'src/utils/common';
 @Injectable({})
 export class AppService {
+  private readonly logger = new Logger(AppService.name);
   constructor(private jwtService: JwtService) {}
   /**
    * Obtiene un usuario por username
@@ -21,7 +22,7 @@ export class AppService {
       request.input('P_usuario', VarChar(255), username);
       resultadoSP = await request.execute('sp_valid_user');
     } catch (error) {
-      console.error('error getUser ', error);
+      this.logger.error('error getUser ', error);
     } finally {
       conn.close();
     }
@@ -38,7 +39,7 @@ export class AppService {
       request.input('getUsr', Numeric(), requireUserName ? 1 : 0);
       resultadoSP = await request.execute('sp_get_user_id');
     } catch (error) {
-      console.error('err getUserById ', error);
+      this.logger.error('err getUserById ', error);
     } finally {
       conn.close();
     }
@@ -60,7 +61,7 @@ export class AppService {
       request.input('uuidList', VarChar(), list);
       resultadoSP = await request.execute('sp_get_porton_uuid');
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
     } finally {
       conn.close();
     }
@@ -142,7 +143,7 @@ export class AppService {
       request.input('uuid', VarChar(), uuid);
       resultadoSP = await request.execute('sp_get_history');
     } catch (error) {
-      console.error('error getHistory ', error);
+      this.logger.error('error getHistory ', error);
     } finally {
       conn.close();
     }
@@ -159,7 +160,7 @@ export class AppService {
       request.input('uuid', VarChar(), uuid);
       resultadoSP = await request.execute('sp_get_data_sms');
     } catch (error) {
-      console.error('err getDataSmsById ', error);
+      this.logger.error('err getDataSmsById ', error);
     } finally {
       conn.close();
     }

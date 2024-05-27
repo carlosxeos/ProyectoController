@@ -96,7 +96,7 @@ export const sendSMSToClient = (
       return respJson?.code === '0';
     })
     .catch((error) => {
-      console.error(error);
+      console.error('labsmobile err ', error);
       return false;
     });
 };

@@ -13,14 +13,14 @@ import { MqttWSLinker } from 'src/utils/mqtt.ws.linker';
 import { WSDoorService } from './door/ws.door.service';
 import { JwtWSGuard } from 'guard/jwt-ws-guard';
 import { AppService } from 'src/http/app.service';
-import { HttpException } from '@nestjs/common';
-
+import { Logger } from '@nestjs/common';
 @WebSocketGateway(81, {
   cors: { origin: '*' },
 })
 export class WSGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+{  
+  private readonly logger = new Logger(WSGateway.name);
   constructor(
     private readonly doorService: WSDoorService,
     private guardWS: JwtWSGuard,
@@ -85,7 +85,7 @@ export class WSGateway
         client.emit('roomDoor', data[0]);
       }
     } catch (e) {
-      console.error('joinDoor Err: ', e);
+      this.logger.error('joinDoor Err: ', e);
       return [];
     }
   }
