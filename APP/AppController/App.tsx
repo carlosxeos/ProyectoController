@@ -18,7 +18,6 @@ import DoorsList from './screens/Door/DoorsList';
 import { DoorHistory } from './screens/Door/DoorHistory';
 import { ListUsers } from './screens/Users/ListUsers';
 import { AddUser } from './screens/Users/AddUser';
-import { isDebugApp } from './Constants';
 import IpConfig from './screens/ip-config';
 
 const Stack = createNativeStackNavigator();

@@ -14,20 +14,23 @@ import { WSDoorService } from './door/ws.door.service';
 import { JwtWSGuard } from 'guard/jwt-ws-guard';
 import { AppService } from 'src/http/app.service';
 import { Logger } from '@nestjs/common';
+import { coldDownDoor } from 'src/utils/utils';
+import { isPrd, sendSMS } from 'src/utils/common';
 @WebSocketGateway(81, {
   cors: { origin: '*' },
 })
 export class WSGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{  
+{
   private readonly logger = new Logger(WSGateway.name);
   constructor(
     private readonly doorService: WSDoorService,
     private guardWS: JwtWSGuard,
     private appService: AppService,
   ) {}
+
   @WebSocketServer() server: Server;
-  private timeStamp = 0;
+  private timeStampMap: Map<string, number> = new Map();
   afterInit(socket: any) {
     // server
     MqttWSLinker.clientWS = this.server;
@@ -82,6 +85,11 @@ export class WSGateway
         payLoad.uuid,
       );
       if (data && data?.length > 0) {
+        if (!this.timeStampMap.has(payLoad.uuid)) {
+          // si no existe un registro previo, crea el map para tener el registro de timestamps por puertas
+          this.logger.debug(`agregando porton ${payLoad.uuid}`);
+          this.timeStampMap.set(payLoad.uuid, 0);
+        }
         client.emit('roomDoor', data[0]);
       }
     } catch (e) {
@@ -92,17 +100,19 @@ export class WSGateway
 
   @SubscribeMessage('set/door')
   setDoorValue(client: Socket, payLoad: any) {
-    if (this.timeStamp > Date.now()) {
-      console.log('todavia no puedes mandar una señal');
-      return;
-    }
     console.log('payload ', payLoad);
-
     this.guardWS
       .checkToken(payLoad.token)
       .then(async (response) => {
-        console.log(`set door `, response);
-        this.timeStamp = Date.now() + 10000; // ponemos timestamp
+        const tmpstmp = this.timeStampMap.get(payLoad.uuid);
+        if (tmpstmp && tmpstmp > Date.now()) {
+          this.logger.log(
+            `porton ${payLoad.uuid} todavia no puedes mandar una señal`,
+          );
+          return;
+        }
+        this.timeStampMap.set(payLoad.uuid, Date.now() + coldDownDoor); // ponemos timestamp
+        this.logger.log(`set door `, response);
         // vamos a llamar al mqtt para que el micro reciba la señal de abrir o cerrar
         MqttWSLinker.callMqtt(`get/door/${payLoad.uuid}`, {
           type: payLoad.type,
@@ -113,15 +123,18 @@ export class WSGateway
           response.idUsuario,
           payLoad.type,
         );
-        console.log('data update door ', data);
+        // console.log('data update door ', data);
         if (data && data?.length > 0) {
           this.server.to(payLoad.uuid).emit('roomDoor', data[0]);
         }
         // finalmente enviamos el sms
-        const usuarios = await this.appService.getDataSmsById(response.idUsuario, payLoad.uuid);
+        const usuarios = await this.appService.getDataSmsById(
+          response.idUsuario,
+          payLoad.uuid,
+        );
         let username = '';
         let doorName = '';
-        console.log('usuarios ', usuarios);
+        //console.log('usuarios ', usuarios);
         if (usuarios?.length == 0) {
           username = 'user not found';
           doorName = 'D N/A';
@@ -130,33 +143,14 @@ export class WSGateway
           username = usuario.userName;
           doorName = usuario.descripcion;
         }
-        this.doorService.sendSMS(username, doorName);
+        if (isPrd) {
+          sendSMS(
+            `${username} ha solicitado abrir/cerrar el porton ${doorName}`,
+          );
+        }
       })
       .catch((e) => {
         console.log('set door err: ', e);
       });
   }
-
-  /**
-   * suscripcion de actualizacion de la puerta
-   * @param payload payload
-   * @returns   
-  @SubscribeMessage('updateDoor')
-  async handleRoomEvent(
-    @MessageBody()
-    payLoad: {
-      uuid: string;
-      token: string;
-      type: string;
-    },
-  ): Promise<any> {
-    console.log('recibiendo ', payLoad);
-    this.guardWS.checkToken(payLoad.token).then(async (response) => {
-      const data = await this.doorService.updateDoor(
-        response.idUsuario,
-        payLoad.type,
-      );
-      this.server.to(payLoad.uuid).emit('roomDoor', data && []);
-    });
-  } */
 }

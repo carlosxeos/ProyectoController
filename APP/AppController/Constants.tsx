@@ -9,8 +9,7 @@ export const tokenKey = 'tokenUser';
 export const keyStorage = {
   user: 'username',
 }
-const testingURL = true; // si esta en true, apunta a localhost
-export const isDebugApp = false;
+export const testingURL = true; // si esta en true, apunta a localhost
 const ipAddressConfigRemote = testingURL ?
   '192.168.1.10' // ip local
   : '13.68.134.198'; // ip del servidor de omar

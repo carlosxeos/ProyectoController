@@ -10,7 +10,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { wsEvents } from '../../Constants';
 import Snackbar from 'react-native-snackbar';
 import moment from 'moment';
-import Usuario from '../../objects/Usuario';
 import { Session } from '../../objects/session';
 
 //👇🏻 Import socket from the socket.js file in utils folder
@@ -49,13 +48,13 @@ function DoorScreen({ navigation, route }: any) {
       });
       return;
     }
-    let timer = await AsyncStorage.getItem(timeKey);
+    let timer = await AsyncStorage.getItem(`${timeKey}-${porton.uuid}`);
     if (!timer) {
       timer = '0';
     }
     if (Date.now() > +timer) {
       console.log('abriendo');
-      await AsyncStorage.setItem(timeKey, '' + (Date.now() + 10000));
+      await AsyncStorage.setItem(`${timeKey}-${porton.uuid}`, '' + (Date.now() + 10000));
       setopen(prev => {
         socketClient.emit(`${wsEvents.set.door}`, {
           uuid: porton.uuid,

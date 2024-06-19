@@ -5,6 +5,32 @@ import {
   Transport,
 } from '@nestjs/microservices';
 
+export const isPrd = false;
+// localhost
+
+export const dataBaseConstants = {
+  user: 'sa',
+  password: '123',
+  server: 'localhost',
+  database: 'DotechProyectSystem',
+  port: 1433,
+  encrypt: false,
+};
+// prd
+/*
+export const dataBaseConstants = {
+  user: 'lucio',
+  password: 'sosaGOD',
+  server: '13.68.134.198',
+  database: 'DotechProyectSystem',
+  port: 1433,
+  encrypt: false,
+  options: {
+    useUTC: true,
+  },
+};
+*/
+
 /**
  * informacion de modo server de mqtt
  */
@@ -39,30 +65,8 @@ export const jwtConstants = {
   secret: 'secretKey',
 };
 
-// localhost
-/*
-export const dataBaseConstants = {
-  user: 'sa',
-  password: '123',
-  server: 'localhost',
-  database: 'DotechProyectSystem',
-  port: 1433,
-  encrypt: false,
-};
-*/
-// prd
-export const dataBaseConstants = {
-  user: 'lucio',
-  password: 'sosaGOD',
-  server: '13.68.134.198',
-  database: 'DotechProyectSystem',
-  port: 1433,
-  encrypt: false,
-  options: {
-    useUTC: true,
-  },
-};
-export const sendSMSToClient = (
+
+const sendSMSToClient = (
   message: string,
   phones: string[],
 ): Promise<boolean> => {
@@ -119,4 +123,12 @@ export function formatDateLocal(date: Date) {
       padTo2Digits(date.getSeconds()),
     ].join(':')
   );
+}
+
+
+export const sendSMS = async(text: string) : Promise<boolean> => {
+  const dateString = new Date(new Date().toLocaleString('en', {timeZone: 'America/Mexico_City'}))
+  // TODO: por ahora solo se le va a enviar mensaje al numero de omar por cualquier tipo de alerta
+  // cambiar a que se obtengan los contactos por bd
+  return await sendSMSToClient(`${text} ${dateString}`, ['+528112558479']);
 }

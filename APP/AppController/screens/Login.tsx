@@ -9,12 +9,12 @@ import { ConnectDB } from '../db/ConectDB';
 import { Session } from '../objects/session';
 import React from 'react';
 import { TextInput } from 'react-native-paper';
-import { isDebugApp, keyStorage } from '../Constants';
+import { keyStorage, testingURL } from '../Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function Login({ navigation }) {
-    const [usuario, setusuario] = useState(isDebugApp ? 'usr.dotech' : '');
-    const [password, setpassword] = useState(isDebugApp ? 'Password01' : '');
+    const [usuario, setusuario] = useState(testingURL ? 'usr.dotech' : '');
+    const [password, setpassword] = useState(testingURL ? 'Password01' : '');
     const [alertVisible, setalertVisible] = useState(false);
     const [loading, setloading] = useState(false);
     const [errorMessage, seterrorMessage] = useState('');
