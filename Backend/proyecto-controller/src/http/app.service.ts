@@ -116,11 +116,16 @@ export class AppService {
       metadata.porton.map((v) => v.uuid).join('&'),
     );
     // insertamos los horarios que se requieren
-    for (const dato of data) {
-      dato.horario = metadata.porton.filter(
-        (v) => (v.uuid = dato?.uuid),
-      )[0].horario;
+    for (let i = 0; i < data.length; i++) {
+      const element = data[i];
+      console.log('dato no ', element);
+      data[i].horario = metadata.porton.filter(
+        (v) => (v.uuid === element?.uuid),
+      )[0].horario;      
     }
+    
+    console.log('datos iportones ', data);
+    
     return data;
   }
 

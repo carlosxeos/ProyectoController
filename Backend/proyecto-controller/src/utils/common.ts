@@ -8,7 +8,7 @@ import {
 } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
 
-export const isPrd = false;
+export const isPrd = true;
 // localhost
 /*
 export const dataBaseConstants = {
