@@ -5,4 +5,4 @@ export const decodeToken = (token: string) => {
   return JSON.parse(Buffer.from(base64, 'base64').toString('ascii'));
 };
 
-export const coldDownDoor = 10000; // tiempo en millis
+export const coldDownDoor = 31000; // tiempo en millis
