@@ -12,11 +12,13 @@
 //  "DAEU9eHv";
 const byte arrayNetworkSize = 2;
 const char* ssidArray[] = {
+  "INFINITUM620F_2.4",
   "IZZI-C79C",
   "OtraRed"
 };
 
 const char* passwordArray[] = {
+  "1585973336",
   "DAEU9eHv",
   "Juarez"
 };
@@ -58,9 +60,10 @@ void setup() {
   WiFi.mode(WIFI_STA);
   delay(10);
   setup_wifi();
-  IPAddress  //ipAddress(13, 68, 134, 198);
-    ipAddress(192, 168, 1, 10);
-  // 13.68.134.198
+  IPAddress  ipAddress(13, 68, 134, 198);
+    //ipAddress(192, 168, 1, 10);
+    //ipAddress(13.68.134.198);
+   //13.68.134.198
   client.setServer(ipAddress, 1883);
   client.setCallback(callback);
   pinMode(pin_led, OUTPUT);

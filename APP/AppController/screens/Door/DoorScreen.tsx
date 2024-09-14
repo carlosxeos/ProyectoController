@@ -48,6 +48,7 @@ function DoorScreen({ navigation, route }: any) {
     });
     return () => {
       socketClient.off('roomDoor');
+      socketClient.off('unauthorizedDoor');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);

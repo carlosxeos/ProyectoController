@@ -6,7 +6,7 @@ import moment from 'moment';
 
 export const DeviceiOS = Platform.OS === 'ios';
 export const tokenKey = 'tokenUser';
-export const timeWaitSeconds = 15; // tiempo de espera para coldown en segundos
+export const timeWaitSeconds = 35; // tiempo de espera para coldown en segundos
 
 // tiempo de espera cuando pulsamos el boton de abrir/cerrar fuera de horario en segundos
 export const timeWaitUnauthorized = 60; // 10 min (600)
