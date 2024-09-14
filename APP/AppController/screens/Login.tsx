@@ -46,6 +46,7 @@ function Login({ navigation }) {
                 setalertVisible(false);
                 console.log('inicia sesion');
                 await AsyncStorage.setItem(tokenKey, response.token);
+                await AsyncStorage.setItem(keyStorage.user, usuario);
                 const session = new Session();
                 await session.removeSession(); // removemos la sesion anterior
                 const resp = await request.getTiposUsuario();

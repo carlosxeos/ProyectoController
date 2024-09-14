@@ -10,7 +10,7 @@ import { Logger } from '@nestjs/common';
 
 export const isPrd = false;
 // localhost
-
+/*
 export const dataBaseConstants = {
   user: 'sa',
   password: '123',
@@ -18,9 +18,8 @@ export const dataBaseConstants = {
   database: 'DotechProyectSystem',
   port: 1433,
   encrypt: false,
-};
+};*/
 // prd
-/*
 export const dataBaseConstants = {
   user: 'lucio',
   password: 'sosaGOD',
@@ -32,7 +31,7 @@ export const dataBaseConstants = {
     useUTC: true,
   },
 };
-*/
+
 
 /**
  * informacion de modo server de mqtt
