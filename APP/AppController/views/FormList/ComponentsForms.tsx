@@ -21,13 +21,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 const DeviceiOS = Platform.OS === 'ios';
 export const ComponentForm = ({ item }: any, handleChange: CallableFunction, form: any, errorId = -1) => {
     const handleInput = (_itemInput: any) => {
-        // const handleClickPhoto = () => {
-        //     handleCamera((e: any) => {
-        //         handleChange(e, itemInput);
-        //     });
-        // };
-
-        const hint: string = item.hint;
         switch (item.type) {
             case 'input':
                 return (
@@ -35,7 +28,7 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                         style={[estilos.cardViewBack, estilos.shadowEffect]}
                         key={item.id}>
                         <TextInput
-                            label={hint}
+                            label={item.hint}
                             value={form[item.id]}
                             maxLength={item.maxLength}
                             keyboardType={item?.inputType}
@@ -65,7 +58,7 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                     <>
                         <View style={[estilos.shadowEffect]} />
                         <View style={[estilos.titleCardContainer, estilos.cardView, estilos.title]}>
-                            <Text style={[estilos.titleCard]}>{hint}</Text>
+                            <Text style={[estilos.titleCard]}>{item.hint}</Text>
                             <TouchableOpacity style={estilos.titleImageContainer} >
                                 <FontAwesomeIcon icon={item.icon} size={25} color={localColores.black} />
                             </TouchableOpacity>
@@ -124,7 +117,7 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                                 estilos.textView,
                                 { textAlign: 'center', color: localColores.Primary },
                             ]}>
-                            {hint}
+                            {item.hint}
                         </Text>
                         <View style={{ flexDirection: 'row', flex: 7, marginBottom: 10 }}>
                             {item.box.map((e: any) => {
@@ -167,7 +160,7 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                             estilos.shadowEffect,
                         ]}>
                         <Text style={[estilos.textView, { textAlign: 'right', flex: 1 }]}>
-                            {item.update ? form[item.id] : hint}
+                            {item.update ? form[item.id] : item.hint}
                         </Text>
                         <Switch
                             trackColor={{
@@ -193,7 +186,7 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                 return (
                     <View style={estilos.cardViewBack}>
                         <Text style={[estilos.textView, { textAlign: 'right' }]}>
-                            {item.update ? form[item.id] : hint}
+                            {item.update ? form[item.id] : item.hint}
                         </Text>
                     </View>
                 );

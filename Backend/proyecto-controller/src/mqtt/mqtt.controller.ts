@@ -33,7 +33,7 @@ export class MqttController {
   @MessagePattern('set/ac_controller')
   getProcessClientData(@Payload() data, @Ctx() context: MqttContext) {
     console.log('Client data in getProcessClientData for process', data);
-    MqttWSLinker.callLinker('get/ac_controller', data);
+    //MqttWSLinker.callLinker('get/ac_controller', data);
   }
 
   // %############################################

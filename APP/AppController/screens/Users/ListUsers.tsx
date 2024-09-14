@@ -8,30 +8,38 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { appStyles, colores, usuariosDummy } from '../../resources/globalStyles';
-import { DeviceiOS } from '../../Constants';
-import {
-    faDoorClosed,
-    faSnowflake,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import React, { useState } from 'react';
-import Usuario from '../../objects/Usuario';
+import { appStyles, colores } from '../../resources/globalStyles';
+import React, { useEffect, useState } from 'react';
 import { SearchBar } from 'react-native-elements';
 import { FAB } from 'react-native-paper';
+import Usuario from '../../db/tables/usuario';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { DeviceiOS } from '../../Constants';
+import { faDoorClosed, faSnowflake, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import TipoUsuario from '../../db/tables/tipoUsuario';
 
-export function ListUsers({ navigation}) {
+
+export function ListUsers({ navigation }) {
     const [search, setSearch] = useState('');
-    const [users] = useState(usuariosDummy);
-    const [userFiltered, setuserFiltered] = useState(usuariosDummy);
-    const cardUsers = ({ item }: any) => {
-        const usuario: Usuario = new Usuario(item);
+    const [users, setUsers] = useState([]);
+    const [userFiltered, setuserFiltered] = useState([] as Usuario[]);
+    useEffect(() => {
+        const usuarios = new Usuario();
+        usuarios.getUsers().then((us: Usuario[]) => {
+            console.log(' value get ', us);
+            setUsers(us);
+            setuserFiltered(us); // TODO: crear tablas para obtener el tipo de usuarios listados
+        });
+    }, []);
+
+    const cardUsers = ({ item }) => {
+        const it: Usuario = item;
         return (
-            <TouchableOpacity activeOpacity={0.7} key={item.id} onPress={() => { }}>
+            <TouchableOpacity activeOpacity={0.7} key={item.idUsuario} onPress={() => { }}>
                 <View
                     style={estilos.viewParentContainer}>
                     <Text style={[appStyles.itemSelection, estilos.nameItem]}>
-                        {usuario.name}
+                        {item.nombreCompleto}
                     </Text>
                     <View style={[estilos.formularioStyle]}>
                         <View style={estilos.centerContainer}>
@@ -40,43 +48,57 @@ export function ListUsers({ navigation}) {
                                     appStyles.itemSelection,
                                     estilos.itemsStyle,
                                     { color: colores.irexcoreDegradadoNegro },
-                                ]}>{`${usuario.type}`}</Text>
-                            <Text
-                                style={[
-                                    appStyles.itemSelection,
-                                    estilos.itemsStyle,
-                                    { color: colores.blackLight },
-                                ]}>{`${usuario.phone}`}</Text>
+                                ]}>{`${item.idTipoUsuario.descripcion}`}</Text>
                         </View>
-                        <View style={estilos.viewStatusContainer}>
-                            {
-                                usuario.permission.map((index) => {
-                                    let icon;
-                                    if (index === 2) {
-                                        icon = faSnowflake;
-                                    } else {
-                                        icon = faDoorClosed;
-                                    }
-                                    return (
-                                        <FontAwesomeIcon
-                                            size={DeviceiOS ? 25 : 22}
-                                            icon={icon}
-                                            color={colores.irexcoreDegradadoNegro}
-                                        />
-                                    );
-                                })
-                            }
-                        </View>
+                        {handlePermissionIcons(it.idTipoUsuario)}
                     </View>
                 </View>
             </TouchableOpacity>
         );
     };
 
+    const handlePermissionIcons = (tipoUsuario: TipoUsuario) => {
+        const icons: IconDefinition[] = [];
+        if (tipoUsuario.accionesClima !== 0) {
+            icons.push(faSnowflake);
+        }
+        if (tipoUsuario.accionesPorton !== 0) {
+            icons.push(faDoorClosed);
+        }
+        return (
+            <View style={estilos.viewStatusContainer}>
+                {
+                    icons.map(icon => <FontAwesomeIcon
+                        size={DeviceiOS ? 25 : 22}
+                        icon={icon}
+                        key={icon.iconName}
+                        color={colores.irexcoreDegradadoNegro} />
+                    )
+                }
+            </View>
+        );
+
+    };
     const handleAdd = () => {
         console.log('open');
         navigation.navigate('AddUser');
     };
+    const onChange = ((text: string) => {
+        if (text.length === 0) {
+            console.log('change text');
+            setuserFiltered(users);
+        }
+        setSearch(text);
+    });
+    const onSubmitSearch = () => {
+        setuserFiltered(users.filter((x) => x?.name.toLowerCase().includes(search.toLowerCase())));
+    };
+
+    const onClearSearch = () => {
+        setuserFiltered(users);
+        console.log('on clear');
+    };
+
     return (
         <SafeAreaView style={appStyles.screen}>
             <StatusBar
@@ -86,33 +108,23 @@ export function ListUsers({ navigation}) {
             />
             <SearchBar
                 placeholder={'Buscar...'}
-                onChangeText={(text) => {
-                    if (text.length === 0) {
-                        console.log('change text');
-                        setuserFiltered(users);
-                    }
-                    setSearch(text);
-                }}
-                onSubmitEditing={() => setuserFiltered(users.filter((x) => x?.name.toLowerCase().includes(search.toLowerCase())))}
+                onChangeText={onChange}
+                onSubmitEditing={onSubmitSearch}
                 inputContainerStyle={estilos.searchBar}
                 inputStyle={{ color: colores.Primary }}
                 containerStyle={estilos.searchContainer}
-                onClear={()=> {
-                    setuserFiltered(users);
-                    console.log('on clear');
-
-                }}
+                onClear={onClearSearch}
                 value={search}
             />
             <FlatList
                 style={estilos.flatStyle}
                 data={userFiltered}
                 renderItem={cardUsers}
-                keyExtractor={item => item.id + ''}
+                keyExtractor={item => item.idUsuario + ''}
             />
             <FAB
                 style={estilos.fab}
-                icon="plus"
+                icon={'plus'}
                 color="white"
                 onPress={handleAdd}
             />

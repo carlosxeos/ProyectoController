@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/react-in-jsx-scope */
+
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { faDoorClosed, faFan } from '@fortawesome/free-solid-svg-icons';
 import { appStyles, colores } from '../resources/globalStyles';
@@ -8,19 +8,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Svg, { Circle } from 'react-native-svg';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
 import { useEffect, useState } from 'react';
-import { Session } from '../objects/session';
-import Request from '../networks/request';
+import Request, { ErrorHandler } from '../networks/request';
 import AlertDialog from '../components/AlertDialog';
 import Snackbar from 'react-native-snackbar';
 import { Porton } from '../objects/porton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { tokenKey } from '../Constants';
 import React from 'react';
+import Usuario from '../db/tables/usuario';
+import { Session } from '../db/tables/session';
 
 function Menu({ navigation }) {
   const [sessionUser, setsessionUser] = useState<Session | null>();
   const [idOpciones, setidOpciones] = useState([0]);
-  const [loading, setloading] = useState(false)
+  const [loading, setloading] = useState(false);
+  const listUserKey = 'usrKeyTimer';
   useEffect(() => {
     handleData();
   }, []);
@@ -37,9 +39,10 @@ function Menu({ navigation }) {
         if (localSessionUser.accionesPorton !== 0) {
           array.push(2);
         }
-        // if (localSessionUser.agregarUsuario === 1) {
-        //   array.push(3);
-        // }
+        //console.log('valor ', localSessionUser);
+        if (localSessionUser.agregarUsuario === 1) {
+          array.push(3);
+        }
       }
       return array;
     });
@@ -48,13 +51,13 @@ function Menu({ navigation }) {
     // TODO: hacer request a bd para saber los portones
     setloading(true);
     const request = new Request();
-    request.getPorton(sessionUser?.token).then(async(porton: Porton[]) => {
+    request.getPorton(sessionUser?.token).then(async (porton: Porton[]) => {
       console.log('porton data ', porton);
       const token = await AsyncStorage.getItem(tokenKey);
       if (porton.length === 1) { // si hay mas de una puerta, entra al list, si no abre directamente la que hay
-        navigation.navigate('DoorScreen', {porton: porton[0], token});
+        navigation.navigate('DoorScreen', { porton: porton[0], token });
       } else {
-        navigation.navigate('DoorsList', {portones: porton, token});
+        navigation.navigate('DoorsList', { portones: porton, token });
       }
     }).catch((e) => {
       Snackbar.show({
@@ -68,6 +71,31 @@ function Menu({ navigation }) {
     });
   };
 
+  const handleListClick = async () => {
+    const timerList = await AsyncStorage.getItem(listUserKey);
+    if (timerList && +timerList > Date.now()) { // abre directo la lista de usuarios
+      navigation.navigate('ListUsers');
+      return;
+    }
+    const request = new Request();
+    request.getListUsers().then(async (value) => {
+      console.log('valor list ', value);
+      if (value instanceof ErrorHandler) {
+        Snackbar.show({
+          text: `Hubo un error, comuniquese con el administrador: ${value.error}`,
+          duration: Snackbar.LENGTH_LONG,
+        });
+        return;
+      } else {
+        AsyncStorage.setItem(listUserKey, (Date.now() + 300000) + '');// le damos oportunidad de revisar cada 5 min
+        const usuario = new Usuario();
+        await usuario.addUsers(value);
+        navigation.navigate('ListUsers');
+      }
+    }).catch(e => {
+      console.error('error al obtener usuarios ', e);
+    });
+  };
   const userOptions = [
     {
       /** boton de informacion de usuario */
@@ -93,9 +121,7 @@ function Menu({ navigation }) {
       text: 'Lista Usuarios',
       faIcon: faUser,
       color: colores.greenButton,
-      onClick: () => {
-        navigation.navigate('ListUsers');
-      },
+      onClick: handleListClick,
     },
   ];
   const size = 60;

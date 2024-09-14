@@ -78,7 +78,7 @@ export class WSGateway
       const response = await this.guardWS.checkToken(payLoad.token); // validas que el token sirva
       //client.join(`${payLoad.uuid}`);
       this.server.in(payLoad.socketId).socketsJoin(payLoad.uuid);
-      // enviamos la informacion especificamente al usuario cuando recien se una al room
+      // enviamos la informacion especificamente al usuario cuando recien se una al room      
       const data = await this.appService.getPortonUuid(
         response.idUsuario,
         response.idTipoUsuario,
@@ -104,10 +104,31 @@ export class WSGateway
     this.guardWS
       .checkToken(payLoad.token)
       .then(async (response) => {
+        const isEnabled = await this.doorService.userIsAuthorized(          
+          response.idUsuario,
+          payLoad.uuid,
+        );
+        if (!isEnabled) {
+          const usuarios = await this.appService.getDataSmsById(
+            response.idUsuario,
+            payLoad.uuid,
+          );
+          const username = usuarios[0]?.userName;
+          const doorName = usuarios[0]?.descripcion;
+          const text = `${username} intenta abrir/cerrar sin autorizacion en porton ${doorName}`;
+          if (isPrd) {
+            sendSMS(text);
+          } else {
+            this.logger.error(text);
+          }
+          // enviamos una mensaje al usuario que realizo la accion que no tiene permiso en este horario
+          this.server.to(payLoad.uuid).emit('unauthorizedDoor', {}); 
+          return;
+        }
         const tmpstmp = this.timeStampMap.get(payLoad.uuid);
         if (tmpstmp && tmpstmp > Date.now()) {
           this.logger.log(
-            `porton ${payLoad.uuid} todavia no puedes mandar una señal`,
+            `porton ${payLoad.uuid} todavia no puede mandar una señal`,
           );
           return;
         }
@@ -143,10 +164,11 @@ export class WSGateway
           username = usuario.userName;
           doorName = usuario.descripcion;
         }
+        const text = `${username} ha solicitado abrir/cerrar el porton ${doorName}`;
         if (isPrd) {
-          sendSMS(
-            `${username} ha solicitado abrir/cerrar el porton ${doorName}`,
-          );
+          sendSMS(text);
+        } else {
+          this.logger.warn(text);
         }
       })
       .catch((e) => {

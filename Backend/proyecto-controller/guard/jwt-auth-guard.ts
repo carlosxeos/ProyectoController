@@ -24,7 +24,7 @@ export class JwtAuthGuard implements CanActivate {
         secret: jwtConstants.secret,
       });
       // TODO: ver la posibilidad de guardar los uuid tambien en el token
-      request['payloadData'] = {idTipoUsuario: payload.idTipoUsuario, idUsuario: payload.idUsuario};
+      request['payloadData'] = {idTipoUsuario: payload.idTipoUsuario, idUsuario: payload.idUsuario, idEmpresa: payload.idEmpresa};
     } catch {
       throw new UnauthorizedException();
     }

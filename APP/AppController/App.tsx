@@ -8,7 +8,7 @@
 
 import { NavigationContainer } from '@react-navigation/native';
 import { NativeStackNavigationOptions, createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Menu from './screens/Menu';
 import { colores } from './resources/globalStyles';
 import DoorScreen from './screens/Door/DoorScreen';
@@ -19,6 +19,7 @@ import { DoorHistory } from './screens/Door/DoorHistory';
 import { ListUsers } from './screens/Users/ListUsers';
 import { AddUser } from './screens/Users/AddUser';
 import IpConfig from './screens/ip-config';
+import { AppDataSource } from './db/database';
 
 const Stack = createNativeStackNavigator();
 const defaultOptions: NativeStackNavigationOptions = {
@@ -30,6 +31,16 @@ const defaultOptions: NativeStackNavigationOptions = {
   headerTintColor: colores.white,
 };
 function App(): JSX.Element {// isDebugApp ? 'IpConfig' : 'Login'
+  useEffect(() => {
+    initDatabase();
+  }, []);
+  const initDatabase = async () => {
+    AppDataSource.initialize().catch((e) => {
+      console.error('error db ', e);
+    }).finally(() => {
+      console.log('db iniciada');
+    });
+  };
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={'Login'}>

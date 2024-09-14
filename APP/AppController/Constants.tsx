@@ -6,13 +6,18 @@ import moment from 'moment';
 
 export const DeviceiOS = Platform.OS === 'ios';
 export const tokenKey = 'tokenUser';
+export const timeWaitSeconds = 15; // tiempo de espera para coldown en segundos
+
+// tiempo de espera cuando pulsamos el boton de abrir/cerrar fuera de horario en segundos
+export const timeWaitUnauthorized = 60; // 10 min (600)
 export const keyStorage = {
   user: 'username',
-}
+};
+export const appVersion = '2.1';
 export const testingURL = true; // si esta en true, apunta a localhost
 const ipAddressConfigRemote = testingURL ?
-  '192.168.1.10' // ip local
-  : '13.68.134.198'; // ip del servidor de omar
+  '192.168.1.16' // ip local
+  : '9'//'13.68.134.198'; // ip del servidor de omar
 export const getApiURL = () => {
   return `http://${ipAddressConfigRemote}:3001/api/`;
 };

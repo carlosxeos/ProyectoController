@@ -74,6 +74,9 @@ export const appStyles = StyleSheet.create({
   bodyView: {
     paddingHorizontal: 20,
   },
+  flexOne: {
+    flex: 1,
+  },
   buttonRound: {
     marginVertical: 5,
     alignItems: 'center',
@@ -147,15 +150,3 @@ export const appStyles = StyleSheet.create({
     backgroundColor: colores.PrimaryDark,
   },
 });
-
-
-export const usuariosDummy = [
-  {
-    id: 0, name: 'Luis Huerta', type: 'Admin',
-    phone: '8183091232', permission: [1, 2],
-  },
-  {
-    id: 1, name: 'Carlos Gzz', type: 'user',
-    phone: '8110262869', permission: [2],
-  },
-];

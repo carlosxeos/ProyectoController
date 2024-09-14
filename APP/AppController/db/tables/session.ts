@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Entity, Column, PrimaryColumn, getRepository, getConnection} from 'typeorm';
+import {Entity, Column, PrimaryColumn, Repository} from 'typeorm';
 
-import {tokenKey} from '../Constants';
+import {tokenKey} from '../../Constants';
+import {AppDataSource} from '../database';
 @Entity('tbSession')
 export class Session {
   @PrimaryColumn('int')
@@ -19,16 +20,9 @@ export class Session {
   nombreCompleto!: string;
   @Column('text', {nullable: true})
   token!: string;
-  async addSession(data: any) {
-    this.id = 1;
-    this.accionesClima = data.accionesClima;
-    this.accionesPorton = data.accionesPorton;
-    this.agregarUsuario = data.agregarUsuario;
-    this.descripcion = data.descripcion;
-    this.nombreCompleto = data.nombreCompleto;
-    this.token = data.token;
-    await AsyncStorage.setItem(tokenKey, data.token);
-    return await this.guardar(this);
+  private repository: Repository<Session>;
+  constructor() {
+    this.repository = AppDataSource.getRepository(Session);
   }
 
   private async guardar(session: Session) {
@@ -36,18 +30,22 @@ export class Session {
       // si existe ya un usuario, borra toda la info para insertarlo de nuevo
       await this.removeSession();
     }
-    const repository = getRepository(Session);
-    return await repository
-      .createQueryBuilder('Session')
-      .insert()
-      .into(Session)
-      .values(session)
-      .execute();
+    return await this.repository.save(session);
+  }
+
+  async addSession(data: any) {
+    this.id = 1; // es 1 porque solo es para tener llave primaria
+    this.accionesClima = +data.accionesClima;
+    this.accionesPorton = +data.accionesPorton;
+    this.agregarUsuario = +data.agregarUsuario;
+    this.descripcion = data.descripcion;
+    this.nombreCompleto = data.nombreCompleto;
+    this.token = data.token;
+    return await this.guardar(this);
   }
 
   async getSession(): Promise<Session | null> {
-    const repo = getRepository(Session);
-    const sessiones = await repo.find();
+    const sessiones = await this.repository.find();
     if (sessiones.length) {
       const session = sessiones[0];
       return session;
@@ -56,6 +54,6 @@ export class Session {
   }
 
   async removeSession() {
-    await getConnection().createQueryBuilder().delete().from(Session).execute();
+    await this.repository.createQueryBuilder().delete().from(Session).execute();
   }
 }

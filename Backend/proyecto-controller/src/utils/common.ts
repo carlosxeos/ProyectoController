@@ -1,9 +1,12 @@
+import fetch, { Headers } from 'node-fetch';
+import { ConnectionPool, Request, VarChar, Numeric } from 'mssql';
 /* eslint-disable prettier/prettier */
 import {
   ClientsModuleOptions,
   MicroserviceOptions,
   Transport,
 } from '@nestjs/microservices';
+import { Logger } from '@nestjs/common';
 
 export const isPrd = false;
 // localhost
@@ -34,7 +37,7 @@ export const dataBaseConstants = {
 /**
  * informacion de modo server de mqtt
  */
-import fetch, { Headers } from 'node-fetch';
+
 export const mqttConfig: MicroserviceOptions = {
   transport: Transport.MQTT,
   options: {
@@ -64,7 +67,6 @@ export const mqttClientRegistrer: ClientsModuleOptions = [
 export const jwtConstants = {
   secret: 'secretKey',
 };
-
 
 const sendSMSToClient = (
   message: string,
@@ -125,10 +127,32 @@ export function formatDateLocal(date: Date) {
   );
 }
 
-
-export const sendSMS = async(text: string) : Promise<boolean> => {
-  const dateString = new Date(new Date().toLocaleString('en', {timeZone: 'America/Mexico_City'}))
+export const sendSMS = async (text: string): Promise<boolean> => {
+  const dateString = new Date(
+    new Date().toLocaleString('en', { timeZone: 'America/Mexico_City' }),
+  );
   // TODO: por ahora solo se le va a enviar mensaje al numero de omar por cualquier tipo de alerta
   // cambiar a que se obtengan los contactos por bd
   return await sendSMSToClient(`${text} ${dateString}`, ['+528112558479']);
-}
+};
+
+export const executeQuery = async <T>(
+  query: string,
+  logger: Logger = null,
+): Promise<T[]> => {
+  const conn = new ConnectionPool(dataBaseConstants);
+  let resultadoSP = { recordset: [] };
+  try {
+    await conn.connect();
+    const request = new Request(conn);
+    resultadoSP = await request.query(query);
+  } catch (error) {
+    if (logger) {
+      logger.error('error executeQuery ', error);
+    }
+    return null;
+  } finally {
+    conn.close();
+  }
+  return resultadoSP['recordset'];
+};

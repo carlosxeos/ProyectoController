@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
+import { Porton } from './porton';
 export class MetaData {
-  porton: string[] = [];
+  porton: Porton[] = [];
   clima: string[] = [];
 }
