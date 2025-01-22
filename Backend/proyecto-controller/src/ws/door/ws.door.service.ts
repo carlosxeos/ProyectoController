@@ -2,12 +2,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { dataBaseConstants, executeQuery } from 'src/utils/common';
 import { ConnectionPool, VarChar, Numeric, Request } from 'mssql';
-import { AppService } from 'src/http/app.service';
+import { UsuarioService } from 'src/http/usuario/usuario.service';
 import { MetaData } from 'src/objects/meta-data';
 import * as moment from 'moment';
 @Injectable({})
 export class WSDoorService {
-  constructor(private appService: AppService) {}
+  constructor(private usuarioService: UsuarioService) {}
 
   private readonly logger = new Logger(WSDoorService.name);
   async updateDoor(uuid: string, idUsuario: number, estatus: number) {

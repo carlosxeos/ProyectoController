@@ -1,51 +1,110 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState } from 'react';
-import { SafeAreaView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, SafeAreaView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { WorkerInputs, DeviceiOS } from '../../Constants';
 import { colores, appStyles } from '../../resources/globalStyles';
 import { ComponentForm } from '../../views/FormList/ComponentsForms';
+import { ErrorHandler } from '../../networks/request';
+import { Porton } from '../../objects/porton';
 
 /**
- *
- * @returns
+ * Pantalla para agregar usuarios nuevos
  */
-const renderInputs = [...WorkerInputs];
-export function AddUser() {
-    const [form, setform] = useState({ });
+export function AddUser({ route, navigation }) {
+    let count = 11;
+    const [form, setform] = useState({});
     const [idError, setidError] = useState(-1);
-    const handleChange = (val = null, {id = -1}, parent = null, _fromClock = false) => {
-        setidError(-1);
-        if (parent) { // si es una pregunta con preguntas anidadas
-            console.log('parent');
-            setform(prev => {
-                return {...prev, [parent?.id]: val};
-            });
-        } else {
-            setform(prev => {
-                return {...prev, [id]: val};
-            });
+    const [inputs, setinputs] = useState([]);
+    const [boxPortones, setboxPortones] = useState<[{ id, text, uuid }]>([] as any);
+    //const request = new Request();
+    const data: ErrorHandler | Porton[] = route?.params?.data; // id
+    useEffect(() => {
+        getPortones();
+    }, []);
+
+    const getPortones = async () => {
+        setinputs(() => {
+            // en caso que no pudieran obtenerse los portones
+            if (data instanceof ErrorHandler) {
+                return WorkerInputs;
+            }
+            const val: [{ id, text, uuid }] = [] as any;
+            for (const element of data) {
+                val.push({
+                    id: count++,
+                    text: element.descripcion,
+                    uuid: element.uuid,
+                });
+            }
+            setboxPortones(val);
+            return [...WorkerInputs, { id: 8, hint: 'Seleccione portones a los cuales va a tener acceso', type: 'checkbox', box: val }];
+        });
+    };
+
+    const validateForm = (): string => {
+        for (const v of inputs) {
+            // si es titulo no hay que revisar
+            if (v.type === 'title' || v.type === 'checkbox') {
+                continue;
+            }
+            const valueForm = form[v.id];
+            console.log('value ' + v.id, ': ', valueForm);
+            // si esta vacio el campo, da error directamente
+            if (!valueForm) {
+                return v?.error;
+            }
+            if (v?.minLength && v?.minLength > valueForm.length) {
+                return v?.error;
+            }
+            if (v?.maxLength && valueForm.length > v?.maxLength) {
+                return v?.error;
+            }
+            if (v?.regex && !(v?.regex).test(valueForm)) {
+                return v?.error;
+            }
+        }
+        // si las contraseñas no son iguales si que no coinciden
+        if (form[5] !== form[6]) {
+            return 'La contraseña con coincide';
+        }
+        return '';
+    };
+    const addAction = () => {
+        const errorString = validateForm();
+        if (errorString.length > 0) {
+            Alert.alert('Error', errorString);
+        }
+        else {
+            const filterBoxPortones = boxPortones.filter(b => form[b.id]);
+            if (filterBoxPortones.length > 0) {
+                navigation.navigate('DetailDoorUser', { form, portones: filterBoxPortones });
+            } else {
+                Alert.alert('Error', 'Selecciona al menos un portón');
+            }
         }
     };
     const FooterButton = () => {
         return (
-            <View style={{marginVertical: 10}}>
-            <TouchableOpacity style={[ appStyles.buttonLogin, appStyles.buttonRound, {flexDirection: 'row', justifyContent: 'center'}]} onPress={()=> {}}>
-                <Text style={appStyles.textButtonLogin}>{'Agregar'}</Text>
-            </TouchableOpacity>
-            </View>
+            < View style={{ marginVertical: 10 }}>
+                <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, { flexDirection: 'row', justifyContent: 'center' }]} onPress={addAction}>
+                    <Text style={appStyles.textButtonLogin}>{'Agregar'}</Text>
+                </TouchableOpacity>
+            </View >
         );
     };
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colores.grayBackgrounds }}>
             <StatusBar animated backgroundColor={colores.PrimaryDark} barStyle={'light-content'} />
             <KeyboardAwareFlatList
                 scrollEnabled
                 removeClippedSubviews={!DeviceiOS}
-                style={{ paddingHorizontal: 20 }} data={renderInputs}
-                renderItem={(item) => ComponentForm(item, handleChange, form, idError)}
+                style={{ paddingHorizontal: 20 }} data={inputs}
+                renderItem={(item) => ComponentForm(item, form, setform, idError, setidError)}
                 ListFooterComponent={FooterButton}
                 keyExtractor={item => item.id} />
         </SafeAreaView>

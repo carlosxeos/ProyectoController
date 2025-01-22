@@ -17,16 +17,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { DeviceiOS } from '../../Constants';
 import { faDoorClosed, faSnowflake, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import TipoUsuario from '../../db/tables/tipoUsuario';
+import Request, { ErrorHandler } from '../../networks/request';
+import { Porton } from '../../objects/porton';
 
 
 export function ListUsers({ navigation }) {
     const [search, setSearch] = useState('');
     const [users, setUsers] = useState([]);
     const [userFiltered, setuserFiltered] = useState([] as Usuario[]);
+    const request = new Request();
     useEffect(() => {
         const usuarios = new Usuario();
         usuarios.getUsers().then((us: Usuario[]) => {
-            console.log(' value get ', us);
             setUsers(us);
             setuserFiltered(us); // TODO: crear tablas para obtener el tipo de usuarios listados
         });
@@ -79,9 +81,10 @@ export function ListUsers({ navigation }) {
         );
 
     };
-    const handleAdd = () => {
+    const handleAdd = async () => {
         console.log('open');
-        navigation.navigate('AddUser');
+        const data: Porton[] | ErrorHandler = await request.getPortonesEmpresa();
+        navigation.navigate('AddUser', { data });
     };
     const onChange = ((text: string) => {
         if (text.length === 0) {

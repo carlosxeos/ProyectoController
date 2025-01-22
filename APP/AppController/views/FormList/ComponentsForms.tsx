@@ -2,7 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /**
  * Componente que obtiene diversos items por tipos
- * @param param0 item list
+ * @param param0 _item list
  * @param handleChange change
  * @param form formulario usado
  * @param errorId id del input con error, si es -1 no se muestra en ninguno
@@ -10,7 +10,7 @@
  */
 
 // import { faCameraRetro } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { Platform, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 // import ImageButton from '../../components/ImageButton';
@@ -19,25 +19,42 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 // import { Asset, ImagePickerResponse, launchImageLibrary } from 'react-native-image-picker';
 // import * as RNFS from 'react-native-fs';
 const DeviceiOS = Platform.OS === 'ios';
-export const ComponentForm = ({ item }: any, handleChange: CallableFunction, form: any, errorId = -1) => {
-    const handleInput = (_itemInput: any) => {
-        switch (item.type) {
+export const ComponentForm = ({ item }: any, form: any, setform, idError, setidError) => {
+    const handleChange = (val = null, { id = -1 }, parent = null) => {
+        setidError(-1);
+        if (parent) { // si es una pregunta con preguntas anidadas
+            //console.log('parent');
+            //setform(prev => {
+            //    return { ...prev, [parent?.id]: val };
+            //});
+            setform(prev => {
+                return { ...prev, [id]: val };
+            });
+        } else {
+            setform(prev => {
+                return { ...prev, [id]: val };
+            });
+        }
+    };
+    const handleInput = (_item: any) => {
+        switch (_item.type) {
             case 'input':
                 return (
                     <View
                         style={[estilos.cardViewBack, estilos.shadowEffect]}
-                        key={item.id}>
+                        key={_item.id}>
                         <TextInput
-                            label={item.hint}
-                            value={form[item.id]}
-                            maxLength={item.maxLength}
-                            keyboardType={item?.inputType}
-                            secureTextEntry={item?.password ? true : false}
-                            onChangeText={v => handleChange(v, item)}
-                            autoCorrect={item?.autoCorrect === true}
-                            autoCapitalize={item?.autoCapitalize || 'none'}
+                            label={_item.hint}
+                            value={form[_item.id]}
+                            maxLength={_item.maxLength}
+                            keyboardType={_item?.inputType}
+                            secureTextEntry={_item?.password ? true : false}
+                            autoComplete={_item?.autocomplete || 'name'}
+                            onChangeText={v => handleChange(v, _item)}
+                            autoCorrect={_item?.autoCorrect === true}
+                            autoCapitalize={_item?.autoCapitalize || 'none'}
                             style={estilos.textInputs}
-                            left={<TextInput.Icon icon={item.icon || 'account'} iconColor={localColores.Primary} />}
+                            left={<TextInput.Icon icon={_item.icon || 'account'} iconColor={localColores.Primary} />}
                             mode="outlined"
                             textColor={localColores.Primary}
                             theme={{
@@ -48,7 +65,7 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                                 },
                             }}
                             error={
-                                errorId === item.id //? item.error : undefined
+                                idError === _item.id //? _item.error : undefined
                             }
                         />
                     </View>
@@ -58,57 +75,13 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                     <>
                         <View style={[estilos.shadowEffect]} />
                         <View style={[estilos.titleCardContainer, estilos.cardView, estilos.title]}>
-                            <Text style={[estilos.titleCard]}>{item.hint}</Text>
+                            <Text style={[estilos.titleCard]}>{_item.hint}</Text>
                             <TouchableOpacity style={estilos.titleImageContainer} >
-                                <FontAwesomeIcon icon={item.icon} size={25} color={localColores.black} />
+                                <FontAwesomeIcon icon={_item.icon} size={25} color={localColores.black} />
                             </TouchableOpacity>
                         </View>
                     </>
                 );
-            // case 'photo':
-            //     return (
-            //         <>
-            //             {form[item.id] ? (
-            //                 <View
-            //                     style={[
-            //                         estilos.container,
-            //                         { backgroundColor: localColores.white },
-            //                     ]}>
-            //                     <TouchableOpacity
-            //                         activeOpacity={0.8}
-            //                         style={[
-            //                             estilos.itemsCenter,
-            //                             { paddingBottom: 10, width: 100 },
-            //                         ]}
-            //                         onPress={handleClickPhoto}>
-            //                         <Image
-            //                             style={estilos.imageView}
-            //                             source={{ uri: `data:image/jpeg;base64,${form[item.id]}` }}
-            //                         />
-            //                         <Text
-            //                             style={[
-            //                                 estilos.smallText,
-            //                                 { textAlign: 'center', color: localColores.black },
-            //                             ]}>
-            //                             {hint}
-            //                         </Text>
-            //                     </TouchableOpacity>
-            //                 </View>
-            //             ) : (
-            //                 <View>
-            //                     <ImageButton
-            //                         faIcon={faCameraRetro}
-            //                         iconColor={localColores.white}
-            //                         buttonColor={item.color}
-            //                         text={hint}
-            //                         textStyle={{ fontSize: 12 }}
-            //                         onClick={handleClickPhoto}
-            //                         buttonSize={80}
-            //                     />
-            //                 </View>
-            //             )}
-            //         </>
-            //     );
             case 'checkbox':
                 return (
                     <View style={estilos.cardViewBack}>
@@ -117,14 +90,12 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                                 estilos.textView,
                                 { textAlign: 'center', color: localColores.Primary },
                             ]}>
-                            {item.hint}
+                            {_item.hint}
                         </Text>
                         <View style={{ flexDirection: 'row', flex: 7, marginBottom: 10 }}>
-                            {item.box.map((e: any) => {
-                                let formulario = form[item.id];
-                                if (formulario && formulario[e.id]) {
-                                    formulario = formulario[e.id].enable;
-                                } else {
+                            {_item.box.map((e: any) => {
+                                let formulario = form[e.id];
+                                if (formulario !== true) {
                                     formulario = false;
                                 }
                                 return (
@@ -140,9 +111,9 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                                             onFillColor={
                                                 formulario ? localColores.Primary : localColores.white
                                             }
-                                            tintColors={{ true: localColores.PrimaryDark, false: localColores.grayLite }}
+                                            tintColors={{ true: localColores.PrimaryDark, false: localColores.Primary }}
                                             value={formulario}
-                                            onValueChange={v => handleChange(v, e, item)}
+                                            onValueChange={v => handleChange(v, e, _item)}
                                         />
                                     </View>
                                 );
@@ -160,7 +131,7 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                             estilos.shadowEffect,
                         ]}>
                         <Text style={[estilos.textView, { textAlign: 'right', flex: 1 }]}>
-                            {item.update ? form[item.id] : item.hint}
+                            {_item.update ? form[_item.id] : _item.hint}
                         </Text>
                         <Switch
                             trackColor={{
@@ -168,17 +139,17 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                                 true: localColores.PrimaryDark,
                             }}
                             thumbColor={
-                                !form[item.id] ? localColores.PrimaryDark : localColores.grayBackgrounds
+                                !form[_item.id] ? localColores.PrimaryDark : localColores.grayBackgrounds
                             }
                             ios_backgroundColor={localColores.grayBackgrounds}
-                            onValueChange={v => handleChange(v, item)}
+                            onValueChange={v => handleChange(v, _item)}
                             style={{
                                 transform: [
                                     { scaleX: DeviceiOS ? 0.7 : 0.9 },
                                     { scaleY: DeviceiOS ? 0.7 : 0.9 },
                                 ],
                             }}
-                            value={form[item.id]}
+                            value={form[_item.id]}
                         />
                     </View>
                 );
@@ -186,7 +157,7 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
                 return (
                     <View style={estilos.cardViewBack}>
                         <Text style={[estilos.textView, { textAlign: 'right' }]}>
-                            {item.update ? form[item.id] : item.hint}
+                            {_item.update ? form[_item.id] : _item.hint}
                         </Text>
                     </View>
                 );
@@ -197,48 +168,12 @@ export const ComponentForm = ({ item }: any, handleChange: CallableFunction, for
             {handleInput(item)}
             {item.child &&
                 item.child.map((itemChild: any) =>
-                    itemChild.visibleSi === form[item.id] ? handleInput(itemChild) : null,
+                    itemChild.visibleSi === form[item.id] ? handleInput(itemChild) : null
                 )}
         </View>
     );
 };
-/*
-export const handleCamera = (setPhoto: any) => {
-    const callback = async (resource: ImagePickerResponse) => {
-        if (!resource.didCancel) {
-            const asset: Asset | null = resource?.assets?.length ? resource?.assets[0] : null;
-            if (!asset) {
-                return;
-            }
-            setPhoto(asset.base64); // inserta la foto actual en base64
-            let fileImages = '';
-            if (DeviceiOS) { // si es un dispositivo iOS
-                const uriSplit = asset.uri?.split('/');
-                fileImages = uriSplit?.slice(0, uriSplit.length - 1).join('/') || '';
-            }
-            else {
-                fileImages = RNFS.CachesDirectoryPath; // lee el directorio de cache
-            }
 
-            console.log('image path ', fileImages);
-            await RNFS.exists(fileImages).then(async (res) => { // encuentra el directorio
-                if (res) { // si existe el directorio , trata de borrar todas las fotos
-                    RNFS.readDir(fileImages).then(items => {
-                        items.forEach(item => { // itera para borrar todos las fotos que sean de rn image picker
-                            if (item.isFile() && (DeviceiOS || item.name.includes('rn_image_picker'))) {
-                                RNFS.unlink(`${fileImages}/${item.name}`);
-                                // console.log("item existente ", item.path);
-                            }
-                        });
-                    });
-                }
-            });
-        }
-    };
-    console.log('ios Version ', Platform.Version);
-    launchImageLibrary({ mediaType: 'photo', includeBase64: true, quality: 0.1 }, callback);
-};
-*/
 const localColores = Object.freeze({
     white: '#FFFFFFFF',
     PrimaryDark: 'rgba(62, 107, 182,1)', // Colores principales aplicacion 62, 107, 182
@@ -340,4 +275,5 @@ const estilos = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+
 

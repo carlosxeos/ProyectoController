@@ -1,21 +1,19 @@
 /* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { UsuarioModule } from './usuario/usuario.module';
+import { CatalogsModule } from './catalogs/catalogs.module';
 import { AppService } from './app.service';
+import { DoorModule } from './door/door.module';
 import { jwtConstants, mqttClientRegistrer } from 'src/utils/common';
 import { ClientsModule } from '@nestjs/microservices';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtAuthGuard } from 'guard/jwt-auth-guard';
 
 @Module({
+  controllers: [],
   imports: [
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3h' },
-    }),
     ClientsModule.register(mqttClientRegistrer),
-  ],
-  controllers: [AppController],
-  providers: [AppService, JwtAuthGuard],
+    UsuarioModule, CatalogsModule, DoorModule
+  ],  
+  providers: [AppService],
 })
 export class AppModule {}

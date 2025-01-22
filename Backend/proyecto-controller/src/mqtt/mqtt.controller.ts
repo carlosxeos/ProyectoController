@@ -62,7 +62,8 @@ export class MqttController {
       const ssid = dataInArray[0] || 'N/A';
       const name = dataInArray[1] || 'N/A';
       if (isPrd) {
-        sendSMS(`Se inicia sistema ${name} red ${ssid}`);
+        //sendSMS(`Se inicia sistema ${name} red ${ssid}`);
+        this.logger.debug(`Se inicia sistema ${name} red ${ssid}`);
       } else {
         this.logger.debug(`Se inicia sistema ${name} red ${ssid}`);
       }

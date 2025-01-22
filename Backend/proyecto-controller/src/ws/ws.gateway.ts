@@ -12,10 +12,12 @@ import { Server, Socket } from 'socket.io';
 import { MqttWSLinker } from 'src/utils/mqtt.ws.linker';
 import { WSDoorService } from './door/ws.door.service';
 import { JwtWSGuard } from 'guard/jwt-ws-guard';
-import { AppService } from 'src/http/app.service';
+import { UsuarioService } from 'src/http/usuario/usuario.service';
 import { Logger } from '@nestjs/common';
 import { coldDownDoor } from 'src/utils/utils';
 import { isPrd, sendSMS } from 'src/utils/common';
+import { DoorService } from 'src/http/door/door.service';
+import { CatalogsService } from 'src/http/catalogs/catalogs.service';
 @WebSocketGateway(81, {
   cors: { origin: '*' },
 })
@@ -26,7 +28,8 @@ export class WSGateway
   constructor(
     private readonly doorService: WSDoorService,
     private guardWS: JwtWSGuard,
-    private appService: AppService,
+    private catalogService: CatalogsService,
+    private doorServiceS: DoorService,
   ) {}
 
   @WebSocketServer() server: Server;
@@ -78,8 +81,8 @@ export class WSGateway
       const response = await this.guardWS.checkToken(payLoad.token); // validas que el token sirva
       //client.join(`${payLoad.uuid}`);
       this.server.in(payLoad.socketId).socketsJoin(payLoad.uuid);
-      // enviamos la informacion especificamente al usuario cuando recien se una al room      
-      const data = await this.appService.getPortonUuid(
+      // enviamos la informacion especificamente al usuario cuando recien se una al room
+      const data = await this.doorServiceS.getPortonUuid(
         response.idUsuario,
         response.idTipoUsuario,
         payLoad.uuid,
@@ -104,12 +107,12 @@ export class WSGateway
     this.guardWS
       .checkToken(payLoad.token)
       .then(async (response) => {
-        const isEnabled = await this.doorService.userIsAuthorized(          
+        const isEnabled = await this.doorService.userIsAuthorized(
           response.idUsuario,
           payLoad.uuid,
         );
         if (!isEnabled) {
-          const usuarios = await this.appService.getDataSmsById(
+          const usuarios = await this.catalogService.getDataSmsById(
             response.idUsuario,
             payLoad.uuid,
           );
@@ -122,7 +125,7 @@ export class WSGateway
             this.logger.error(text);
           }
           // enviamos una mensaje al usuario que realizo la accion que no tiene permiso en este horario
-          this.server.to(payLoad.uuid).emit('unauthorizedDoor', {}); 
+          this.server.to(payLoad.uuid).emit('unauthorizedDoor', {});
           return;
         }
         const tmpstmp = this.timeStampMap.get(payLoad.uuid);
@@ -149,7 +152,7 @@ export class WSGateway
           this.server.to(payLoad.uuid).emit('roomDoor', data[0]);
         }
         // finalmente enviamos el sms
-        const usuarios = await this.appService.getDataSmsById(
+        const usuarios = await this.catalogService.getDataSmsById(
           response.idUsuario,
           payLoad.uuid,
         );

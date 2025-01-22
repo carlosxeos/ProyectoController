@@ -6,11 +6,11 @@ import {
   MicroserviceOptions,
   Transport,
 } from '@nestjs/microservices';
-import { Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Logger } from '@nestjs/common';
 
-export const isPrd = true;
+export const isPrd = false;
 // localhost
-/*
+
 export const dataBaseConstants = {
   user: 'sa',
   password: '123',
@@ -18,7 +18,8 @@ export const dataBaseConstants = {
   database: 'DotechProyectSystem',
   port: 1433,
   encrypt: false,
-};*/
+};
+/**
 // prd
 export const dataBaseConstants = {
   user: 'lucio',
@@ -31,7 +32,7 @@ export const dataBaseConstants = {
     useUTC: true,
   },
 };
-
+**/
 
 /**
  * informacion de modo server de mqtt
@@ -154,4 +155,12 @@ export const executeQuery = async <T>(
     conn.close();
   }
   return resultadoSP['recordset'];
+};
+
+export const validateTokenData = (data: any) => {
+  if (!data?.idUsuario || !data?.idEmpresa || !data?.idTipoUsuario) {
+    throw new HttpException('Token no encontrado', HttpStatus.BAD_REQUEST, {
+      cause: new Error('Token no encontrado'),
+    });
+  }
 };

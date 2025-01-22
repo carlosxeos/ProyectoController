@@ -79,7 +79,7 @@ class Request {
       const myHeaders = new Headers();
       myHeaders.append('Content-Type', 'application/json');
       myHeaders.append('Authorization', `Bearer ${token || ''}`);
-      const request = await this.fetchWithTimeout('getPorton', {
+      const request = await this.fetchWithTimeout('door/getPorton', {
         method: 'GET',
         headers: myHeaders,
       });
@@ -97,7 +97,7 @@ class Request {
       const myHeaders = new Headers();
       myHeaders.append('Content-Type', 'application/json');
       myHeaders.append('Authorization', `Bearer ${token || ''}`);
-      const request = await this.fetchWithTimeout(`getHistory?uuid=${uuid}`, {
+      const request = await this.fetchWithTimeout(`catalogs/getHistory?uuid=${uuid}`, {
         method: 'GET',
         headers: myHeaders,
       });
@@ -116,6 +116,10 @@ class Request {
 
   async getTiposUsuario() {
     return await this.requestGetMethod<TipoUsuario[]>('getTiposUsuarios', true);
+  }
+
+  async getPortonesEmpresa() {
+    return await this.requestGetMethod<Porton[]>('door/getPortonesEmpresa', true);
   }
 }
 

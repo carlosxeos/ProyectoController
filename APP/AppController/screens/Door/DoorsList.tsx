@@ -11,7 +11,7 @@ export default function DoorsList({ navigation, route }: any) {
     const portones = route?.params?.portones; // id
     const token = route?.params?.token;
     const doorClick = (item: any) => {
-        navigation.navigate('DoorScreen', { porton: item, token });
+        navigation.replace('DoorScreen', { porton: item, token });
     };
     const dataList = ({ item }) => {
         let icon;

@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import Request from '../../networks/request';
 import { History } from '../../objects/history';
 import moment from 'moment';
+import { getDateFormatLocal } from '../../Constants';
 
 export function DoorHistory({ route }: any) {
     const messageText = ['Abrir puerta', 'Cerrar puerta'];
@@ -20,16 +21,14 @@ export function DoorHistory({ route }: any) {
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    const getDateTimeString = (date: string) => {
-        return moment(date).format('DD/MM/YY hh:mm:ss A');
-      };
+
     const dataList = ({item}: any) => {
         return (
             <TouchableOpacity activeOpacity={1} key={item.idHistorial}>
                 <View style={[estilos.cardStyle, { marginBottom: 0, backgroundColor: colores.white}]}>
                     <View style={[estilos.formularioStyle]}>
                         <Text style={[appStyles.itemSelection, { flex: 0.6 }, appStyles.mediumTextView]}>{item.userName}</Text>
-                        <Text style={[appStyles.itemSelection, estilos.dateText]}>{getDateTimeString(item.fecha)}</Text>
+                        <Text style={[appStyles.itemSelection, estilos.dateText]}>{getDateFormatLocal(item.fecha)}</Text>
                     </View>
                     <View style={estilos.textViews}>
                         <Text style={[appStyles.itemSelection, appStyles.mediumTextView, { color: colores.PrimaryDark }]}>{typeof item?.idTipoMovimiento !== 'undefined' ? messageText[item?.idTipoMovimiento - 1] : 'Sin comentarios'}</Text>

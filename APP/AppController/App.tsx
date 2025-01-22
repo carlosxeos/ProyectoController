@@ -20,6 +20,7 @@ import { ListUsers } from './screens/Users/ListUsers';
 import { AddUser } from './screens/Users/AddUser';
 import IpConfig from './screens/ip-config';
 import { AppDataSource } from './db/database';
+import { DetailDoorUser } from './screens/Users/DetailDoorUser';
 
 const Stack = createNativeStackNavigator();
 const defaultOptions: NativeStackNavigationOptions = {
@@ -115,6 +116,14 @@ function App(): JSX.Element {// isDebugApp ? 'IpConfig' : 'Login'
           options={() => {
             const opts = defaultOptions;
             opts.title = 'Agregar usuario';
+            return defaultOptions;
+          }} />
+        <Stack.Screen
+          name="DetailDoorUser"
+          component={DetailDoorUser}
+          options={() => {
+            const opts = defaultOptions;
+            opts.title = 'Horarios de portones';
             return defaultOptions;
           }} />
       </Stack.Navigator>
