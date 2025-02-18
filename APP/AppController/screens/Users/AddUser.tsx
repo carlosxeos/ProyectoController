@@ -8,8 +8,9 @@ import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { WorkerInputs, DeviceiOS } from '../../Constants';
 import { colores, appStyles } from '../../resources/globalStyles';
 import { ComponentForm } from '../../views/FormList/ComponentsForms';
-import { ErrorHandler } from '../../networks/request';
+import Request, { ErrorHandler } from '../../networks/request';
 import { Porton } from '../../objects/porton';
+import AlertDialog from '../../components/AlertDialog';
 
 /**
  * Pantalla para agregar usuarios nuevos
@@ -20,7 +21,8 @@ export function AddUser({ route, navigation }) {
     const [idError, setidError] = useState(-1);
     const [inputs, setinputs] = useState([]);
     const [boxPortones, setboxPortones] = useState<[{ id, text, uuid }]>([] as any);
-    //const request = new Request();
+    const [alertVisible, setalertVisible] = useState(false);
+    const request = new Request();
     const data: ErrorHandler | Porton[] = route?.params?.data; // id
     useEffect(() => {
         getPortones();
@@ -73,15 +75,22 @@ export function AddUser({ route, navigation }) {
         }
         return '';
     };
-    const addAction = () => {
-        const errorString = validateForm();
+    const addAction = async () => {
+        const errorString = "";//validateForm();
         if (errorString.length > 0) {
             Alert.alert('Error', errorString);
         }
         else {
             const filterBoxPortones = boxPortones.filter(b => form[b.id]);
             if (filterBoxPortones.length > 0) {
-                navigation.navigate('DetailDoorUser', { form, portones: filterBoxPortones });
+                setalertVisible(true);
+                if (await request.checkUsername(form[4])) {
+                    setalertVisible(false);
+                    navigation.navigate('DetailDoorUser', { form, portones: filterBoxPortones });
+                } else {
+                    setalertVisible(false);
+                    Alert.alert('Error', 'El username es inválido o ya existe');
+                }
             } else {
                 Alert.alert('Error', 'Selecciona al menos un portón');
             }
@@ -100,6 +109,11 @@ export function AddUser({ route, navigation }) {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colores.grayBackgrounds }}>
             <StatusBar animated backgroundColor={colores.PrimaryDark} barStyle={'light-content'} />
+            <AlertDialog
+                setVisible={setalertVisible} visible={alertVisible}
+                alertColor={colores.redDotech}
+                handleNeutral={undefined}
+                loading={true} />
             <KeyboardAwareFlatList
                 scrollEnabled
                 removeClippedSubviews={!DeviceiOS}

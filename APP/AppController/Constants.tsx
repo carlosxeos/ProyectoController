@@ -16,7 +16,7 @@ export const keyStorage = {
 export const appVersion = '2.2';
 export const testingURL = true; // si esta en true, apunta a localhost
 const ipAddressConfigRemote = testingURL ?
-  '192.168.1.18' // ip local
+  '192.168.1.16' // ip local
   : '1'//'13.68.134.198'; // ip del servidor de omar
 export const getApiURL = () => {
   return `http://${ipAddressConfigRemote}:3001/api/`;
@@ -42,24 +42,20 @@ export const WorkerInputs = [ // 0 a 6
     id: 0, hint: 'Llene los siguientes campos', type: 'title', icon: faUser, color: colores.Primary,
   },
   {
-    id: 1, hint: 'Nombre',
+    id: 1, hint: 'Nombre completo',
     maxLength: 50, type: 'input',
-    error: 'Ingrese un nombre válido', minLength: 3,
+    error: 'Ingrese un nombre válido', minLength: 5,
   },
-  {
-    id: 2, hint: 'Apellido',
-    maxLength: 50, type: 'input',
-    error: 'Ingrese un apellido válido', minLength: 3,
-  },
-  {
-    id: 3, hint: 'Teléfono', icon: 'phone',
-    maxLength: 13, type: 'input', inputType: 'number-pad',
-    error: 'Ingrese un número de teléfono válido', minLength: 5,
-  },
+  // {
+  //   id: 3, hint: 'Teléfono', icon: 'phone',
+  //   maxLength: 13, type: 'input', inputType: 'number-pad',
+  //   error: 'Ingrese un número de teléfono válido', minLength: 5,
+  // },
   {
     id: 4, hint: 'Nombre de usuario',
     maxLength: 13, type: 'input',
-    error: 'Ingrese un nombre de usuario', minLength: 5,
+    regex: /((?=.{5,13}$)[a-z0-9]+\.[a-z0-9]+$)/,
+    error: 'Ingrese un nombre de usuario válido(nombre.apellido)', minLength: 5,
     autocomplete: 'off',
   },
   {

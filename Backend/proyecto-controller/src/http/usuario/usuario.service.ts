@@ -1,12 +1,14 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { match } from 'assert';
 import * as bcrypt from 'bcrypt';
 import { ConnectionPool, Request, VarChar, Numeric } from 'mssql';
 import { dataBaseConstants } from 'src/utils/common';
 @Injectable({})
 export class UsuarioService {
   private readonly logger = new Logger(UsuarioService.name);
+  private readonly userRegular = /((?=.{5,13}$)[a-z0-9]+\.[a-z0-9]+$)/;
   constructor(private jwtService: JwtService) {}
   /**
    * Obtiene un usuario por username
@@ -50,8 +52,6 @@ export class UsuarioService {
     }
     return resultadoSP['recordset'];
   }
-
-
 
   /**
    * inicia sesion
@@ -101,7 +101,6 @@ export class UsuarioService {
     return { auth: false, error: 'Usuario o contraseña incorrectos' };
   }
 
-
   /**
    * obtiene todos los usuarios
    * @param idUsuario id del usuario(debe tener permiso de agregar usuarios)
@@ -144,5 +143,20 @@ export class UsuarioService {
       conn.close();
     }
     return resultadoSP['recordset'];
+  }
+
+  async validUser(user: any) {
+    if (!user) {
+      throw new HttpException('Usuario incorrecto', HttpStatus.BAD_REQUEST, {
+        cause: new Error('Usuario incorrecto'),
+      });
+    }
+    if (!this.userRegular.test(user)) {
+      throw new HttpException('Su username tiene un fomato no permitido', HttpStatus.BAD_REQUEST, {
+        cause: new Error('Su username tiene un fomato no permitido'),
+      });
+    }
+    const usuarios = await this.getUser(user);
+    return { valid: usuarios?.length == 0 };
   }
 }

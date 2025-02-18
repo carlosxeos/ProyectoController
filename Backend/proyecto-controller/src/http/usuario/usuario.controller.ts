@@ -35,4 +35,10 @@ export class UsuarioController {
     validateTokenData(data);
     return this.usuarioService.getTiposUsuarios();
   }
+
+  @Post('valid_user')
+  async validUser(@Body() body: any) {
+    console.log('validando');
+    return this.usuarioService.validUser(body?.user);
+  }  
 } //

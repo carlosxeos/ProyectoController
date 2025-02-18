@@ -97,10 +97,13 @@ class Request {
       const myHeaders = new Headers();
       myHeaders.append('Content-Type', 'application/json');
       myHeaders.append('Authorization', `Bearer ${token || ''}`);
-      const request = await this.fetchWithTimeout(`catalogs/getHistory?uuid=${uuid}`, {
-        method: 'GET',
-        headers: myHeaders,
-      });
+      const request = await this.fetchWithTimeout(
+        `catalogs/getHistory?uuid=${uuid}`,
+        {
+          method: 'GET',
+          headers: myHeaders,
+        },
+      );
       const result = await request.json();
       return result;
     } catch (e) {
@@ -119,7 +122,62 @@ class Request {
   }
 
   async getPortonesEmpresa() {
-    return await this.requestGetMethod<Porton[]>('door/getPortonesEmpresa', true);
+    return await this.requestGetMethod<Porton[]>(
+      'door/getPortonesEmpresa',
+      true,
+    );
+  }
+
+  /**
+   * revisa si el username ya existe y esta en formato correcto
+   * @param userName username
+   * @returns valido
+   */
+  async checkUsername(userName: string): Promise<boolean> {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+      const request = await this.fetchWithTimeout('valid_user', {
+        body: JSON.stringify({user: userName}),
+        method: 'POST',
+        headers: myHeaders,
+      });
+      const result = await request.json();
+      return result?.valid;
+    } catch (e) {
+      console.log('checkUsername error ', e);
+      return false;
+    }
+  }
+
+  async addNewUser(
+    userName: string,
+    password: string,
+    nombreCompleto: string,
+    metadata: any[],
+  ): Promise<string> {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+      const request = await this.fetchWithTimeout('add_newuser', {
+        body: JSON.stringify({
+          userName,
+          password,
+          nombreCompleto,
+          metadata,
+        }),
+        method: 'POST',
+        headers: myHeaders,
+      });
+      const result = await request.json();
+      if (result?.save) {
+        return '';
+      }
+      return result?.msg || 'error general';
+    } catch (e) {
+      console.log('addNewUser error ', e);
+      return 'Hubo un error en el request, intente de nuevo más tarde';
+    }
   }
 }
 

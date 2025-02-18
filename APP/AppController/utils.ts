@@ -8,6 +8,11 @@ function formatTime(minutes) {
     .toString()
     .padStart(2, '0')} ${period}`;
 }
+export const getHorarioFormattingSingle = (horario: string) => {
+  const array = [];
+  array.push(horario);
+  return getHorarioFormatting(array);
+};
 
 export const getHorarioFormatting = (horarios: string[], currentDay = true) => {
   if (horarios.length === 0) {
@@ -18,14 +23,30 @@ export const getHorarioFormatting = (horarios: string[], currentDay = true) => {
     if (text.length !== 0) {
       text += '\n';
     }
-    const cLetter = horario.indexOf('C');
-    const abiertoMin = horario.substring(2, cLetter);
-    const cerradoMin = horario.substring(cLetter + 1);
-    const abierto = formatTime(abiertoMin);
-    const cerrado = formatTime(cerradoMin);
+    const min = horarioStringConvert(horario);
+    const abierto = formatTime(min.abierto);
+    const cerrado = formatTime(min.cerrado);
     text += `${abierto} A ${cerrado}`;
   }
   return text;
 };
 
-export const diaSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+export const horarioStringConvert = (horario: string) => {
+  const cLetter = horario.indexOf('C');
+  return {
+    abierto: +horario.substring(2, cLetter),
+    cerrado: +horario.substring(cLetter + 1),
+    dia: +horario[0],
+    codigo: horario,
+  };
+};
+
+export const diaSemana = [
+  'Domingo',
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado',
+];
