@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
+import { Porton } from './porton';
 export class UsuarioData {
-    idTipoUsuario: number;
-    userName: string;
-    password: string;
-    nombreCompleto: string;
-    fechaCreacion: string;
-    fechaModificacion: string;
-    metadata: string;
-    idEmpresa: number;
+  idUsuario: number;
+  idTipoUsuario: number;
+  userName: string;
+  password: string;
+  nombreCompleto: string;
+  metadata: Porton[]; // se dejo en porton por ahora porque no se va a ocupar climas todavia
+  idEmpresa: number;
 }

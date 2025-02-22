@@ -2,42 +2,50 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/react-in-jsx-scope */
-import { Alert, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeviceiOS } from '../../Constants';
 import { appStyles, colores } from '../../resources/globalStyles';
 import { Text } from 'react-native';
 import { diaSemana, getHorarioFormatting, getHorarioFormattingSingle, horarioStringConvert } from '../../utils';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import TimeInputModal from '../../views/timeInputModal';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faL, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import Request from '../../networks/request';
-import AlertDialog from '../../components/AlertDialog';
-
-// Definimos la interfaz para el tipo de dato que almacenará horariosList
-interface Horario {
-    uuid: string;
-    horario: string[]; // Aquí ajusta el tipo de horario según tus necesidades
-}
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { listUserKey } from '../Menu';
+import { ModalContext } from '../../context/modal-provider';
+import { AlertDialogCallback } from '../../objects/alertdialog-callback';
+import Usuario from '../../db/tables/usuario';
 
 /**
  *
  * @returns
  */
-export function DetailDoorUser({ route }) {
+export function DetailDoorUser({ route, navigation }) {
+    const { showLoading, showAlertError, showAlertSucess, showAlertWarning } = useContext(ModalContext);
     const portones: [{ id, text, uuid }] = route?.params?.portones; // id
     const { form } = route?.params;
     const MAX_HORARIOS_PORTON = 10;
     const [modal, setModal] = useState({ visible: false, uuid: null });
     const [horariosList, sethorariosList] = useState<Horario[]>([]);
-    const [alertVisible, setalertVisible] = useState(false);
-    const [loading, setloading] = useState(false);
-    const [errorMessage, seterrorMessage] = useState('');
-    const [positiveButton, setpositiveButton] = useState(false);
+    const { isEdit } = route?.params;
+    const usuario: Usuario = route?.params?.usuario;
     useEffect(() => {
-        sethorariosList(portones.flatMap(p => { return { uuid: p.uuid, horario: [] }; }) as Horario[]);
+        sethorariosList(portones.flatMap(p => {
+            if (isEdit) {
+                const json: MetadataObject = usuario.getMetadataJson(usuario);
+                const index = json.porton.findIndex(f => f.uuid === p.uuid);
+                if (index !== -1) {
+                    const hr = json.porton[index].horario;
+                    return { uuid: p.uuid, horario: hr.length === 0 ? [] : hr.split(',') };
+                }
+            }
+            return { uuid: p.uuid, horario: [] };
+
+        }) as Horario[]);
     }, []);
 
     const deleteTimeClick = (uuid, index) => {
@@ -111,7 +119,7 @@ export function DetailDoorUser({ route }) {
         const horariosArray = horariosList[horarioIndex]?.horario;
         // revisamos la cantidad de horarios distintos
         if ((horariosArray.length) + outputArray.length > MAX_HORARIOS_PORTON) {
-            Alert.alert('Aviso', `No puedes agregar mas de ${MAX_HORARIOS_PORTON} horarios distintos`);
+            showAlertWarning(`No puedes agregar mas de ${MAX_HORARIOS_PORTON} horarios distintos`);
             return;
         }
         // revisamos que no haya empalmes con algun otro horario ya ingresado
@@ -125,7 +133,7 @@ export function DetailDoorUser({ route }) {
                 return !(horarioOutput.cerrado <= arrayHorario.abierto || horarioOutput.abierto >= arrayHorario.cerrado);
             });
             if (ind !== -1) {
-                Alert.alert('Aviso', `El horario del ${diaSemana[horarioOutput.dia]} ${getHorarioFormattingSingle(output)} se empalma con ${getHorarioFormattingSingle(horariosArray[ind])}`);
+                showAlertError(`El horario del ${diaSemana[horarioOutput.dia]} ${getHorarioFormattingSingle(output)} se empalma con ${getHorarioFormattingSingle(horariosArray[ind])}`);
                 return;
             }
         }
@@ -137,46 +145,75 @@ export function DetailDoorUser({ route }) {
     };
 
     const handleSend = () => {
-        setloading(false);
-        setpositiveButton(true);
-        seterrorMessage('¿Esta seguro de enviar la siguiente información?');
-        setalertVisible(true);
+        const callbackAcept: AlertDialogCallback = {
+            onClick: isEdit ? handlePositiveEdit : handlePositiveAdd,
+            text: 'Aceptar',
+        };
+        const callbackNegate: AlertDialogCallback = {
+            onClick: async () => true,
+            text: 'Cancelar',
+        };
+        showAlertWarning('¿Esta seguro de enviar la siguiente información?', callbackAcept, callbackNegate);
     };
 
-    const handlePositive = async () => {
-        setloading(true);
-        setpositiveButton(false);
+    const handlePositiveEdit = async (): Promise<boolean> => {
+        showLoading();
         const request = new Request();
-        const response = await request.addNewUser(form[4],
+        const response = await request.editUser(usuario.idUsuario, form[1], horariosList);
+        if (response) {
+            showAlertError(`Error: ${response}`);
+        } else {
+            // hacemos que obtenga todos los usuarios para refrescar
+            AsyncStorage.setItem(listUserKey, '1');
+            const callback: AlertDialogCallback = {
+                onClick: async () => {
+                    return true;
+                },
+                text: 'Aceptar',
+            };
+            showAlertSucess('Usuario modificado', callback);
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Menu' }],
+            });
+        }
+        return false;
+    };
+
+    const handlePositiveAdd = async (): Promise<boolean> => {
+        showLoading();
+        console.log('show loading');
+        const request = new Request();
+        const response = await request.addNewUser(
+            form[4],
             form[5],
             form[1],
             horariosList);
+        console.log('hide loading');
         if (response) {
-            setloading(false);
-            seterrorMessage(`Error: ${response}`);
+            showAlertError(`Error: ${response}`);
         } else {
-            console.log('usuario agregado');
-            handleNegative();
+            // hacemos que obtenga todos los usuarios para refrescar
+            AsyncStorage.setItem(listUserKey, '1');
+            const callback: AlertDialogCallback = {
+                onClick: async () => {
+                    return true;
+                },
+                text: 'Aceptar',
+            };
+            showAlertSucess('Usuario agregado', callback);
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Menu' }],
+            });
         }
-    };
-
-    const handleNegative = () => {
-        setloading(false);
-        setalertVisible(false);
-        seterrorMessage('');
+        return false;
     };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colores.grayBackgrounds, marginVertical: 10 }}>
             <StatusBar animated backgroundColor={colores.PrimaryDark} barStyle={'light-content'} />
             <TimeInputModal visible={modal.visible} onClose={() => setModal({ ...modal, visible: false })} onSubmit={handleTimeInput} />
-            <AlertDialog
-                setVisible={setalertVisible} visible={alertVisible}
-                alertColor={colores.warningColor}
-                handlePositive={positiveButton && { onClick: handlePositive, text: 'Aceptar' }}
-                handleNegative={{ onClick: handleNegative, text: 'Cerrar' }}
-                text={errorMessage}
-                loading={loading} faIcon={faTimesCircle} />
             <KeyboardAwareFlatList
                 scrollEnabled
                 removeClippedSubviews={!DeviceiOS}

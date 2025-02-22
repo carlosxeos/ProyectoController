@@ -15,7 +15,7 @@ import { FAB } from 'react-native-paper';
 import Usuario from '../../db/tables/usuario';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { DeviceiOS } from '../../Constants';
-import { faDoorClosed, faSnowflake, IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faDoorClosed, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import TipoUsuario from '../../db/tables/tipoUsuario';
 import Request, { ErrorHandler } from '../../networks/request';
 import { Porton } from '../../objects/porton';
@@ -23,21 +23,21 @@ import { Porton } from '../../objects/porton';
 
 export function ListUsers({ navigation }) {
     const [search, setSearch] = useState('');
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState([] as Usuario[]);
     const [userFiltered, setuserFiltered] = useState([] as Usuario[]);
     const request = new Request();
     useEffect(() => {
         const usuarios = new Usuario();
         usuarios.getUsers().then((us: Usuario[]) => {
             setUsers(us);
-            setuserFiltered(us); // TODO: crear tablas para obtener el tipo de usuarios listados
+            setuserFiltered(us);
         });
     }, []);
 
     const cardUsers = ({ item }) => {
         const it: Usuario = item;
         return (
-            <TouchableOpacity activeOpacity={0.7} key={item.idUsuario} onPress={() => { }}>
+            <TouchableOpacity activeOpacity={0.7} key={item.idUsuario} onPress={() => handleEdit(it)}>
                 <View
                     style={estilos.viewParentContainer}>
                     <Text style={[appStyles.itemSelection, estilos.nameItem]}>
@@ -61,9 +61,9 @@ export function ListUsers({ navigation }) {
 
     const handlePermissionIcons = (tipoUsuario: TipoUsuario) => {
         const icons: IconDefinition[] = [];
-        if (tipoUsuario.accionesClima !== 0) {
-            icons.push(faSnowflake);
-        }
+        // if (tipoUsuario.accionesClima !== 0) {
+        //     icons.push(faSnowflake);
+        // }
         if (tipoUsuario.accionesPorton !== 0) {
             icons.push(faDoorClosed);
         }
@@ -82,9 +82,12 @@ export function ListUsers({ navigation }) {
 
     };
     const handleAdd = async () => {
-        console.log('open');
         const data: Porton[] | ErrorHandler = await request.getPortonesEmpresa();
         navigation.navigate('AddUser', { data });
+    };
+    const handleEdit = async (item: Usuario) => {
+        const data: Porton[] | ErrorHandler = await request.getPortonesEmpresa();
+        navigation.navigate('AddUser', { data, isEdit: true, usuario: item, isAdmin: item.idTipoUsuario.idTipoUsuario === 1});
     };
     const onChange = ((text: string) => {
         if (text.length === 0) {
@@ -94,7 +97,7 @@ export function ListUsers({ navigation }) {
         setSearch(text);
     });
     const onSubmitSearch = () => {
-        setuserFiltered(users.filter((x) => x?.name.toLowerCase().includes(search.toLowerCase())));
+        setuserFiltered(users.filter((x) => x?.nombreCompleto?.toLowerCase().includes(search.toLowerCase())));
     };
 
     const onClearSearch = () => {

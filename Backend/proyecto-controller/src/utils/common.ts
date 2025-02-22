@@ -64,6 +64,9 @@ export const mqttClientRegistrer: ClientsModuleOptions = [
   },
 ];
 
+/**
+ * secret para jwt token
+ */
 export const jwtConstants = {
   secret: 'secretKey',
 };
@@ -114,9 +117,9 @@ function padTo2Digits(num) {
 export function formatDateLocal(date: Date) {
   return (
     [
-      date.getFullYear(),
-      padTo2Digits(date.getMonth() + 1),
       padTo2Digits(date.getDate()),
+      padTo2Digits(date.getMonth() + 1),
+      date.getFullYear()
     ].join('-') +
     ' ' +
     [
@@ -133,7 +136,7 @@ export const sendSMS = async (text: string): Promise<boolean> => {
   );
   // TODO: por ahora solo se le va a enviar mensaje al numero de omar por cualquier tipo de alerta
   // cambiar a que se obtengan los contactos por bd
-  return await sendSMSToClient(`${text} ${dateString}`, ['+528112558479']);
+  return await sendSMSToClient(`${text} ${formatDateLocal(dateString)}`, ['+528112558479']);
 };
 
 export const executeQuery = async <T>(

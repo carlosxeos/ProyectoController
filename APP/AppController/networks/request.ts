@@ -4,12 +4,53 @@ import {getApiURL, testingURL, tokenKey} from '../Constants';
 import {History} from '../objects/history';
 import {Porton} from '../objects/porton';
 import TipoUsuario from '../db/tables/tipoUsuario';
+import {ResponsePost} from '../objects/response-post';
 /* eslint-disable prettier/prettier */
 class Request {
   private apiUrl: string;
   constructor() {
     this.apiUrl = getApiURL();
   }
+  private async requestPostMethod<T>(
+    url: string,
+    needToken: boolean,
+    body: {},
+  ): Promise<ResponsePost<T>> {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append('Content-Type', 'application/json');
+      if (needToken) {
+        const token = await AsyncStorage.getItem(tokenKey);
+        myHeaders.append('Authorization', `Bearer ${token || ''}`);
+      }
+      const request = await this.fetchWithTimeout(url, {
+        body: JSON.stringify(body),
+        method: 'POST',
+        headers: myHeaders,
+      });
+      if (request.status === 401) {
+        console.warn('token vencido');
+        return new ResponsePost<T>(request.status, 'token vencido', false);
+      }
+      if (testingURL) {
+        console.warn(`${url}: ${request.status}`);
+      }
+      if (!(request.status >= 200 && request.status < 300)) {
+        return new ResponsePost(
+          request.status,
+          `${await request.json()}`,
+          false,
+        );
+      }
+      const result = new ResponsePost<T>(request.status, null, true);
+      result.data = await request.json();
+      return result;
+    } catch (e) {
+      console.log('requestPostMethod error ', e);
+      return new ResponsePost(500, `error ${e}`, false);
+    }
+  }
+
   private async requestGetMethod<T = any>(
     url: string,
     needToken: boolean,
@@ -33,10 +74,7 @@ class Request {
         console.warn(`${url}: ${request.status}`);
       }
       if (!(request.status >= 200 && request.status < 300)) {
-        return new ErrorHandler(
-          `Error ${await request.text()}`,
-          request.status,
-        );
+        return new ErrorHandler(`${await request.json()}`, request.status);
       }
       const result = await request.json();
       return result;
@@ -45,6 +83,7 @@ class Request {
       return new ErrorHandler(`error ${e}`, -1);
     }
   }
+
   private async fetchWithTimeout(
     url: string,
     options: RequestInit = {},
@@ -59,31 +98,30 @@ class Request {
   }
   async loginUser(user: string, password: string) {
     try {
-      const myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
-      const request = await this.fetchWithTimeout('login', {
-        body: JSON.stringify({user: user, password: password}),
-        method: 'POST',
-        headers: myHeaders,
+      const result = await this.requestPostMethod<any>('login', false, {
+        user: user,
+        password: password,
       });
-      const result = await request.json();
-      return result;
+      if (!result.sucess) {
+        return {autenticado: false};
+      }
+      return result.data;
     } catch (e) {
       console.log('login error ', e);
       return {autenticado: false};
     }
   }
 
-  async getPorton(token: string | undefined): Promise<Porton[]> {
+  async getPorton(): Promise<Porton[]> {
     try {
-      const myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
-      myHeaders.append('Authorization', `Bearer ${token || ''}`);
-      const request = await this.fetchWithTimeout('door/getPorton', {
-        method: 'GET',
-        headers: myHeaders,
-      });
-      const result = await request.json();
+      const result = await this.requestGetMethod<Porton[]>(
+        'door/getPorton',
+        true,
+      );
+      if (result instanceof ErrorHandler) {
+        console.log('getPorton error ', result?.error);
+        return [];
+      }
       return result;
     } catch (e) {
       console.log('getPorton error ', e);
@@ -92,19 +130,15 @@ class Request {
   }
 
   async getHistory(uuid: string): Promise<History[]> {
-    const token = await AsyncStorage.getItem(tokenKey);
     try {
-      const myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
-      myHeaders.append('Authorization', `Bearer ${token || ''}`);
-      const request = await this.fetchWithTimeout(
+      const result = await this.requestGetMethod<History[]>(
         `catalogs/getHistory?uuid=${uuid}`,
-        {
-          method: 'GET',
-          headers: myHeaders,
-        },
+        true,
       );
-      const result = await request.json();
+      if (result instanceof ErrorHandler) {
+        console.log('getHistory error ', result?.error);
+        return [];
+      }
       return result;
     } catch (e) {
       console.log('getPorton error ', e);
@@ -135,15 +169,12 @@ class Request {
    */
   async checkUsername(userName: string): Promise<boolean> {
     try {
-      const myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
-      const request = await this.fetchWithTimeout('valid_user', {
-        body: JSON.stringify({user: userName}),
-        method: 'POST',
-        headers: myHeaders,
+      const request = await this.requestPostMethod<any>('valid_user', false, {
+        user: userName,
       });
-      const result = await request.json();
-      return result?.valid;
+      console.log('request ', request);
+
+      return request.sucess && request.data?.valid;
     } catch (e) {
       console.log('checkUsername error ', e);
       return false;
@@ -154,28 +185,77 @@ class Request {
     userName: string,
     password: string,
     nombreCompleto: string,
-    metadata: any[],
+    metadata: Horario[], //
   ): Promise<string> {
     try {
-      const myHeaders = new Headers();
-      myHeaders.append('Content-Type', 'application/json');
-      const request = await this.fetchWithTimeout('add_newuser', {
-        body: JSON.stringify({
-          userName,
-          password,
-          nombreCompleto,
-          metadata,
-        }),
-        method: 'POST',
-        headers: myHeaders,
+      const data = metadata.map(m => {
+        return {
+          horario: m.horario.join(','),
+          uuid: m.uuid,
+        };
       });
-      const result = await request.json();
-      if (result?.save) {
-        return '';
+      const result = await this.requestPostMethod<any>('add_newuser', true, {
+        userName,
+        password,
+        nombreCompleto,
+        metadata: data,
+      });
+      if (result.sucess) {
+        console.log('result print ', result);
+        return null;
       }
-      return result?.msg || 'error general';
+      return result.error || result.data.error;
     } catch (e) {
       console.log('addNewUser error ', e);
+      return 'Hubo un error en el request, intente de nuevo más tarde';
+    }
+  }
+
+  async editUser(
+    idUsuario: number,
+    nombreCompleto: string,
+    metadata: Horario[], //
+  ): Promise<string> {
+    try {
+      const data = metadata.map(m => {
+        return {
+          horario: m.horario.join(','),
+          uuid: m.uuid,
+        };
+      });
+      const result = await this.requestPostMethod<any>('edit_user', true, {
+        idUsuario,
+        nombreCompleto,
+        metadata: data,
+      });
+      if (result.sucess) {
+        console.log('result print ', result);
+        return null;
+      }
+      console.log('result edit ', result);
+      return result.error || result.data.error;
+    } catch (e) {
+      console.log('addNewUser error ', e);
+      return 'Hubo un error en el request, intente de nuevo más tarde';
+    }
+  }
+
+  /**
+   * Borra el usuario, pero solo borrado logico
+   * Para borrar el usuario permanentemente seria desde la base de datos
+   * @param idUsuario id del usuario a borrar
+   * @returns usuario borrado
+   */
+  async deleteUser(idUsuario: number) {
+    try {
+      const result = await this.requestPostMethod<any>('delete_user', true, {
+        idUsuario,
+      });
+      if (result.sucess) {
+        return null;
+      }
+      return result.error || result.data.error;
+    } catch (e) {
       return 'Hubo un error en el request, intente de nuevo más tarde';
     }
   }

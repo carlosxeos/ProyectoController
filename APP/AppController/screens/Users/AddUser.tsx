@@ -1,35 +1,74 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable prettier/prettier */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from 'react';
-import { Alert, SafeAreaView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { WorkerInputs, DeviceiOS } from '../../Constants';
 import { colores, appStyles } from '../../resources/globalStyles';
 import { ComponentForm } from '../../views/FormList/ComponentsForms';
 import Request, { ErrorHandler } from '../../networks/request';
 import { Porton } from '../../objects/porton';
-import AlertDialog from '../../components/AlertDialog';
+import { ModalContext } from '../../context/modal-provider';
+import Usuario from '../../db/tables/usuario';
+import { AlertDialogCallback } from '../../objects/alertdialog-callback';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { listUserKey } from '../Menu';
 
 /**
  * Pantalla para agregar usuarios nuevos
  */
 export function AddUser({ route, navigation }) {
+
+    const { showLoading, hideLoading, showAlertError, showAlertWarning, showAlertSucess } = useContext(ModalContext);
     let count = 11;
     const [form, setform] = useState({});
     const [idError, setidError] = useState(-1);
     const [inputs, setinputs] = useState([]);
     const [boxPortones, setboxPortones] = useState<[{ id, text, uuid }]>([] as any);
-    const [alertVisible, setalertVisible] = useState(false);
+    const [showDelete, setshowDelete] = useState(false);
     const request = new Request();
     const data: ErrorHandler | Porton[] = route?.params?.data; // id
+    const { isEdit, isAdmin } = route?.params;
+    const usuario: Usuario = route?.params?.usuario;
     useEffect(() => {
         getPortones();
     }, []);
 
     const getPortones = async () => {
         setinputs(() => {
+            //si es edicion de un usuario, ya que comparten todas las funciones
+            if (isEdit) {
+                if (data instanceof ErrorHandler) {
+                    return WorkerInputs.filter(f => f.editable);
+                }
+                const json: MetadataObject = usuario.getMetadataJson(usuario);
+                const val: [{ id, text, uuid }] = [] as any;
+                for (const element of data) {
+                    val.push({
+                        id: count++,
+                        text: element.descripcion,
+                        uuid: element.uuid,
+                    });
+                }
+                setboxPortones(val);
+                setform((prev) => {
+                    const selectedBoxes = {};
+                    for (const element of val) {
+                        if (json.porton.findIndex(f => f.uuid === element.uuid) !== -1) {
+                            selectedBoxes[element.id] = true;
+                        }
+                    }
+                    return {
+                        ...prev,
+                        [1]: usuario.nombreCompleto,// insertamos manualmente el nombre
+                        ...selectedBoxes,
+                    };
+                });
+                return [...WorkerInputs.filter(f => f.editable), { id: 8, hint: 'Seleccione portones a los cuales va a tener acceso', type: 'checkbox', box: val }];
+            }
+            // en caso que sea un nuevo usuario
             // en caso que no pudieran obtenerse los portones
             if (data instanceof ErrorHandler) {
                 return WorkerInputs;
@@ -69,51 +108,103 @@ export function AddUser({ route, navigation }) {
                 return v?.error;
             }
         }
-        // si las contraseñas no son iguales si que no coinciden
+        // revisa si las contraseñas no son iguales
         if (form[5] !== form[6]) {
             return 'La contraseña con coincide';
         }
         return '';
     };
-    const addAction = async () => {
-        const errorString = "";//validateForm();
+    const nextAction = async () => {
+        const errorString = validateForm();
         if (errorString.length > 0) {
-            Alert.alert('Error', errorString);
+            showAlertError(errorString);
         }
         else {
             const filterBoxPortones = boxPortones.filter(b => form[b.id]);
             if (filterBoxPortones.length > 0) {
-                setalertVisible(true);
-                if (await request.checkUsername(form[4])) {
-                    setalertVisible(false);
-                    navigation.navigate('DetailDoorUser', { form, portones: filterBoxPortones });
+                showLoading();
+                // si es edicion es diferente el proceso desde aqui
+                if (isEdit) {
+                    hideLoading();
+                    navigation.navigate('DetailDoorUser', { form, portones: filterBoxPortones, isEdit, usuario });
                 } else {
-                    setalertVisible(false);
-                    Alert.alert('Error', 'El username es inválido o ya existe');
+                    if (await request.checkUsername(form[4])) {
+                        hideLoading();
+                        navigation.navigate('DetailDoorUser', { form, portones: filterBoxPortones });
+                    } else {
+                        hideLoading();
+                        showAlertError('El username es inválido o ya existe');
+                    }
                 }
             } else {
-                Alert.alert('Error', 'Selecciona al menos un portón');
+                showAlertError('Selecciona al menos un portón');
             }
         }
     };
+
+    const deleteUser = async () => {
+        showLoading();
+        const response = await request.deleteUser(usuario.idUsuario);
+        if (response) {
+            showAlertError(`Error: ${response}`);
+        } else {
+            // hacemos que obtenga todos los usuarios para refrescar
+            AsyncStorage.setItem(listUserKey, '1');
+            const callback: AlertDialogCallback = {
+                onClick: async () => {
+                    return true;
+                },
+                text: 'Aceptar',
+            };
+            showAlertSucess('Usuario eliminado', callback);
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Menu' }],
+            });
+        }
+        return false;
+    };
+
+    const deleteAction = () => {
+        const callbackConfirm: AlertDialogCallback = {
+            text: 'Si',
+            onClick: deleteUser,
+        };
+        const callbackNegative: AlertDialogCallback = {
+            text: 'No',
+            onClick: async () => true,
+        };
+        showAlertWarning('¿Está seguro de borrar este usuario?', callbackConfirm, callbackNegative);
+    };
+
     const FooterButton = () => {
         return (
             < View style={{ marginVertical: 10 }}>
-                <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, { flexDirection: 'row', justifyContent: 'center' }]} onPress={addAction}>
-                    <Text style={appStyles.textButtonLogin}>{'Agregar'}</Text>
+                <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, estilos.buttonRound]} onPress={nextAction}>
+                    <Text style={appStyles.textButtonLogin}>{'Siguiente'}</Text>
                 </TouchableOpacity>
+                {
+                    // si es admin no se puede borrar directamente desde la app
+                    <>
+                        {(isEdit && !isAdmin) &&
+                            <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, estilos.buttonRed, showDelete && { backgroundColor: colores.irexcoreDegradadoNegro }]}
+                                onPress={() => setshowDelete(true)}>
+                                <Text style={appStyles.textButtonLogin}>{'Pulse para borrar'}</Text>
+                            </TouchableOpacity>
+                        }
+                        {(isEdit && !isAdmin && showDelete) &&
+                            <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, estilos.buttonRed]} onPress={deleteAction}>
+                                <Text style={appStyles.textButtonLogin}>{'Borrar'}</Text>
+                            </TouchableOpacity>
+                        }
+                    </>
+                }
             </View >
         );
     };
-
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colores.grayBackgrounds }}>
             <StatusBar animated backgroundColor={colores.PrimaryDark} barStyle={'light-content'} />
-            <AlertDialog
-                setVisible={setalertVisible} visible={alertVisible}
-                alertColor={colores.redDotech}
-                handleNeutral={undefined}
-                loading={true} />
             <KeyboardAwareFlatList
                 scrollEnabled
                 removeClippedSubviews={!DeviceiOS}
@@ -124,3 +215,16 @@ export function AddUser({ route, navigation }) {
         </SafeAreaView>
     );
 }
+
+
+const estilos = StyleSheet.create({
+    buttonRound: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+    },
+    buttonRed: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        backgroundColor: colores.redDotech,
+    },
+});

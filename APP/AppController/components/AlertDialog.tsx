@@ -33,7 +33,7 @@ export default function AlertDialog({ setVisible = undefined, visible, handlePos
             <>
                 <TouchableOpacity activeOpacity={0.9} style={[
                     estilos.buttonStyle, inlineStyle,
-                ]} onPress={handle.onClick}>
+                ]} onPress={async() => { if (await handle.onClick()) { setVisible(false); } }}>
                     <Text style={[estilos.textBtn, { color: textColor }]}>{handle.text}</Text>
                 </TouchableOpacity>
             </>

@@ -7,9 +7,8 @@ import { appStyles, colores } from '../resources/globalStyles';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Svg, { Circle } from 'react-native-svg';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Request, { ErrorHandler } from '../networks/request';
-import AlertDialog from '../components/AlertDialog';
 import Snackbar from 'react-native-snackbar';
 import { Porton } from '../objects/porton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,12 +16,12 @@ import { tokenKey } from '../Constants';
 import React from 'react';
 import Usuario from '../db/tables/usuario';
 import { Session } from '../db/tables/session';
-
+import { ModalContext } from '../context/modal-provider';
+export const listUserKey = 'usrKeyTimer';
 function Menu({ navigation }) {
   const [sessionUser, setsessionUser] = useState<Session | null>();
   const [idOpciones, setidOpciones] = useState([0]);
-  const [loading, setloading] = useState(false);
-  const listUserKey = 'usrKeyTimer';
+  const { showLoading, hideLoading } = useContext(ModalContext);
   useEffect(() => {
     handleData();
   }, []);
@@ -49,9 +48,9 @@ function Menu({ navigation }) {
   };
   const handlePuerta = async () => {
     // TODO: hacer request a bd para saber los portones
-    setloading(true);
+    showLoading();
     const request = new Request();
-    request.getPorton(sessionUser?.token).then(async (porton: Porton[]) => {
+    request.getPorton().then(async (porton: Porton[]) => {
       console.log('porton data ', porton);
       const token = await AsyncStorage.getItem(tokenKey);
       if (porton.length === 1) { // si hay mas de una puerta, entra al list, si no abre directamente la que hay
@@ -67,19 +66,19 @@ function Menu({ navigation }) {
       console.error('error puerta ', e);
 
     }).finally(() => {
-      setloading(false);
+      hideLoading();
     });
   };
 
   const handleListClick = async () => {
-    const timerList = await AsyncStorage.getItem(listUserKey);
+    const timerList = 0;//await AsyncStorage.getItem(listUserKey);
+    // TODO: 
     if (timerList && +timerList > Date.now()) { // abre directo la lista de usuarios
       navigation.navigate('ListUsers');
       return;
     }
     const request = new Request();
     request.getListUsers().then(async (value) => {
-      console.log('valor list ', value);
       if (value instanceof ErrorHandler) {
         Snackbar.show({
           text: `Hubo un error, comuniquese con el administrador: ${value.error}`,
@@ -87,9 +86,9 @@ function Menu({ navigation }) {
         });
         return;
       } else {
-        AsyncStorage.setItem(listUserKey, (Date.now() + 300000) + '');// le damos oportunidad de revisar cada 5 min
         const usuario = new Usuario();
         await usuario.addUsers(value);
+        await AsyncStorage.setItem(listUserKey, (Date.now() + 300000) + '');// le damos oportunidad de revisar cada 5 min
         navigation.navigate('ListUsers');
       }
     }).catch(e => {
@@ -149,10 +148,6 @@ function Menu({ navigation }) {
       <FlatList data={
         userOptions.filter(v => idOpciones.findIndex(a => a === v.id) !== -1)
       } renderItem={cardOption} />
-      <AlertDialog
-        setVisible={setloading} visible={loading}
-        alertColor={colores.redDotech}
-        loading />
     </View>
   );
 }

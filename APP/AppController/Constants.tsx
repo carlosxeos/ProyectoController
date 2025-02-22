@@ -45,6 +45,7 @@ export const WorkerInputs = [ // 0 a 6
     id: 1, hint: 'Nombre completo',
     maxLength: 50, type: 'input',
     error: 'Ingrese un nombre válido', minLength: 5,
+    editable: true
   },
   // {
   //   id: 3, hint: 'Teléfono', icon: 'phone',
@@ -55,8 +56,9 @@ export const WorkerInputs = [ // 0 a 6
     id: 4, hint: 'Nombre de usuario',
     maxLength: 13, type: 'input',
     regex: /((?=.{5,13}$)[a-z0-9]+\.[a-z0-9]+$)/,
-    error: 'Ingrese un nombre de usuario válido(nombre.apellido)', minLength: 5,
+    error: 'Ingrese un nombre de usuario válido(nombre.apellido) en minúsculas', minLength: 5,
     autocomplete: 'off',
+    editable: false
   },
   {
     id: 5, hint: 'Contraseña',
@@ -64,6 +66,7 @@ export const WorkerInputs = [ // 0 a 6
     error: 'La contraseña es inválida', minLength: 6, password: true,
     regex: /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     autocomplete: 'off',
+    editable: false
   },
   {
     id: 6, hint: 'Confirmar contraseña',
@@ -71,6 +74,7 @@ export const WorkerInputs = [ // 0 a 6
     error: 'La contraseña no coincide', minLength: 6, password: true,
     regex: /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     autocomplete: 'off',
+    editable: false
   },
   //{ TODO: a futuro para implementacion de tipos de usuario, mientras va a ser todos de tipo usuario
   //  id: 7, hint: 'Tipo de usuario',
