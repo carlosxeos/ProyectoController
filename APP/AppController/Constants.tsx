@@ -14,10 +14,10 @@ export const keyStorage = {
   user: 'username',
 };
 export const appVersion = '2.3';
-export const testingURL = false; // si esta en true, apunta a localhost
+export const testingURL = true; // si esta en true, apunta a localhost
 const ipAddressConfigRemote = testingURL ?
   '192.168.1.16' // ip local
-  : '13.68.134.198'; // ip del servidor de omar
+  : '1';//'13.68.134.198'; // ip del servidor de omar
 export const getApiURL = () => {
   return `http://${ipAddressConfigRemote}:3001/api/`;
 };
@@ -63,7 +63,7 @@ export const WorkerInputs = [ // 0 a 6
   {
     id: 5, hint: 'Contraseña',
     maxLength: 20, type: 'input', icon: 'account-key',
-    error: 'La contraseña es inválida', minLength: 6, password: true,
+    error: 'La contraseña es inválida (Min. una mayúscula, una minúscula y un dígito)', minLength: 6, password: true,
     regex: /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     autocomplete: 'off',
     editable: false,
