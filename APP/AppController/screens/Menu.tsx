@@ -47,11 +47,9 @@ function Menu({ navigation }) {
     });
   };
   const handlePuerta = async () => {
-    // TODO: hacer request a bd para saber los portones
     showLoading();
     const request = new Request();
     request.getPorton().then(async (porton: Porton[]) => {
-      console.log('porton data ', porton);
       const token = await AsyncStorage.getItem(tokenKey);
       if (porton.length === 1) { // si hay mas de una puerta, entra al list, si no abre directamente la que hay
         navigation.navigate('DoorScreen', { porton: porton[0], token });
@@ -71,8 +69,7 @@ function Menu({ navigation }) {
   };
 
   const handleListClick = async () => {
-    const timerList = 0;//await AsyncStorage.getItem(listUserKey);
-    // TODO: 
+    const timerList = await AsyncStorage.getItem(listUserKey);
     if (timerList && +timerList > Date.now()) { // abre directo la lista de usuarios
       navigation.navigate('ListUsers');
       return;

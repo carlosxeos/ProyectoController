@@ -23,10 +23,6 @@ export const ComponentForm = ({ item }: any, form: any, setform, idError, setidE
     const handleChange = (val = null, { id = -1 }, parent = null) => {
         setidError(-1);
         if (parent) { // si es una pregunta con preguntas anidadas
-            //console.log('parent');
-            //setform(prev => {
-            //    return { ...prev, [parent?.id]: val };
-            //});
             setform(prev => {
                 return { ...prev, [id]: val };
             });

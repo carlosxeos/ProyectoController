@@ -36,7 +36,6 @@ export class DoorService {
     const metadata = new MetaData();
     const json = JSON.parse(usuario.metadata);
     metadata.porton = json?.porton || [];
-    console.log('metadata.porton ', metadata.porton);
 
     const data = await this.getPortonUuid(
       idUsuario,
@@ -46,14 +45,10 @@ export class DoorService {
     // insertamos los horarios que se requieren
     for (let i = 0; i < data.length; i++) {
       const element = data[i];
-      console.log('dato no ', element);
       data[i].horario = metadata.porton.filter(
         (v) => v.uuid === element?.uuid,
       )[0].horario;
     }
-
-    console.log('datos iportones ', data);
-
     return data;
   }
 

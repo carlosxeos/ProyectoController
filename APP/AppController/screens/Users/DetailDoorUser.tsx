@@ -159,7 +159,7 @@ export function DetailDoorUser({ route, navigation }) {
     const handlePositiveEdit = async (): Promise<boolean> => {
         showLoading();
         const request = new Request();
-        const response = await request.editUser(usuario.idUsuario, form[1], horariosList);
+        const response = await request.editUser(usuario.idUsuario, form[1], form[5], horariosList);
         if (response) {
             showAlertError(`Error: ${response}`);
         } else {

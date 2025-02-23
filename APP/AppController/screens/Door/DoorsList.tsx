@@ -5,7 +5,7 @@ import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native
 import { colores, appStyles } from '../../resources/globalStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeviceiOS, getDateFormatLocal } from '../../Constants';
-import { faDoorClosed, faDoorOpen } from '@fortawesome/free-solid-svg-icons';
+import { faDoorClosed, faDoorOpen, IconLookup, IconName, IconPrefix } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 export default function DoorsList({ navigation, route }: any) {
     const portones = route?.params?.portones; // id
@@ -14,9 +14,8 @@ export default function DoorsList({ navigation, route }: any) {
         navigation.replace('DoorScreen', { porton: item, token });
     };
     const dataList = ({ item }) => {
-        let icon;
-        let colorIcon;
-        console.log('data ', item);
+        let icon: string | IconLookup | [IconPrefix, IconName];
+        let colorIcon: string;
         if (item.idtipomodificacion === 1) { // 1 si esta abierto, 2 si se encuentra cerrado
             icon = faDoorOpen;
             colorIcon = colores.greenButton;

@@ -13,11 +13,11 @@ export const timeWaitUnauthorized = 60; // 10 min (600)
 export const keyStorage = {
   user: 'username',
 };
-export const appVersion = '2.2';
-export const testingURL = true; // si esta en true, apunta a localhost
+export const appVersion = '2.3';
+export const testingURL = false; // si esta en true, apunta a localhost
 const ipAddressConfigRemote = testingURL ?
   '192.168.1.16' // ip local
-  : '1'//'13.68.134.198'; // ip del servidor de omar
+  : '13.68.134.198'; // ip del servidor de omar
 export const getApiURL = () => {
   return `http://${ipAddressConfigRemote}:3001/api/`;
 };
@@ -45,7 +45,7 @@ export const WorkerInputs = [ // 0 a 6
     id: 1, hint: 'Nombre completo',
     maxLength: 50, type: 'input',
     error: 'Ingrese un nombre válido', minLength: 5,
-    editable: true
+    editable: true,
   },
   // {
   //   id: 3, hint: 'Teléfono', icon: 'phone',
@@ -58,7 +58,7 @@ export const WorkerInputs = [ // 0 a 6
     regex: /((?=.{5,13}$)[a-z0-9]+\.[a-z0-9]+$)/,
     error: 'Ingrese un nombre de usuario válido(nombre.apellido) en minúsculas', minLength: 5,
     autocomplete: 'off',
-    editable: false
+    editable: false,
   },
   {
     id: 5, hint: 'Contraseña',
@@ -66,7 +66,7 @@ export const WorkerInputs = [ // 0 a 6
     error: 'La contraseña es inválida', minLength: 6, password: true,
     regex: /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     autocomplete: 'off',
-    editable: false
+    editable: false,
   },
   {
     id: 6, hint: 'Confirmar contraseña',
@@ -74,7 +74,7 @@ export const WorkerInputs = [ // 0 a 6
     error: 'La contraseña no coincide', minLength: 6, password: true,
     regex: /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
     autocomplete: 'off',
-    editable: false
+    editable: false,
   },
   //{ TODO: a futuro para implementacion de tipos de usuario, mientras va a ser todos de tipo usuario
   //  id: 7, hint: 'Tipo de usuario',

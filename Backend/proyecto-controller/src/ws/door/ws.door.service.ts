@@ -30,9 +30,7 @@ export class WSDoorService {
   async userIsAuthorized(idUsuario: number, uuid: string): Promise<boolean> {
     const usuarioData = await <any>executeQuery(`select usr.idUsuario, usr.idTipoUsuario, usr.metadata, usr.userName, (select utc from tbPorton where uuid = '${uuid}') as utc from ctUsuario usr where usr.idUsuario = ${idUsuario}`, this.logger);
     if (usuarioData === null || usuarioData.length == 0) {
-      // si no hay usuario directamente esta mal
-      console.log('no encontramos datos');
-      
+      // si no hay usuario directamente esta mal      
       return false;
     }
     const utcTime : number = +usuarioData[0].utc;
@@ -40,9 +38,7 @@ export class WSDoorService {
     const metaData: MetaData = JSON.parse(usuarioData[0].metadata);    
     for (const porton of metaData.porton) {
       if (porton.uuid === uuid) {
-        const dayNumber = momentDate.day();
-        console.log('dayNumber ', dayNumber);
-        
+        const dayNumber = momentDate.day();        
         const horariosToday: string[] = porton.horario
           .split(',')
           .filter((p) => +p[0] === dayNumber);
@@ -54,14 +50,11 @@ export class WSDoorService {
           const cLetter = horario.indexOf('C');
           const abiertoMinutes = +horario.substring(2, cLetter);
           const cerradoMinutes = +horario.substring(cLetter + 1);
-          console.log('hora actual server ', momentDate);          
           if(abiertoMinutes === 0 && cerradoMinutes === 0) { // si es 0 en ambos significa que es horario de todo el dia
             return true;
           }          
           const mmtMidnight = momentDate.clone().startOf('day');
-          const diffMinutes = momentDate.diff(mmtMidnight, 'minutes');
-          console.log('diffMinutes ', diffMinutes);
-          
+          const diffMinutes = momentDate.diff(mmtMidnight, 'minutes');          
           if (diffMinutes >= abiertoMinutes && diffMinutes <= cerradoMinutes) {
             return true;
           }

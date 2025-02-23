@@ -214,6 +214,7 @@ class Request {
   async editUser(
     idUsuario: number,
     nombreCompleto: string,
+    password: string,
     metadata: Horario[], //
   ): Promise<string> {
     try {
@@ -226,6 +227,7 @@ class Request {
       const result = await this.requestPostMethod<any>('edit_user', true, {
         idUsuario,
         nombreCompleto,
+        password,
         metadata: data,
       });
       if (result.sucess) {

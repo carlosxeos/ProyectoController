@@ -235,6 +235,10 @@ export class UsuarioService {
       request.input('metadata', VarChar(MAX), metadataTransformation);
       request.input('nombre_completo', VarChar(100), usuario.nombreCompleto);
       request.input('id_usuario', Numeric(), usuario.idUsuario);
+      if (usuario.password) {
+        const passwordHash = await bcrypt.hash(usuario.password, 10);
+        request.input('password', VarChar(), passwordHash);
+      }
       resultadoSP = await request.execute('sp_edit_user');
     } catch (error) {
       this.logger.error('error editUser ', error);

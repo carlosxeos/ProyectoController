@@ -3,7 +3,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import React, { useContext, useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareFlatList } from 'react-native-keyboard-aware-scroll-view';
 import { WorkerInputs, DeviceiOS } from '../../Constants';
 import { colores, appStyles } from '../../resources/globalStyles';
@@ -32,6 +32,8 @@ export function AddUser({ route, navigation }) {
     const data: ErrorHandler | Porton[] = route?.params?.data; // id
     const { isEdit, isAdmin } = route?.params;
     const usuario: Usuario = route?.params?.usuario;
+    const passwordQuestions = [5, 6];
+    const [showEditPassword, setshowEditPassword] = useState(true);
     useEffect(() => {
         getPortones();
     }, []);
@@ -172,9 +174,21 @@ export function AddUser({ route, navigation }) {
         };
         const callbackNegative: AlertDialogCallback = {
             text: 'No',
-            onClick: async () => true,
+            onClick: async () => {
+                setshowDelete(false);
+                return true;
+            },
         };
         showAlertWarning('¿Está seguro de borrar este usuario?', callbackConfirm, callbackNegative);
+    };
+    const handleEditPassword = () => {
+        if (inputs.findIndex(p => passwordQuestions.includes(p.id)) !== -1) {
+            return;
+        }
+        setinputs(prev => {
+            return [...prev, ...WorkerInputs.filter(f => passwordQuestions.includes(f.id))];
+        });
+        setshowEditPassword(false);
     };
 
     const FooterButton = () => {
@@ -183,16 +197,22 @@ export function AddUser({ route, navigation }) {
                 <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, estilos.buttonRound]} onPress={nextAction}>
                     <Text style={appStyles.textButtonLogin}>{'Siguiente'}</Text>
                 </TouchableOpacity>
-                {
+                {!isAdmin &&
                     // si es admin no se puede borrar directamente desde la app
                     <>
-                        {(isEdit && !isAdmin) &&
+                        {showEditPassword &&
+                            <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, estilos.buttonPwd]}
+                                onPress={handleEditPassword}>
+                                <Text style={appStyles.textButtonLogin}>{'Editar contraseña'}</Text>
+                            </TouchableOpacity>
+                        }
+                        {isEdit &&
                             <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, estilos.buttonRed, showDelete && { backgroundColor: colores.irexcoreDegradadoNegro }]}
-                                onPress={() => setshowDelete(true)}>
+                                onPress={() => setshowDelete(prev => !prev)}>
                                 <Text style={appStyles.textButtonLogin}>{'Pulse para borrar'}</Text>
                             </TouchableOpacity>
                         }
-                        {(isEdit && !isAdmin && showDelete) &&
+                        {(isEdit && showDelete) &&
                             <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, estilos.buttonRed]} onPress={deleteAction}>
                                 <Text style={appStyles.textButtonLogin}>{'Borrar'}</Text>
                             </TouchableOpacity>
@@ -218,6 +238,11 @@ export function AddUser({ route, navigation }) {
 
 
 const estilos = StyleSheet.create({
+    buttonPwd: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        backgroundColor: colores.greenButton,
+    },
     buttonRound: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -226,5 +251,6 @@ const estilos = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         backgroundColor: colores.redDotech,
+        marginVertical: 30,
     },
 });
