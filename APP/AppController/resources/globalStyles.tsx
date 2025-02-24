@@ -35,7 +35,7 @@ export const appStyles = StyleSheet.create({
     color: colores.white,
     fontSize: 16,
     textAlign: 'center',
-    fontFamily: 'Signika-Medium',
+    fontFamily: 'RobotoSlab-Medium',
   },
   headerStyle: {
     fontSize: Platform.OS === 'ios' ? 32 : 24,
@@ -99,7 +99,7 @@ export const appStyles = StyleSheet.create({
     marginHorizontal: 20,
   },
   itemSelection: {
-    fontFamily: 'Signika-Medium',
+    fontFamily: 'RobotoSlab-Medium',
     fontSize: Platform.OS === 'ios' ? 14 : 11,
     margin: Platform.OS === 'ios' ? 4 : 2,
   },
@@ -126,7 +126,7 @@ export const appStyles = StyleSheet.create({
     color: colores.white,
     fontSize: 30,
     textAlign: 'center',
-    fontFamily: 'Signika-Medium',
+    fontFamily: 'RobotoSlab-Medium',
   },
   screen: {
     backgroundColor: colores.grayBackgrounds,

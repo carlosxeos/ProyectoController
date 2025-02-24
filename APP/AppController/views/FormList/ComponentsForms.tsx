@@ -213,7 +213,7 @@ const estilos = StyleSheet.create({
     titleCard: {
         color: localColores.PrimaryDark,
         fontWeight: 'bold',
-        fontFamily: 'Signika-Medium',
+        fontFamily: 'RobotoSlab-Medium',
         fontSize: 16,
         flex: 1,
     },

@@ -1,7 +1,16 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+#######
+# Read min iOS version from Xcode project and set as min iOS version for Podfile
+require 'xcodeproj'
+
+project_path = './AppController.xcodeproj'
+project = Xcodeproj::Project.open(project_path)
+min_ios_version_supported = project.build_configurations.first.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+######
 
 platform :ios, min_ios_version_supported
+#platform :ios, 13.0#min_ios_version_supported
 prepare_react_native_project!
 
 # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
@@ -55,6 +64,13 @@ target 'AppController' do
       # necessary for Mac Catalyst builds
       :mac_catalyst_enabled => false
     )
+    installer.generated_projects.each do |project|
+      project.targets.each do |target|
+          target.build_configurations.each do |config|
+              config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+          end
+      end
+  end    
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
