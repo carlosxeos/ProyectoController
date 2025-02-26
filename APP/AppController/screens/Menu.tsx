@@ -21,7 +21,7 @@ export const listUserKey = 'usrKeyTimer';
 function Menu({ navigation }) {
   const [sessionUser, setsessionUser] = useState<Session | null>();
   const [idOpciones, setidOpciones] = useState([0]);
-  const { showLoading, hideLoading } = useContext(ModalContext);
+  const { showLoading, hideLoading, showAlertError} = useContext(ModalContext);
   useEffect(() => {
     handleData();
   }, []);
@@ -38,7 +38,6 @@ function Menu({ navigation }) {
         if (localSessionUser.accionesPorton !== 0) {
           array.push(2);
         }
-        //console.log('valor ', localSessionUser);
         if (localSessionUser.agregarUsuario === 1) {
           array.push(3);
         }
@@ -47,25 +46,20 @@ function Menu({ navigation }) {
     });
   };
   const handlePuerta = async () => {
-    showLoading();
     const request = new Request();
-    request.getPorton().then(async (porton: Porton[]) => {
-      const token = await AsyncStorage.getItem(tokenKey);
-      if (porton.length === 1) { // si hay mas de una puerta, entra al list, si no abre directamente la que hay
+    const token = await AsyncStorage.getItem(tokenKey);
+    if (sessionUser.metadataObject.porton.length === 1) {
+      showLoading();
+      request.getPorton().then(async (porton: Porton[]) => {
         navigation.navigate('DoorScreen', { porton: porton[0], token });
-      } else {
-        navigation.navigate('DoorsList', { portones: porton, token });
-      }
-    }).catch((e) => {
-      Snackbar.show({
-        text: 'Hubo un error al obtener los portones, intente más tarde',
-        duration: Snackbar.LENGTH_LONG,
+        hideLoading();
+      }).catch((e) => {
+        showAlertError('Hubo un error al obtener los portones, intente más tarde');
+        console.error('error puerta ', e);
       });
-      console.error('error puerta ', e);
-
-    }).finally(() => {
-      hideLoading();
-    });
+    } else {
+      navigation.navigate('DoorsList', { token });
+    }
   };
 
   const handleListClick = async () => {

@@ -101,7 +101,7 @@ export const appStyles = StyleSheet.create({
   itemSelection: {
     fontFamily: 'RobotoSlab-Medium',
     fontSize: Platform.OS === 'ios' ? 14 : 11,
-    margin: Platform.OS === 'ios' ? 4 : 2,
+    margin: Platform.OS === 'ios' ? 2 : 2,
   },
   mediumTextView: {
     marginTop: 5,

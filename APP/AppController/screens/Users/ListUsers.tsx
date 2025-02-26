@@ -41,7 +41,10 @@ export function ListUsers({ navigation }) {
                 <View
                     style={estilos.viewParentContainer}>
                     <Text style={[appStyles.itemSelection, estilos.nameItem]}>
-                        {item.nombreCompleto}
+                        {it.nombreCompleto}
+                    </Text>
+                    <Text style={[appStyles.itemSelection, estilos.userNameItem]}>
+                        {it.userName || 'No disponible'}
                     </Text>
                     <View style={[estilos.formularioStyle]}>
                         <View style={estilos.centerContainer}>
@@ -49,7 +52,6 @@ export function ListUsers({ navigation }) {
                                 style={[
                                     appStyles.itemSelection,
                                     estilos.itemsStyle,
-                                    { color: colores.irexcoreDegradadoNegro },
                                 ]}>{`${item.idTipoUsuario.descripcion}`}</Text>
                         </View>
                         {handlePermissionIcons(it.idTipoUsuario)}
@@ -87,7 +89,7 @@ export function ListUsers({ navigation }) {
     };
     const handleEdit = async (item: Usuario) => {
         const data: Porton[] | ErrorHandler = await request.getPortonesEmpresa();
-        navigation.navigate('AddUser', { data, isEdit: true, usuario: item, isAdmin: item.idTipoUsuario.idTipoUsuario === 1});
+        navigation.navigate('AddUser', { data, isEdit: true, usuario: item, isAdmin: item.idTipoUsuario.idTipoUsuario === 1 });
     };
     const onChange = ((text: string) => {
         if (text.length === 0) {
@@ -186,6 +188,14 @@ const estilos = StyleSheet.create({
         fontFamily: 'RobotoSlab-Regular',
         marginHorizontal: 20,
         marginTop: 10,
+        width: '100%',
+    },
+    userNameItem: {
+        color: colores.cardBlackBackground,
+        fontSize: 14,
+        fontFamily: 'RobotoSlab-Regular',
+        marginHorizontal: 20,
+        marginTop: 5,
         width: '100%',
     },
     itemsStyle: { fontSize: 15 },

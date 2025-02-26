@@ -18,6 +18,10 @@ export class Session {
   nombreCompleto!: string;
   @Column('text', {nullable: true})
   token!: string;
+  @Column('text', {nullable: true})
+  metadata!: string;
+  // es una variable para el objeto transformado
+  metadataObject: MetadataObject;
   private repository: Repository<Session>;
   constructor() {
     this.repository = AppDataSource.getRepository(Session);
@@ -39,6 +43,9 @@ export class Session {
     this.descripcion = data.descripcion;
     this.nombreCompleto = data.nombreCompleto;
     this.token = data.token;
+    console.log('data?.metadata ', data?.metadata);
+    
+    this.metadata = data?.metadata;
     return await this.guardar(this);
   }
 
@@ -46,6 +53,10 @@ export class Session {
     const sessiones = await this.repository.find();
     if (sessiones.length) {
       const session = sessiones[0];
+      console.log('session.metadata ', session.metadata);
+      if(session.metadata.length > 0) {
+      session.metadataObject = JSON.parse(session.metadata);
+      }
       return session;
     }
     return null;

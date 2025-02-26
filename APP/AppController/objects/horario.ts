@@ -4,4 +4,5 @@
 interface Horario {
   uuid: string;
   horario: string[]; // Aquí ajusta el tipo de horario según tus necesidades
+  text: string;
 }

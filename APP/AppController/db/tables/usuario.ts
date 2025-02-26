@@ -16,6 +16,8 @@ export default class Usuario {
   @Column('text')
   public nombreCompleto: string;
   @Column('text', {nullable: true})
+  public userName: string;
+  @Column('text', {nullable: true})
   public metadata: string;
   @Column('int')
   public idEmpresa: number;

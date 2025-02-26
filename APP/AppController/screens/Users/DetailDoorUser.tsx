@@ -33,6 +33,7 @@ export function DetailDoorUser({ route, navigation }) {
     const [horariosList, sethorariosList] = useState<Horario[]>([]);
     const { isEdit } = route?.params;
     const usuario: Usuario = route?.params?.usuario;
+    const allHorariosList = ['0A0C0', '1A0C0', '2A0C0', '3A0C0', '4A0C0', '5A0C0', '6A0C0'];
     useEffect(() => {
         sethorariosList(portones.flatMap(p => {
             if (isEdit) {
@@ -43,7 +44,7 @@ export function DetailDoorUser({ route, navigation }) {
                     return { uuid: p.uuid, horario: hr.length === 0 ? [] : hr.split(',') };
                 }
             }
-            return { uuid: p.uuid, horario: [] };
+            return { uuid: p.uuid, horario: [], text: p.text } as Horario;
 
         }) as Horario[]);
     }, []);
@@ -145,21 +146,53 @@ export function DetailDoorUser({ route, navigation }) {
     };
 
     const handleSend = () => {
+        // si no encuentra ningun horario asignado, la app automaticamente va a asignar horarios de lun a dom 12:00 a 12:00
+        // que es la configuracion de todo el dia
+        const horariosEmpty: Horario[] = [];
+        for (const list of horariosList) {
+            if (list.horario.length <= 0) {
+                horariosEmpty.push(list);
+            }
+        }
         const callbackAcept: AlertDialogCallback = {
-            onClick: isEdit ? handlePositiveEdit : handlePositiveAdd,
+            onClick: () => {
+                const list = (): Horario[] => {
+                    if (horariosEmpty.length === 0) {
+                        return horariosList;
+                    }
+                    return horariosList.map((h) => {
+                        // si no se encuentra vacio se envia igual
+                        if (h.horario.length > 0) {
+                            return h;
+                        }
+                        return {
+                            text: h.text,
+                            uuid: h.uuid,
+                            horario: allHorariosList,
+                        };
+                    });
+                };
+                return isEdit ? handlePositiveEdit(list()) : handlePositiveAdd(list());
+            },
             text: 'Aceptar',
         };
         const callbackNegate: AlertDialogCallback = {
             onClick: async () => true,
             text: 'Cancelar',
         };
-        showAlertWarning('¿Esta seguro de enviar la siguiente información?', callbackAcept, callbackNegate);
+        const msgAlert = () => {
+            if (horariosEmpty.length !== 0) {
+                return `El usuario tendrá acceso sin limite de tiempo a los portones: \n${horariosEmpty.map(h => h.text).join(',')}\n ¿Desea continuar?`;
+            }
+            return '¿Esta seguro de enviar la siguiente información?';
+        };
+        showAlertWarning(msgAlert(), callbackAcept, callbackNegate);
     };
 
-    const handlePositiveEdit = async (): Promise<boolean> => {
+    const handlePositiveEdit = async (list: Horario[]): Promise<boolean> => {
         showLoading();
         const request = new Request();
-        const response = await request.editUser(usuario.idUsuario, form[1], form[5], horariosList);
+        const response = await request.editUser(usuario.idUsuario, form[1], form[5], list);
         if (response) {
             showAlertError(`Error: ${response}`);
         } else {
@@ -180,16 +213,14 @@ export function DetailDoorUser({ route, navigation }) {
         return false;
     };
 
-    const handlePositiveAdd = async (): Promise<boolean> => {
+    const handlePositiveAdd = async (list: Horario[]): Promise<boolean> => {
         showLoading();
-        console.log('show loading');
         const request = new Request();
         const response = await request.addNewUser(
             form[4],
             form[5],
             form[1],
-            horariosList);
-        console.log('hide loading');
+            list);
         if (response) {
             showAlertError(`Error: ${response}`);
         } else {

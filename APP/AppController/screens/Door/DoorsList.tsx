@@ -7,11 +7,32 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { DeviceiOS, getDateFormatLocal } from '../../Constants';
 import { faDoorClosed, faDoorOpen, IconLookup, IconName, IconPrefix } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useContext, useEffect, useState } from 'react';
+import { Porton } from '../../objects/porton';
+import Request from '../../networks/request';
+import { ModalContext } from '../../context/modal-provider';
 export default function DoorsList({ navigation, route }: any) {
-    const portones = route?.params?.portones; // id
+    const { showLoading, hideLoading, showAlertError } = useContext(ModalContext);
+    const [portones, setportones] = useState<Porton[]>(); // id
     const token = route?.params?.token;
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            console.log('onFocus');
+            const request = new Request();
+            showLoading();
+            request.getPorton().then(async (porton: Porton[]) => {
+                setportones(porton);
+                hideLoading();
+            }).catch((e) => {
+                showAlertError('Hubo un error al obtener los portones, intente más tarde');
+                console.error('error puerta ', e);
+            });
+        });
+        return unsubscribe;
+    }, [hideLoading, navigation, showAlertError, showLoading]);
+
     const doorClick = (item: any) => {
-        navigation.replace('DoorScreen', { porton: item, token });
+        navigation.navigate('DoorScreen', { porton: item, token });
     };
     const dataList = ({ item }) => {
         let icon: string | IconLookup | [IconPrefix, IconName];

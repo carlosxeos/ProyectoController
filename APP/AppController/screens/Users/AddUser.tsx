@@ -200,7 +200,7 @@ export function AddUser({ route, navigation }) {
                 {!isAdmin &&
                     // si es admin no se puede borrar directamente desde la app
                     <>
-                        {showEditPassword &&
+                        {isEdit && showEditPassword &&
                             <TouchableOpacity style={[appStyles.buttonLogin, appStyles.buttonRound, estilos.buttonPwd]}
                                 onPress={handleEditPassword}>
                                 <Text style={appStyles.textButtonLogin}>{'Editar contraseña'}</Text>
