@@ -2,7 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { faDoorClosed, faFan } from '@fortawesome/free-solid-svg-icons';
+import { faClose, faDoorClosed, faFan } from '@fortawesome/free-solid-svg-icons';
 import { appStyles, colores } from '../resources/globalStyles';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Svg, { Circle } from 'react-native-svg';
@@ -17,11 +17,12 @@ import React from 'react';
 import Usuario from '../db/tables/usuario';
 import { Session } from '../db/tables/session';
 import { ModalContext } from '../context/modal-provider';
+import { AlertDialogCallback, defaultCancelNoCallback } from '../objects/alertdialog-callback';
 export const listUserKey = 'usrKeyTimer';
 function Menu({ navigation }) {
   const [sessionUser, setsessionUser] = useState<Session | null>();
   const [idOpciones, setidOpciones] = useState([0]);
-  const { showLoading, hideLoading, showAlertError} = useContext(ModalContext);
+  const { showLoading, hideLoading, showAlertError, showAlertWarning } = useContext(ModalContext);
   useEffect(() => {
     handleData();
   }, []);
@@ -51,7 +52,12 @@ function Menu({ navigation }) {
     if (sessionUser.metadataObject.porton.length === 1) {
       showLoading();
       request.getPorton().then(async (porton: Porton[]) => {
-        navigation.navigate('DoorScreen', { porton: porton[0], token });
+        if (porton.length === 1) {
+          navigation.navigate('DoorScreen', { porton: porton[0], token });
+        } else {
+          // ahora sabemos que son 2 portones
+          navigation.navigate('DoorsList', { token });
+        }
         hideLoading();
       }).catch((e) => {
         showAlertError('Hubo un error al obtener los portones, intente más tarde');
@@ -86,6 +92,21 @@ function Menu({ navigation }) {
       console.error('error al obtener usuarios ', e);
     });
   };
+
+  const handleLogOut = async () => {
+    const callbackConfirm: AlertDialogCallback = {
+      onClick: async () => {
+        await (new Session().removeSession());
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        });
+        return true;
+      },
+      text: 'Si',
+    };
+    showAlertWarning('¿Desea cerrar sesión?', callbackConfirm, defaultCancelNoCallback);
+  };
   const userOptions = [
     {
       /** boton de informacion de usuario */
@@ -96,6 +117,7 @@ function Menu({ navigation }) {
       onClick: () => {
         navigation.navigate('AControllerScreen');
       },
+      show: false
     },
     {
       /** boton de ver horario registrado */
@@ -104,6 +126,7 @@ function Menu({ navigation }) {
       faIcon: faDoorClosed,
       color: colores.Primary,
       onClick: handlePuerta,
+      show: false,
     },
     {
       /** boton de ver horario registrado */
@@ -112,6 +135,16 @@ function Menu({ navigation }) {
       faIcon: faUser,
       color: colores.greenButton,
       onClick: handleListClick,
+      show: false,
+    },
+    {
+      /** boton de ver horario registrado */
+      id: 4,
+      text: 'Cerrar sesión',
+      faIcon: faClose,
+      color: colores.redDotech,
+      onClick: handleLogOut,
+      show: true,
     },
   ];
   const size = 60;
@@ -137,7 +170,7 @@ function Menu({ navigation }) {
     <View style={estilos.rootView}>
       <Text style={[appStyles.textHeader, estilos.headerStyle]}>Menú</Text>
       <FlatList data={
-        userOptions.filter(v => idOpciones.findIndex(a => a === v.id) !== -1)
+        userOptions.filter(v => v.show || idOpciones.findIndex(a => a === v.id) !== -1)
       } renderItem={cardOption} />
     </View>
   );

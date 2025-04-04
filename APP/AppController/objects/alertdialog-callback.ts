@@ -10,3 +10,11 @@ export const defaultAlertCallback: AlertDialogCallback = {
   },
   text: 'Ok',
 };
+
+
+export const defaultCancelNoCallback : AlertDialogCallback = {
+  onClick: async() => {
+    return true;
+  },
+  text: 'No',
+};

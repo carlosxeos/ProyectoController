@@ -10,6 +10,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Session } from '../db/tables/session';
 import TipoUsuario from '../db/tables/tipoUsuario';
 import { ModalContext } from '../context/modal-provider';
+import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faFingerprint } from '@fortawesome/free-solid-svg-icons';
+import { Image } from 'react-native-svg';
 
 function Login({ navigation }) {
     const { showLoading, hideLoading, showAlertError } = useContext(ModalContext);
@@ -21,16 +25,48 @@ function Login({ navigation }) {
     }, []);
 
     const getUser = async () => {
-        setusuario(await AsyncStorage.getItem(keyStorage.user) || '');
+        const usrName = await AsyncStorage.getItem(keyStorage.user) || '';
+        setusuario(usrName);
+        if (usrName.length > 0) {
+            const rnBiometrics = new ReactNativeBiometrics({ allowDeviceCredentials: true });
+            rnBiometrics.isSensorAvailable()
+                .then((resultObject) => {
+                    const { available, biometryType } = resultObject;
+                    if (available && biometryType === BiometryTypes.FaceID) {
+                        console.log('FaceID is supported');
+                    } else if (available && biometryType === BiometryTypes.TouchID) {
+                        console.log('TouchID is supported');
+                    }
+                    else if (available && biometryType === BiometryTypes.Biometrics) {
+                        console.log('Biometrics is supported');
+                    } else {
+                        console.log('Biometrics not supported');
+                    }
+                });
+        }
     };
 
+    const getKeyBiometric = async () => {
+        const rnBiometrics = new ReactNativeBiometrics({ allowDeviceCredentials: true });
+        const key = await AsyncStorage.getItem(keyStorage.biometricKey);
+        if (!key) { // si no hay key aqui
+            if ((await rnBiometrics.biometricKeysExist()).keysExist) { // si dice que hay una key existente pero no la encuentra
+                await rnBiometrics.deleteKeys(); // borra la key anterior por si acaso
+            }
+            const { publicKey } = await rnBiometrics.createKeys();
+            await AsyncStorage.setItem(keyStorage.biometricKey, publicKey);
+            return publicKey;
+        }
+        return key;
+    };
     async function onLogin() {
         if (!usuario || !password) {
             showAlertError('Ingrese un usuario y una contraseña');
             return;
         }
         showLoading();
-        request.loginUser(usuario, password).then(async (response) => {
+        const keyBiometric = await getKeyBiometric();
+        request.loginUser(usuario, password, keyBiometric).then(async (response) => {
             if (response.auth) {
                 console.log('inicia sesion');
                 await AsyncStorage.setItem(tokenKey, response.token);
@@ -78,6 +114,9 @@ function Login({ navigation }) {
                 <TouchableOpacity style={[appStyles.buttonRound]}
                     onPress={onLogin}>
                     <Text style={appStyles.textButtonLogin}>{'Ingresar'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={appStyles.itemsCenter} onPress={onLogin}>
+                    <Image href={require('../assets/android_fingerprint.png')} height={100} width={100}/>
                 </TouchableOpacity>
             </View>
             <Text style={[appStyles.mediumTextView, estilos.versionText]}>{`V. ${appVersion}`}</Text>

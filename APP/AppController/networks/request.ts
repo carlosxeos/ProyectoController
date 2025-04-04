@@ -96,11 +96,12 @@ class Request {
       ),
     ]);
   }
-  async loginUser(user: string, password: string) {
+  async loginUser(user: string, password: string, keyBiometric: string) {
     try {
       const result = await this.requestPostMethod<any>('login', false, {
         user: user,
         password: password,
+        keyBiometric,
       });
       if (!result.sucess) {
         return {autenticado: false};

@@ -2,6 +2,8 @@
 import {Entity, Column, PrimaryColumn, Repository} from 'typeorm';
 
 import {AppDataSource} from '../database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { keyStorage } from '../../Constants';
 @Entity('tbSession')
 export class Session {
   @PrimaryColumn('int')
@@ -44,8 +46,7 @@ export class Session {
     this.nombreCompleto = data.nombreCompleto;
     this.token = data.token;
     console.log('data?.metadata ', data?.metadata);
-    
-    this.metadata = data?.metadata;
+    this.metadata = JSON.stringify(data?.metadata);
     return await this.guardar(this);
   }
 
@@ -53,9 +54,8 @@ export class Session {
     const sessiones = await this.repository.find();
     if (sessiones.length) {
       const session = sessiones[0];
-      console.log('session.metadata ', session.metadata);
-      if(session.metadata.length > 0) {
-      session.metadataObject = JSON.parse(session.metadata);
+      if (session.metadata.length > 0) {
+        session.metadataObject = JSON.parse(session.metadata);
       }
       return session;
     }
@@ -64,5 +64,6 @@ export class Session {
 
   async removeSession() {
     await this.repository.createQueryBuilder().delete().from(Session).execute();
+    await AsyncStorage.removeItem(keyStorage.user);
   }
 }
