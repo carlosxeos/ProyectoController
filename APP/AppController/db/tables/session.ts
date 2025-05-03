@@ -3,7 +3,7 @@ import {Entity, Column, PrimaryColumn, Repository} from 'typeorm';
 
 import {AppDataSource} from '../database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { keyStorage } from '../../Constants';
+import {keyStorage} from '../../Constants';
 @Entity('tbSession')
 export class Session {
   @PrimaryColumn('int')
@@ -62,8 +62,11 @@ export class Session {
     return null;
   }
 
-  async removeSession() {
+  async removeSession(deleteUser: boolean = true) {
     await this.repository.createQueryBuilder().delete().from(Session).execute();
-    await AsyncStorage.removeItem(keyStorage.user);
+    if (deleteUser) {
+      await AsyncStorage.removeItem(keyStorage.user);
+    }
+    console.warn('borrando sesion');
   }
 }

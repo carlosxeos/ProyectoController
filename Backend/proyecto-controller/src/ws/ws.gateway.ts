@@ -103,7 +103,7 @@ export class WSGateway
 
   @SubscribeMessage('set/door')
   setDoorValue(client: Socket, payLoad: any) {
-    console.log('payload ', payLoad);
+    // console.log('payload ', payLoad);
     this.guardWS
       .checkToken(payLoad.token)
       .then(async (response) => {

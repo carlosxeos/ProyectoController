@@ -22,6 +22,7 @@ function DoorScreen({ navigation, route }: any) {
   const [porton, setporton] = useState<Porton>(route?.params?.porton);
   const [open, setopen] = useState(route?.params?.porton.idtipomodificacion === 1);
   const [horarios, sethorarios] = useState<string[]>([]);
+  const [historyButton, sethistoryButton] = useState(false);
   useEffect(() => {
     //console.log('horario ', moment().day());
     sethorarios(portonHorariosSemana.filter(p => +p[0] === moment().day()));
@@ -46,6 +47,12 @@ function DoorScreen({ navigation, route }: any) {
       uuid: porton.uuid,
       token: token,
       socketId: socketClient.id,
+    });
+    (new Session()).getSession().then(s => {
+      // si tiene la opcion de agregar usuarios significa que tiene los privilegios mas altos
+      sethistoryButton(s.agregarUsuario === 1);
+    }).catch(e => {
+      console.warn('error al obtener la sesion ', e);
     });
     return () => {
       socketClient.off('roomDoor');
@@ -123,11 +130,13 @@ function DoorScreen({ navigation, route }: any) {
             borderColor={porton.idtipomodificacion === 1 ? colores.greenLite : colores.redButton}
             textStyle={{ fontSize: 20 }} />
           <View style={[appStyles.flexRowCenter, { marginTop: 30 }]}>
-            <View style={estilos.optionsCenter}>
-              <ImageButton faIcon={faHistory} buttonSize={60} onClick={() => handleOption(1)}
-                buttonColor={colores.white} iconColor={colores.irexcoreDegradadoNegro}
-                borderColor={colores.irexcoreDegradadoNegro} />
-            </View>
+            {historyButton &&
+              <View style={estilos.optionsCenter}>
+                <ImageButton faIcon={faHistory} buttonSize={60} onClick={() => handleOption(1)}
+                  buttonColor={colores.white} iconColor={colores.irexcoreDegradadoNegro}
+                  borderColor={colores.irexcoreDegradadoNegro} />
+              </View>
+            }
             <View style={estilos.optionsCenter}>
               <ImageButton faIcon={faGear} buttonSize={60} onClick={() => handleOption(2)}
                 buttonColor={colores.white} iconColor={colores.irexcoreDegradadoNegro} borderColor={colores.irexcoreDegradadoNegro} />

@@ -23,6 +23,7 @@ import { AppDataSource } from './db/database';
 import { DetailDoorUser } from './screens/Users/DetailDoorUser';
 import AlertDialog from './components/AlertDialog';
 import { ModalContext, ModalProvider } from './context/modal-provider';
+import SplashScreen from './screens/splash-screen';
 
 const Stack = createNativeStackNavigator();
 const defaultOptions: NativeStackNavigationOptions = {
@@ -48,7 +49,19 @@ function App(): JSX.Element {// isDebugApp ? 'IpConfig' : 'Login'
   return (
     <ModalProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={'Login'}>
+        <Stack.Navigator initialRouteName={'SplashScreen'}>
+          <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
+            options={(bar) => {
+              const opts = defaultOptions;
+              // opts.navigationBarHidden = true;
+              // opts.headerShown = false;
+              // opts.statusBarColor = colores.white;
+              // opts.statusBarStyle = 'dark';
+              opts.title = '';
+              return defaultOptions;
+            }} />
           <Stack.Screen
             name="Login"
             component={Login}

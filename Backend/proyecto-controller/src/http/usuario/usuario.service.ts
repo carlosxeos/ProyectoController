@@ -1,37 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { ConnectionPool, Request, VarChar, Numeric, MAX } from 'mssql';
-import { MetaData } from 'src/objects/meta-data';
 import { Porton } from 'src/objects/porton';
 import { UsuarioData } from 'src/objects/usuario-data';
-import { dataBaseConstants } from 'src/utils/common';
+import { dataBaseConstants, getUser } from 'src/utils/common';
 @Injectable({})
 export class UsuarioService {
   private readonly logger = new Logger(UsuarioService.name);
   private readonly userRegular = /((?=.{5,13}$)[a-z0-9]+\.[a-z0-9]+$)/;
-  constructor(private jwtService: JwtService) {}
-  /**
-   * Obtiene un usuario por username
-   * @param username usuario que se ingreso en la app
-   */
-  private async getUser(username: string): Promise<any[]> {
-    const conn = new ConnectionPool(dataBaseConstants);
-    let resultadoSP = { recordset: [] };
-    try {
-      await conn.connect();
-      const request = new Request(conn);
-      request.input('P_usuario', VarChar(255), username);
-      resultadoSP = await request.execute('sp_valid_user');
-    } catch (error) {
-      this.logger.error('error getUser ', error);
-    } finally {
-      conn.close();
-    }
-    return resultadoSP['recordset'];
-  }
-
   /**
    * Obtiene los datos completos del usuario por su id de usuario
    * @param idUsuario id del usuario en bd
@@ -56,54 +33,6 @@ export class UsuarioService {
   }
 
   /**
-   * inicia sesion
-   * @param user usuario
-   * @param password  password
-   * @returns data del usuario
-   */
-  async loginUser(user: string, password: string) {
-    if (!(user && password)) {
-      return { auth: false, error: 'Ingrese el usuario o la contraseña' };
-    }
-    const usuarios = await this.getUser(user);
-    if (usuarios?.length == 0) {
-      return {
-        auth: false,
-        error: 'No existe este usuario o se encuentra dado de baja',
-      };
-    }
-    const usuario = usuarios[0];
-    const contraseñaValida = await bcrypt.compare(
-      password,
-      usuario['password'],
-    );
-    if (contraseñaValida) {
-      const payload = {
-        idUsuario: usuario['idUsuario'],
-        idTipoUsuario: usuario['idTipoUsuario'],
-        idEmpresa: usuario['idEmpresa'],
-      };
-      const jwt = this.jwtService.sign(payload);
-      // se borra el password para evitar filtrar el password codificado
-      delete usuario['password'];
-      // se borra el id usuario y el idTipoUsuario porque esta informacion se encontrara en el paylaod del token con mas seguridad
-      delete usuario['idUsuario'];
-      delete usuario['idTipoUsuario'];
-      // por ahora, como la unica accion disponible es el porton, si no tiene ningun permiso con el porton, borrara el uuid
-      // para que no pueda acceder a ninguna de sus funciones
-      if (!usuario['accionesPorton'] || usuario['accionesPorton'] == '0') {
-        usuario['metadata'] = null;
-      } else {
-        if (usuario['metadata'].length > 2) {
-          usuario['metadata'] = JSON.parse(usuario['metadata']);
-        }
-      }
-      return { ...usuario, token: jwt, auth: true };
-    }
-    return { auth: false, error: 'Usuario o contraseña incorrectos' };
-  }
-
-  /**
    * obtiene todos los usuarios
    * @param idUsuario id del usuario(debe tener permiso de agregar usuarios)
    * @param idEmpresa id de la emrpesa
@@ -123,7 +52,6 @@ export class UsuarioService {
     } finally {
       conn.close();
     }
-    console.log('resultadoSP ', resultadoSP);
     return resultadoSP['recordset'];
   }
 
@@ -163,7 +91,7 @@ export class UsuarioService {
         },
       );
     }
-    const usuarios = await this.getUser(user);
+    const usuarios = await getUser(this.logger, user);
     return { valid: usuarios?.length == 0 };
   }
 

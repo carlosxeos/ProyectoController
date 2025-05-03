@@ -1,6 +1,6 @@
-import fetch, { Headers } from 'node-fetch';
-import { ConnectionPool, Request, VarChar, Numeric } from 'mssql';
 /* eslint-disable prettier/prettier */
+import fetch, { Headers } from 'node-fetch';
+import { ConnectionPool, Request, VarChar, MAX } from 'mssql';
 import {
   ClientsModuleOptions,
   MicroserviceOptions,
@@ -20,7 +20,7 @@ export const dataBaseConstants = {
   encrypt: false,
 };
 /**
-// prd
+// prd CAMBIAR VBARIABLE isPrd tambien 
 export const dataBaseConstants = {
   user: 'lucio',
   password: 'sosaGOD',
@@ -68,7 +68,7 @@ export const mqttClientRegistrer: ClientsModuleOptions = [
  * secret para jwt token
  */
 export const jwtConstants = {
-  secret: 'secretKey',
+  secret: 'EAA4E13B8C847FD61C4FFD536C64C-6BEDE826ACBF2A5E24F2D3991A584',
 };
 
 const sendSMSToClient = (
@@ -119,7 +119,7 @@ export function formatDateLocal(date: Date) {
     [
       padTo2Digits(date.getDate()),
       padTo2Digits(date.getMonth() + 1),
-      date.getFullYear()
+      date.getFullYear(),
     ].join('-') +
     ' ' +
     [
@@ -136,7 +136,9 @@ export const sendSMS = async (text: string): Promise<boolean> => {
   );
   // TODO: por ahora solo se le va a enviar mensaje al numero de omar por cualquier tipo de alerta
   // cambiar a que se obtengan los contactos por bd
-  return await sendSMSToClient(`${text} ${formatDateLocal(dateString)}`, ['+528112558479']);
+  return await sendSMSToClient(`${text} ${formatDateLocal(dateString)}`, [
+    '+528112558479',
+  ]);
 };
 
 export const executeQuery = async <T>(
@@ -166,4 +168,27 @@ export const validateTokenData = (data: any) => {
       cause: new Error('Token no encontrado'),
     });
   }
+};
+
+/**
+ * 20 Abril 25: Se agrega opcion para que valide la biometric key
+ * Obtiene un usuario por username
+ * @param username usuario que se ingreso en la app
+ * @param [biometricKey= null] si contiene valor, revisa la biometric key, si esta vacio solo servira para validar si existe ese username
+ */
+export const getUser = async (logger: Logger, username: string, biometricKey: string = null): Promise<any[]> => {
+  const conn = new ConnectionPool(dataBaseConstants);
+  let resultadoSP = { recordset: [] };
+  try {
+    await conn.connect();
+    const request = new Request(conn);
+    request.input('P_usuario', VarChar(255), username);
+    request.input('P_biometric_key', VarChar(MAX), biometricKey);
+    resultadoSP = await request.execute('sp_valid_user');
+  } catch (error) {
+    logger.error('error getUser ', error);
+  } finally {
+    conn.close();
+  }
+  return resultadoSP['recordset'];
 };

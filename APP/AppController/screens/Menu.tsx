@@ -12,7 +12,7 @@ import Request, { ErrorHandler } from '../networks/request';
 import Snackbar from 'react-native-snackbar';
 import { Porton } from '../objects/porton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { tokenKey } from '../Constants';
+import { keyStorage, tokenKey } from '../Constants';
 import React from 'react';
 import Usuario from '../db/tables/usuario';
 import { Session } from '../db/tables/session';
@@ -97,9 +97,13 @@ function Menu({ navigation }) {
     const callbackConfirm: AlertDialogCallback = {
       onClick: async () => {
         await (new Session().removeSession());
+        // eliminamos los biometric de sesion
+        // await AsyncStorage.multiRemove([keyStorage.biometricUUID, keyStorage.biometricKey]);
+        const request: Request = new Request();
+        await request.logOut();
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Login' }],
+          routes: [{ name: 'SplashScreen' }],
         });
         return true;
       },

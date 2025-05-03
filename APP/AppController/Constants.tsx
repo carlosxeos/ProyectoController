@@ -13,12 +13,13 @@ export const timeWaitUnauthorized = 60; // 10 min (600)
 export const keyStorage = {
   user: 'username',
   biometricKey: 'biometricKey',
+  biometricUUID: 'biometricUUID', 
 };
 export const appVersion = '2.3';
-export const testingURL = false; // si esta en true, apunta a localhost
+export const testingURL = true; // si esta en true, apunta a localhost
 const ipAddressConfigRemote = testingURL ?
-  '192.168.1.16' // ip local
-  : '13.68.134.198'; // ip del servidor de omar
+  '192.168.1.5' // ip local
+  : '1'//'13.68.134.198'; // ip del servidor de omar
 export const getApiURL = () => {
   return `http://${ipAddressConfigRemote}:3001/api/`;
 };
@@ -87,7 +88,7 @@ export const WorkerInputs = [ // 0 a 6
 ];
 
 export const getDateFormatLocal = (date: string) => {
-  return moment(date).utc().format('DD/MM/YY hh:mm:ss A');
+  return moment(date).utc().format('DD/MM/YY hh:mm A');
 };
 //
 

@@ -2,20 +2,13 @@
 import { Module } from '@nestjs/common';
 import { UsuarioController } from './usuario.controller';
 import { UsuarioService } from './usuario.service';
-import { jwtConstants, mqttClientRegistrer } from 'src/utils/common';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 
 /**
- * Maneja todo lo relacionado a los usuarios(usuarios, tipos de usuario, login, agregar usuarios)
+ * Maneja todo lo relacionado a los usuarios(usuarios, tipos de usuario, agregar usuarios)
  */
 @Module({
-  imports: [
-    JwtModule.register({
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3h' },
-    }),
-  ],
   controllers: [UsuarioController],
-  providers: [UsuarioService],
+  providers: [UsuarioService, JwtService],
 })
 export class UsuarioModule {}

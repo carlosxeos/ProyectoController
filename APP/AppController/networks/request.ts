@@ -96,12 +96,27 @@ class Request {
       ),
     ]);
   }
-  async loginUser(user: string, password: string, keyBiometric: string) {
+
+  /**
+   * hace inicio de sesion del usuario
+   * @param user usuario
+   * @param password password
+   * @param publicKey llave biometrica o uuid
+   * @param isBiometric si es true, es a apartir de una llave biometrica
+   * @returns logeo usuario
+   */
+  async loginUser(
+    user: string,
+    password: string,
+    publicKey: string,
+    isBiometric: boolean,
+  ) {
     try {
       const result = await this.requestPostMethod<any>('login', false, {
         user: user,
         password: password,
-        keyBiometric,
+        publicKey,
+        isBiometric,
       });
       if (!result.sucess) {
         return {autenticado: false};
@@ -113,6 +128,26 @@ class Request {
     }
   }
 
+  async loginUserBiometric(user: string, signature: string, payload: string) {
+    try {
+      const result = await this.requestPostMethod<any>(
+        'login_biometric',
+        false,
+        {
+          user,
+          signature,
+          payload,
+        },
+      );
+      if (!result.sucess) {
+        return {autenticado: false};
+      }
+      return result.data;
+    } catch (e) {
+      console.log('loginUserBiometric error ', e);
+      return {autenticado: false};
+    }
+  }
   async getPorton(): Promise<Porton[]> {
     try {
       const result = await this.requestGetMethod<Porton[]>(
@@ -149,11 +184,14 @@ class Request {
 
   async getListUsers() {
     // TODO: agregar al metodo una funcion para enviar los ids de los usuarios que ya tenemos y su fecha de actualizacion
-    return await this.requestGetMethod('getusers', true);
+    return await this.requestGetMethod('users/getusers', true);
   }
 
   async getTiposUsuario() {
-    return await this.requestGetMethod<TipoUsuario[]>('getTiposUsuarios', true);
+    return await this.requestGetMethod<TipoUsuario[]>(
+      'users/getTiposUsuarios',
+      true,
+    );
   }
 
   async getPortonesEmpresa() {
@@ -170,9 +208,13 @@ class Request {
    */
   async checkUsername(userName: string): Promise<boolean> {
     try {
-      const request = await this.requestPostMethod<any>('valid_user', false, {
-        user: userName,
-      });
+      const request = await this.requestPostMethod<any>(
+        'users/valid_user',
+        false,
+        {
+          user: userName,
+        },
+      );
       console.log('request ', request);
 
       return request.sucess && request.data?.valid;
@@ -195,12 +237,16 @@ class Request {
           uuid: m.uuid,
         };
       });
-      const result = await this.requestPostMethod<any>('add_newuser', true, {
-        userName,
-        password,
-        nombreCompleto,
-        metadata: data,
-      });
+      const result = await this.requestPostMethod<any>(
+        'users/add_newuser',
+        true,
+        {
+          userName,
+          password,
+          nombreCompleto,
+          metadata: data,
+        },
+      );
       if (result.sucess) {
         console.log('result print ', result);
         return null;
@@ -225,12 +271,16 @@ class Request {
           uuid: m.uuid,
         };
       });
-      const result = await this.requestPostMethod<any>('edit_user', true, {
-        idUsuario,
-        nombreCompleto,
-        password,
-        metadata: data,
-      });
+      const result = await this.requestPostMethod<any>(
+        'users/edit_user',
+        true,
+        {
+          idUsuario,
+          nombreCompleto,
+          password,
+          metadata: data,
+        },
+      );
       if (result.sucess) {
         console.log('result print ', result);
         return null;
@@ -251,9 +301,13 @@ class Request {
    */
   async deleteUser(idUsuario: number) {
     try {
-      const result = await this.requestPostMethod<any>('delete_user', true, {
-        idUsuario,
-      });
+      const result = await this.requestPostMethod<any>(
+        'users/delete_user',
+        true,
+        {
+          idUsuario,
+        },
+      );
       if (result.sucess) {
         return null;
       }
@@ -261,6 +315,15 @@ class Request {
     } catch (e) {
       return 'Hubo un error en el request, intente de nuevo más tarde';
     }
+  }
+
+  /**
+   * cierra sesion para que pueda acceder otro dispositivo al instante
+   * @returns
+   */
+  async logOut() {
+    return true;
+    //return await this.requestGetMethod('log_out', true);
   }
 }
 

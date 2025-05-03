@@ -2,7 +2,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import {
   faWarning,
-  faTimes,
   faCheckCircle,
   IconDefinition,
   faTimesCircle,
@@ -15,6 +14,11 @@ import {
 import { colores } from '../resources/globalStyles';
 
 export const ModalContext = createContext<any>(null);
+/**
+ * provider para manejar los alerts
+ * @param param0 childers
+ * @returns provider
+ */
 export const ModalProvider = ({ children }) => {
   const defaultProperties = {
     loading: false,
@@ -27,19 +31,36 @@ export const ModalProvider = ({ children }) => {
     positive: null,
   };
   const [alertProperties, setAlertProperties] = useState(defaultProperties);
+  /**
+   * Funcion para cerrar modal
+   */
   function closeModal() {
     setAlertProperties(defaultProperties);
   }
+
+  /**
+   * Muestra un alert de loading
+   */
   function showLoading() {
     setAlertProperties(_ => {
       return { ...defaultProperties, loading: true, visible: true };
     });
   }
 
+  /**
+   * esconde el loading
+   */
   function hideLoading() {
     closeModal();
   }
 
+  /**
+   * muestra un alert de tipo error, color rojo y con un icono de error
+   * @param text mensaje
+   * @param positive accion al seleccionar boton positivo(si lo dejas vacio selecciona defaultAlertCallback)
+   * @param negative accion al seleccionar boton negativo (opcional)
+   * @param neutral accion al seleccion boton neutral (opcional)
+   */
   function showAlertError(
     text: string,
     positive: AlertDialogCallback = defaultAlertCallback,
@@ -58,6 +79,13 @@ export const ModalProvider = ({ children }) => {
     });
   }
 
+  /**
+   * muestra un alert de tipo warning, color amarillo y con un icono de warning
+   * @param text mensaje
+   * @param positive accion al seleccionar boton positivo(si lo dejas vacio selecciona defaultAlertCallback)
+   * @param negative accion al seleccionar boton negativo (opcional)
+   * @param neutral accion al seleccion boton neutral (opcional)
+   */
   function showAlertWarning(
     text: string,
     positive: AlertDialogCallback = defaultAlertCallback,
@@ -76,6 +104,13 @@ export const ModalProvider = ({ children }) => {
     });
   }
 
+  /**
+   * muestra un alert de tipo success, color verde y con un icono de check
+   * @param text mensaje
+   * @param positive accion al seleccionar boton positivo(si lo dejas vacio selecciona defaultAlertCallback)
+   * @param negative accion al seleccionar boton negativo (opcional)
+   * @param neutral accion al seleccion boton neutral (opcional)
+   */
   function showAlertSucess(
     text: string,
     positive: AlertDialogCallback = defaultAlertCallback,
@@ -94,6 +129,15 @@ export const ModalProvider = ({ children }) => {
     });
   }
 
+  /**
+   * se invoca cuando requieres un alert que no pueda ser cumplido con los tradicionales
+   * @param text texto
+   * @param positive callback de boton positive
+   * @param negative callback de boton negative
+   * @param neutral callback de boton neutral
+   * @param color color que debe tomar la alerta
+   * @param icon icono que debe mostrarse (el color del icono es basado en el color elegido previamente)
+   */
   function showCustomAlertDialog(
     text: string,
     positive: AlertDialogCallback,
