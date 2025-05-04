@@ -13,7 +13,7 @@ export const timeWaitUnauthorized = 60; // 10 min (600)
 export const keyStorage = {
   user: 'username',
   biometricKey: 'biometricKey',
-  biometricUUID: 'biometricUUID', 
+  biometricUUID: 'biometricUUID',
 };
 export const appVersion = '2.3';
 export const testingURL = true; // si esta en true, apunta a localhost

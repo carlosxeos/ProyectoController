@@ -36,10 +36,10 @@ function SplashScreen({ navigation }) {
                 else {
                     console.warn('Biometrics not supported');
                 }
-                navigation.replace('Login', { typeNumber, usrName});
+                navigation.replace('Login', { typeNumber, usrName });
             }).catch(e => {
                 console.warn('error al obtener data biometrics ', e);
-                navigation.replace('Login', { typeNumber: 0 , usrName});
+                navigation.replace('Login', { typeNumber: 0, usrName });
             })
     }
     useEffect(() => {
@@ -64,6 +64,6 @@ const estilos = StyleSheet.create({
         alignItems: 'center',
 
     },
-    icon_splash: { resizeMode: 'center', height: 300 },
+    icon_splash: { resizeMode: 'contain', height: 200, width: 200 },
 });
 export default SplashScreen;
