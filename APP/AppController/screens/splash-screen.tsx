@@ -70,6 +70,6 @@ const estilos = StyleSheet.create({
         alignItems: 'center',
 
     },
-    icon_splash: { resizeMode: 'center', height: 300 },
+    icon_splash: { resizeMode: 'contain', height: 200, width: 200 },
 });
 export default SplashScreen;
