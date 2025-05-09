@@ -5,6 +5,7 @@ import { ConnectionPool, Request, Numeric, VarChar, MAX } from 'mssql';
 import { dataBaseConstants, getUser } from 'src/utils/common';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { TokenData } from 'src/objects/token-data';
 @Injectable({})
 export class LoginService {
   private readonly logger = new Logger(LoginService.name);
@@ -85,7 +86,7 @@ export class LoginService {
       usuario['password'],
     );
     if (contraseñaValida) {
-      const payload = {
+      const payload: TokenData = {
         idUsuario: usuario['idUsuario'],
         idTipoUsuario: usuario['idTipoUsuario'],
         idEmpresa: usuario['idEmpresa'],
@@ -200,5 +201,25 @@ export class LoginService {
       }
     }
     return { ...usuario, token: jwt, auth: true };
+  }
+
+  async logOut(idUsuario: number) {
+    const conn = new ConnectionPool(dataBaseConstants);
+    let resultadoSP = { recordset: [] };
+    try {
+      await conn.connect();
+      const request = new Request(conn);
+      request.input('idUsuario', Numeric(), idUsuario);
+      resultadoSP = await request.execute('sp_log_out');
+    } catch (error) {
+      this.logger.error('error logOut ', error);
+      return { delete: false };
+    } finally {
+      conn.close();
+    }
+    if (resultadoSP.recordset.length <= 0) {
+      return { delete: false };
+    }
+    return { delete: resultadoSP.recordset[0]?.deleted > 0};
   }
 }

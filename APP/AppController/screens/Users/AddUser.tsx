@@ -28,7 +28,7 @@ export function AddUser({ route, navigation }) {
     const [inputs, setinputs] = useState([]);
     const [boxPortones, setboxPortones] = useState<[{ id, text, uuid }]>([] as any);
     const [showDelete, setshowDelete] = useState(false);
-    const request = new Request();
+    const request = new Request(navigation);
     const data: ErrorHandler | Porton[] = route?.params?.data; // id
     const { isEdit, isAdmin } = route?.params;
     const usuario: Usuario = route?.params?.usuario;
@@ -148,6 +148,9 @@ export function AddUser({ route, navigation }) {
         showLoading();
         const response = await request.deleteUser(usuario.idUsuario);
         if (response) {
+            if (response === 'token') {
+                return;
+            }
             showAlertError(`Error: ${response}`);
         } else {
             // hacemos que obtenga todos los usuarios para refrescar

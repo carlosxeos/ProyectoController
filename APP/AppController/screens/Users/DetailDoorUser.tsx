@@ -34,6 +34,7 @@ export function DetailDoorUser({ route, navigation }) {
     const { isEdit } = route?.params;
     const usuario: Usuario = route?.params?.usuario;
     const allHorariosList = ['0A0C0', '1A0C0', '2A0C0', '3A0C0', '4A0C0', '5A0C0', '6A0C0'];
+    const request = new Request(navigation);
     useEffect(() => {
         sethorariosList(portones.flatMap(p => {
             if (isEdit) {
@@ -41,7 +42,7 @@ export function DetailDoorUser({ route, navigation }) {
                 const index = json.porton.findIndex(f => f.uuid === p.uuid);
                 if (index !== -1) {
                     const hr = json.porton[index].horario;
-                    return { uuid: p.uuid, horario: hr.length === 0 ? [] : hr.split(',') };
+                    return { uuid: p.uuid, horario: hr.length === 0 ? [] : hr.split(','), text: p.text};
                 }
             }
             return { uuid: p.uuid, horario: [], text: p.text } as Horario;
@@ -181,6 +182,8 @@ export function DetailDoorUser({ route, navigation }) {
             text: 'Cancelar',
         };
         const msgAlert = () => {
+            console.log('horariosEmpty ', horariosEmpty);
+            
             if (horariosEmpty.length !== 0) {
                 return `El usuario tendrá acceso sin limite de tiempo a los portones: \n${horariosEmpty.map(h => h.text).join(',')}\n ¿Desea continuar?`;
             }
@@ -191,9 +194,11 @@ export function DetailDoorUser({ route, navigation }) {
 
     const handlePositiveEdit = async (list: Horario[]): Promise<boolean> => {
         showLoading();
-        const request = new Request();
         const response = await request.editUser(usuario.idUsuario, form[1], form[5], list);
         if (response) {
+            if (response === 'token') {
+                return;
+            }
             showAlertError(`Error: ${response}`);
         } else {
             // hacemos que obtenga todos los usuarios para refrescar
@@ -215,13 +220,15 @@ export function DetailDoorUser({ route, navigation }) {
 
     const handlePositiveAdd = async (list: Horario[]): Promise<boolean> => {
         showLoading();
-        const request = new Request();
         const response = await request.addNewUser(
             form[4],
             form[5],
             form[1],
             list);
         if (response) {
+            if (response === 'token') {
+                return;
+            }
             showAlertError(`Error: ${response}`);
         } else {
             // hacemos que obtenga todos los usuarios para refrescar

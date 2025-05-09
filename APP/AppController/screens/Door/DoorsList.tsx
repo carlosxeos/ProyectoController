@@ -4,7 +4,7 @@
 import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { colores, appStyles } from '../../resources/globalStyles';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { DeviceiOS, getDateFormatLocal } from '../../Constants';
+import { checkTokenError, DeviceiOS, getDateFormatLocal } from '../../Constants';
 import { faDoorClosed, faDoorOpen, IconLookup, IconName, IconPrefix } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useContext, useEffect, useState } from 'react';
@@ -18,14 +18,17 @@ export default function DoorsList({ navigation, route }: any) {
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             console.log('onFocus');
-            const request = new Request();
+            const request = new Request(navigation);
             showLoading();
             request.getPorton().then(async (porton: Porton[]) => {
                 setportones(porton);
                 hideLoading();
             }).catch((e) => {
-                showAlertError('Hubo un error al obtener los portones, intente más tarde');
-                console.error('error puerta ', e);
+                console.log('err door list ', e);
+                if (!checkTokenError(e)) {
+                    showAlertError('Hubo un error al obtener los portones, intente más tarde');
+                    console.error('error puerta ', e);
+                }
             });
         });
         return unsubscribe;

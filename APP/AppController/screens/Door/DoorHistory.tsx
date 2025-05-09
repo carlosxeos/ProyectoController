@@ -7,25 +7,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
 import Request from '../../networks/request';
 import { History } from '../../objects/history';
-import moment from 'moment';
 import { getDateFormatLocal } from '../../Constants';
 
-export function DoorHistory({ route }: any) {
+export function DoorHistory({ route, navigation }: any) {
     const messageText = ['Abrir puerta', 'Cerrar puerta'];
     const [history, sethistory] = useState<History[]>([]);
     const { uuid } = route?.params;
     useEffect(() => {
-        const request = new Request();
+        const request = new Request(navigation);
         request.getHistory(uuid).then((response: History[]) => {
             sethistory(response);
         });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const dataList = ({item}: any) => {
+    const dataList = ({ item }: any) => {
         return (
             <TouchableOpacity activeOpacity={1} key={item.idHistorial}>
-                <View style={[estilos.cardStyle, { marginBottom: 0, backgroundColor: colores.white}]}>
+                <View style={[estilos.cardStyle, { marginBottom: 0, backgroundColor: colores.white }]}>
                     <View style={[estilos.formularioStyle]}>
                         <Text style={[appStyles.itemSelection, { flex: 0.6 }, appStyles.mediumTextView]}>{item.userName}</Text>
                         <Text style={[appStyles.itemSelection, estilos.dateText]}>{getDateFormatLocal(item.fecha)}</Text>
@@ -46,7 +45,7 @@ export function DoorHistory({ route }: any) {
     };
     return (
         <SafeAreaView style={estilos.rootView}>
-            <FlatList data={history} ListHeaderComponent={headerComponent} renderItem={dataList}/>
+            <FlatList data={history} ListHeaderComponent={headerComponent} renderItem={dataList} />
         </SafeAreaView>
     );
 }

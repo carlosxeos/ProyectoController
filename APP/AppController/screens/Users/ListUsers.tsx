@@ -9,23 +9,26 @@ import {
     View,
 } from 'react-native';
 import { appStyles, colores } from '../../resources/globalStyles';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { SearchBar } from 'react-native-elements';
 import { FAB } from 'react-native-paper';
 import Usuario from '../../db/tables/usuario';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { DeviceiOS } from '../../Constants';
+import { checkTokenError, DeviceiOS } from '../../Constants';
 import { faDoorClosed, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import TipoUsuario from '../../db/tables/tipoUsuario';
 import Request, { ErrorHandler } from '../../networks/request';
 import { Porton } from '../../objects/porton';
+import { ModalContext } from '../../context/modal-provider';
 
 
 export function ListUsers({ navigation }) {
+    const { showAlertWarning } = useContext(ModalContext);
+
     const [search, setSearch] = useState('');
     const [users, setUsers] = useState([] as Usuario[]);
     const [userFiltered, setuserFiltered] = useState([] as Usuario[]);
-    const request = new Request();
+    const request = new Request(navigation);
     useEffect(() => {
         const usuarios = new Usuario();
         usuarios.getUsers().then((us: Usuario[]) => {
@@ -85,11 +88,23 @@ export function ListUsers({ navigation }) {
     };
     const handleAdd = async () => {
         const data: Porton[] | ErrorHandler = await request.getPortonesEmpresa();
-        navigation.navigate('AddUser', { data });
+        if (data instanceof ErrorHandler) {
+            if (!checkTokenError(data)) {
+                showAlertWarning(data.error);
+            }
+        } else {
+            navigation.navigate('AddUser', { data });
+        }
     };
     const handleEdit = async (item: Usuario) => {
         const data: Porton[] | ErrorHandler = await request.getPortonesEmpresa();
-        navigation.navigate('AddUser', { data, isEdit: true, usuario: item, isAdmin: item.idTipoUsuario.idTipoUsuario === 1 });
+        if (data instanceof ErrorHandler) {
+            if (!checkTokenError(data)) {
+                showAlertWarning(data.error);
+            }
+        } else {
+            navigation.navigate('AddUser', { data, isEdit: true, usuario: item, isAdmin: item.idTipoUsuario.idTipoUsuario === 1 });
+        }
     };
     const onChange = ((text: string) => {
         if (text.length === 0) {

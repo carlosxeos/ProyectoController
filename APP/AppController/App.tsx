@@ -24,6 +24,7 @@ import { DetailDoorUser } from './screens/Users/DetailDoorUser';
 import AlertDialog from './components/AlertDialog';
 import { ModalContext, ModalProvider } from './context/modal-provider';
 import SplashScreen from './screens/splash-screen';
+import { AppProvider } from './context/app-context';
 
 const Stack = createNativeStackNavigator();
 const defaultOptions: NativeStackNavigationOptions = {
@@ -34,11 +35,11 @@ const defaultOptions: NativeStackNavigationOptions = {
   },
   headerTintColor: colores.white,
 };
-function App(): JSX.Element {// isDebugApp ? 'IpConfig' : 'Login'
-
+function App(): JSX.Element {
   useEffect(() => {
     initDatabase();
   }, []);
+
   const initDatabase = async () => {
     AppDataSource.initialize().catch((e) => {
       console.error('error db ', e);
@@ -48,116 +49,114 @@ function App(): JSX.Element {// isDebugApp ? 'IpConfig' : 'Login'
   };
   return (
     <ModalProvider>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName={'SplashScreen'}>
-          <Stack.Screen
-            name="SplashScreen"
-            component={SplashScreen}
-            options={(bar) => {
-              const opts = defaultOptions;
-              // opts.navigationBarHidden = true;
-              // opts.headerShown = false;
-              // opts.statusBarColor = colores.white;
-              // opts.statusBarStyle = 'dark';
-              opts.title = '';
-              return defaultOptions;
-            }} />
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{
-              title: 'Iniciar Sesión',
-              headerTintColor: 'white',
-              statusBarColor: colores.PrimaryDark,
-              headerShadowVisible: false,
-              headerShown: true,
-              headerStyle: { backgroundColor: colores.PrimaryDark },
-            }}
-          />
-          <Stack.Screen
-            name="IpConfig"
-            component={IpConfig} />
-          <Stack.Screen
-            name="Menu"
-            component={Menu}
-            options={() => {
-              const opts = defaultOptions;
-              opts.title = 'Inicio';
-              return defaultOptions;
-            }}
-          />
-          <Stack.Screen
-            name="DoorScreen"
-            component={DoorScreen}
-            options={() => {
-              const opts = defaultOptions;
-              opts.title = 'Puertas';
-              return defaultOptions;
-            }}
-          />
-          <Stack.Screen
-            name="AControllerScreen"
-            component={AControllerScreen}
-            options={() => {
-              const opts = defaultOptions;
-              opts.title = 'AC Control';
-              return defaultOptions;
-            }} />
-          <Stack.Screen
-            name="DoorsList"
-            component={DoorsList}
-            options={() => {
-              const opts = defaultOptions;
-              opts.title = 'Lista de Puertas';
-              return defaultOptions;
-            }} />
-          <Stack.Screen
-            name="DoorHistory"
-            component={DoorHistory}
-            options={({ route }) => {
-              const opts = defaultOptions;
-              opts.title = route.params?.name || 'Historial';
-              return defaultOptions;
-            }} />
-          <Stack.Screen
-            name="ListUsers"
-            component={ListUsers}
-            options={() => {
-              const opts = defaultOptions;
-              opts.title = 'Lista de usuarios';
-              return defaultOptions;
-            }} />
-          <Stack.Screen
-            name="AddUser"
-            component={AddUser}
-            options={() => {
-              const opts = defaultOptions;
-              opts.title = 'Agregar usuario';
-              return defaultOptions;
-            }} />
-          <Stack.Screen
-            name="DetailDoorUser"
-            component={DetailDoorUser}
-            options={() => {
-              const opts = defaultOptions;
-              opts.title = 'Horarios de portones';
-              return defaultOptions;
-            }} />
-        </Stack.Navigator>
-        <ModalContext.Consumer>
-          {({ alertProperties, closeModal }) => (
-            <AlertDialog
-              setVisible={() => closeModal()} visible={alertProperties.visible}
-              alertColor={alertProperties.color}
-              handleNeutral={alertProperties.neutral}
-              faIcon={alertProperties.icon}
-              handleNegative={alertProperties.negative}
-              handlePositive={alertProperties.positive}
-              text={alertProperties.text}
-              loading={alertProperties.loading} />
-          )}
-        </ModalContext.Consumer>
-      </NavigationContainer>
+      <AppProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName={'SplashScreen'}>
+            <Stack.Screen
+              name="SplashScreen"
+              component={SplashScreen}
+              options={() => {
+                const opts = defaultOptions;
+                opts.title = '';
+                return defaultOptions;
+              }} />
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{
+                title: 'Iniciar Sesión',
+                headerTintColor: 'white',
+                statusBarColor: colores.PrimaryDark,
+                headerShadowVisible: false,
+                headerShown: true,
+                headerStyle: { backgroundColor: colores.PrimaryDark },
+              }}
+            />
+            <Stack.Screen
+              name="IpConfig"
+              component={IpConfig} />
+            <Stack.Screen
+              name="Menu"
+              component={Menu}
+              options={() => {
+                const opts = defaultOptions;
+                opts.title = 'Inicio';
+                return defaultOptions;
+              }}
+            />
+            <Stack.Screen
+              name="DoorScreen"
+              component={DoorScreen}
+              options={() => {
+                const opts = defaultOptions;
+                opts.title = 'Puertas';
+                return defaultOptions;
+              }}
+            />
+            <Stack.Screen
+              name="AControllerScreen"
+              component={AControllerScreen}
+              options={() => {
+                const opts = defaultOptions;
+                opts.title = 'AC Control';
+                return defaultOptions;
+              }} />
+            <Stack.Screen
+              name="DoorsList"
+              component={DoorsList}
+              options={() => {
+                const opts = defaultOptions;
+                opts.title = 'Lista de Puertas';
+                return defaultOptions;
+              }} />
+            <Stack.Screen
+              name="DoorHistory"
+              component={DoorHistory}
+              options={({ route }) => {
+                const opts = defaultOptions;
+                opts.title = route.params?.name || 'Historial';
+                return defaultOptions;
+              }} />
+            <Stack.Screen
+              name="ListUsers"
+              component={ListUsers}
+              options={() => {
+                const opts = defaultOptions;
+                opts.title = 'Lista de usuarios';
+                return defaultOptions;
+              }} />
+            <Stack.Screen
+              name="AddUser"
+              component={AddUser}
+              options={() => {
+                const opts = defaultOptions;
+                opts.title = 'Agregar usuario';
+                return defaultOptions;
+              }} />
+            <Stack.Screen
+              name="DetailDoorUser"
+              component={DetailDoorUser}
+              options={() => {
+                const opts = defaultOptions;
+                opts.title = 'Horarios de portones';
+                return defaultOptions;
+              }} />
+          </Stack.Navigator>
+          <ModalContext.Consumer>
+            {({ alertProperties, closeModal }) => (
+              <AlertDialog
+                setVisible={() => closeModal()} visible={alertProperties.visible}
+                alertColor={alertProperties.color}
+                handleNeutral={alertProperties.neutral}
+                faIcon={alertProperties.icon}
+                handleNegative={alertProperties.negative}
+                handlePositive={alertProperties.positive}
+                text={alertProperties.text}
+                loading={alertProperties.loading} />
+            )}
+          </ModalContext.Consumer>
+        </NavigationContainer>
+      </AppProvider>
     </ModalProvider>
   );
 }

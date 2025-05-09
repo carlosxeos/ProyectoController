@@ -3,23 +3,25 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { Platform } from 'react-native';
 import { colores } from './resources/globalStyles';
 import moment from 'moment';
+import { ErrorHandler } from './networks/request';
 
 export const DeviceiOS = Platform.OS === 'ios';
 export const tokenKey = 'tokenUser';
 export const timeWaitSeconds = 35; // tiempo de espera para coldown en segundos
-
+export const sessionTimer = 1; // es la cantidad de minutos que va a esperar
 // tiempo de espera cuando pulsamos el boton de abrir/cerrar fuera de horario en segundos
 export const timeWaitUnauthorized = 60; // 10 min (600)
 export const keyStorage = {
   user: 'username',
   biometricKey: 'biometricKey',
-  biometricUUID: 'biometricUUID', 
+  biometricUUID: 'biometricUUID',
+  sessionStartTime: 'sessionStartTime',
 };
 export const appVersion = '2.3';
 export const testingURL = true; // si esta en true, apunta a localhost
 const ipAddressConfigRemote = testingURL ?
-  '192.168.1.5' // ip local
-  : '1'//'13.68.134.198'; // ip del servidor de omar
+  '192.168.1.16' // ip local
+  : '1';//'13.68.134.198'; // ip del servidor de omar
 export const getApiURL = () => {
   return `http://${ipAddressConfigRemote}:3001/api/`;
 };
@@ -92,3 +94,9 @@ export const getDateFormatLocal = (date: string) => {
 };
 //
 
+export const checkTokenError = (e) => {
+  if (e instanceof ErrorHandler) {
+    return e.status === 401;
+  }
+  return false;
+};

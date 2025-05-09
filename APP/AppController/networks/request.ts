@@ -5,11 +5,14 @@ import {History} from '../objects/history';
 import {Porton} from '../objects/porton';
 import TipoUsuario from '../db/tables/tipoUsuario';
 import {ResponsePost} from '../objects/response-post';
+import {NavigationProp} from '@react-navigation/native';
 /* eslint-disable prettier/prettier */
 class Request {
   private apiUrl: string;
-  constructor() {
+  private navigation: NavigationProp<any>;
+  constructor(navigation: NavigationProp<any> = null) {
     this.apiUrl = getApiURL();
+    this.navigation = navigation;
   }
   private async requestPostMethod<T>(
     url: string,
@@ -30,7 +33,9 @@ class Request {
       });
       if (request.status === 401) {
         console.warn('token vencido');
-        return new ResponsePost<T>(request.status, 'token vencido', false);
+        return Promise.reject(
+          new ResponsePost<T>(request.status, 'token vencido', false),
+        );
       }
       if (testingURL) {
         console.warn(`${url}: ${request.status}`);
@@ -84,19 +89,52 @@ class Request {
     }
   }
 
+  // private async fetchWithTimeout(
+  //   url: string,
+  //   options: RequestInit = {},
+  //   timeout = 10000,
+  // ): Promise<Response> {
+  //   return Promise.race([
+  //     fetch(`${this.apiUrl}${url}`, options),
+  //     new Promise<Response>((_, reject) =>
+  //       setTimeout(() => reject(null), timeout),
+  //     ),
+  //   ]);
+  // }
+
   private async fetchWithTimeout(
     url: string,
     options: RequestInit = {},
-    timeout = 10000,
-  ): Promise<Response> {
-    return Promise.race([
-      fetch(`${this.apiUrl}${url}`, options),
-      new Promise<Response>((_, reject) =>
-        setTimeout(() => reject(null), timeout),
-      ),
-    ]);
-  }
+  ): Promise<Response | null> {
+    try {
+      const response = await Promise.race([
+        fetch(`${this.apiUrl}${url}`, options),
+        new Promise<Response>((_, reject) =>
+          setTimeout(() => reject(new Error('Request timed out')), 10000),
+        ),
+      ]);
 
+      if (response.status === 401) {
+        // Opcional: Redirigir al usuario a la pantalla de login si se incluye navigation
+        if (this.navigation) {
+          console.warn('Token vencido');
+          await AsyncStorage.removeItem(tokenKey);
+          this.navigation.reset({
+            index: 0,
+            routes: [{name: 'Login', params: {closeSession: true}}],
+          });
+          return response;
+        } else {
+          return response;
+        }
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Error en la petición:', error);
+      return null;
+    }
+  }
   /**
    * hace inicio de sesion del usuario
    * @param user usuario
@@ -156,11 +194,11 @@ class Request {
       );
       if (result instanceof ErrorHandler) {
         console.log('getPorton error ', result?.error);
-        return [];
+        return Promise.reject(result);
       }
       return result;
     } catch (e) {
-      console.log('getPorton error ', e);
+      console.log('getPorton try error ', e);
       return [];
     }
   }
@@ -177,7 +215,7 @@ class Request {
       }
       return result;
     } catch (e) {
-      console.log('getPorton error ', e);
+      console.log('getHistory error ', e);
       return [];
     }
   }
@@ -253,6 +291,11 @@ class Request {
       }
       return result.error || result.data.error;
     } catch (e) {
+      if (e instanceof ResponsePost) {
+        if (e.status === 401) {
+          return 'token';
+        }
+      }
       console.log('addNewUser error ', e);
       return 'Hubo un error en el request, intente de nuevo más tarde';
     }
@@ -289,6 +332,11 @@ class Request {
       return result.error || result.data.error;
     } catch (e) {
       console.log('addNewUser error ', e);
+      if (e instanceof ResponsePost) {
+        if (e.status === 401) {
+          return 'token';
+        }
+      }
       return 'Hubo un error en el request, intente de nuevo más tarde';
     }
   }
@@ -313,6 +361,11 @@ class Request {
       }
       return result.error || result.data.error;
     } catch (e) {
+      if (e instanceof ResponsePost) {
+        if (e.status === 401) {
+          return 'token';
+        }
+      }
       return 'Hubo un error en el request, intente de nuevo más tarde';
     }
   }
@@ -321,9 +374,8 @@ class Request {
    * cierra sesion para que pueda acceder otro dispositivo al instante
    * @returns
    */
-  async logOut() {
-    return true;
-    //return await this.requestGetMethod('log_out', true);
+  async logOut()  {
+    return await this.requestGetMethod('log_out', true);
   }
 }
 

@@ -13,7 +13,7 @@ import { MqttWSLinker } from 'src/utils/mqtt.ws.linker';
 import { WSDoorService } from './door/ws.door.service';
 import { JwtWSGuard } from 'guard/jwt-ws-guard';
 import { UsuarioService } from 'src/http/usuario/usuario.service';
-import { Logger } from '@nestjs/common';
+import { Logger, UnauthorizedException } from '@nestjs/common';
 import { coldDownDoor } from 'src/utils/utils';
 import { isPrd, sendSMS } from 'src/utils/common';
 import { DoorService } from 'src/http/door/door.service';
@@ -97,7 +97,11 @@ export class WSGateway
       }
     } catch (e) {
       this.logger.error('joinDoor Err: ', e);
-      return [];
+      if (e instanceof UnauthorizedException) {
+        client.emit('errorTracker', { authFailed: true });
+      } else {
+        client.emit('errorTracker', { msg: e });
+      }
     }
   }
 
@@ -176,6 +180,11 @@ export class WSGateway
       })
       .catch((e) => {
         console.log('set door err: ', e);
+        if (e instanceof UnauthorizedException) {
+          client.emit('errorTracker', { authFailed: true });
+        } else {
+          client.emit('errorTracker', { msg: e });
+        }
       });
   }
 }

@@ -7,6 +7,7 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { TokenData } from 'src/objects/token-data';
 
 export const isPrd = false;
 // localhost
@@ -162,7 +163,7 @@ export const executeQuery = async <T>(
   return resultadoSP['recordset'];
 };
 
-export const validateTokenData = (data: any) => {
+export const validateTokenData = (data: TokenData) => {
   if (!data?.idUsuario || !data?.idEmpresa || !data?.idTipoUsuario) {
     throw new HttpException('Token no encontrado', HttpStatus.BAD_REQUEST, {
       cause: new Error('Token no encontrado'),

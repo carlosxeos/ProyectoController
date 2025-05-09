@@ -15,6 +15,7 @@ import { Image } from 'react-native-elements';
 import { AlertDialogCallback, defaultCancelNoCallback } from '../objects/alertdialog-callback';
 import moment from 'moment';
 import { RSA } from 'react-native-rsa-native';
+import { AppContext } from '../context/app-context';
 let testingCredentials = false;
 function Login({ navigation, route }) {
     const { showLoading, hideLoading, showAlertError, showAlertWarning } = useContext(ModalContext);
@@ -22,25 +23,36 @@ function Login({ navigation, route }) {
     const [password, setpassword] = useState(testingCredentials ? 'Password01' : '');
     const [biometricIcon, setbiometricIcon] = useState<ImageSourcePropType>(null);
     const [passwordMethod, setpasswordMethod] = useState(true);
-    const { typeNumber, usrName } = route?.params;
+    const [typeNumber, settypeNumber] = useState(0);
+    const closeSession = route?.params?.closeSession;
     const request = new Request();
-    useEffect(() => {
-        setusuario(usrName);
-        if (usrName.length > 0) {
-            if (typeNumber === 1) {
-                setbiometricIcon(require('../assets/face_id.png'));
-                setpasswordMethod(false);
-            } else if (typeNumber === 2) {
-                setbiometricIcon(require('../assets/touch_id.png'));
-                setpasswordMethod(false);
-            }
-            else if (typeNumber === 3) {
-                setbiometricIcon(require('../assets/android_fingerprint.png'));
-                setpasswordMethod(false);
-            }
-        }
-    }, [typeNumber, usrName]);
+    const { sessionData } = useContext(AppContext);
 
+    useEffect(() => {
+        console.log('closeSession ', closeSession);
+        if (closeSession) {
+            console.log('ty ', sessionData.biometricType);
+            showAlertWarning('No se completó la peticion porque la sesión finalizó, inicie sesión de nuevo');
+        }
+        AsyncStorage.getItem(keyStorage.user).then(v => {
+            setusuario(v || '');
+            const ty = sessionData.biometricType;
+            settypeNumber(ty);
+            if (v && v.length > 0) {
+                if (ty === 1) {
+                    setbiometricIcon(require('../assets/face_id.png'));
+                    setpasswordMethod(false);
+                } else if (ty === 2) {
+                    setbiometricIcon(require('../assets/touch_id.png'));
+                    setpasswordMethod(false);
+                }
+                else if (ty === 3) {
+                    setbiometricIcon(require('../assets/android_fingerprint.png'));
+                    setpasswordMethod(false);
+                }
+            }
+        });
+    }, [closeSession, sessionData.biometricType]);
     async function handleLoginResponse(response: any) {
         if (response.auth) {
             console.log('inicia sesion');

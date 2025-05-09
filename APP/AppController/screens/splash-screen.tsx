@@ -4,15 +4,19 @@ import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native-elements';
 import { appStyles, colores } from '../resources/globalStyles';
-import { useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { keyStorage } from '../Constants';
+import { useContext, useEffect } from 'react';
 import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
+import { AppContext } from '../context/app-context';
 
 function SplashScreen({ navigation }) {
+    const { sessionData, setSessionData } = useContext(AppContext);
     async function checkBiometrics() {
-        const usrName = await AsyncStorage.getItem(keyStorage.user) || '';
         const rnBiometrics = new ReactNativeBiometrics({ allowDeviceCredentials: false });
+        if (sessionData?.biometricType !== -2) { // si es distinto a -2 significa que ya hizo esta validacion del sensor
+            console.log('entrando sin validar ', sessionData);
+            navigation.replace('Login', { typeNumber: sessionData});
+            return;
+        }
         rnBiometrics.isSensorAvailable()
             .then((resultObject) => {
                 const { available, biometryType } = resultObject;
@@ -36,14 +40,16 @@ function SplashScreen({ navigation }) {
                 else {
                     console.warn('Biometrics not supported');
                 }
-                navigation.replace('Login', { typeNumber, usrName});
+                setSessionData({ biometricType: typeNumber });
+                navigation.replace('Login');
             }).catch(e => {
                 console.warn('error al obtener data biometrics ', e);
-                navigation.replace('Login', { typeNumber: 0 , usrName});
-            })
+                setSessionData({ biometricType: 0 });
+                navigation.replace('Login');
+            });
     }
     useEffect(() => {
-        setTimeout(() => checkBiometrics(), 500);
+        setTimeout(() => checkBiometrics(), 100);
     }, []);
 
     return (

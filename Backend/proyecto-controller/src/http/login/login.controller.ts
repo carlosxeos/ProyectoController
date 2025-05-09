@@ -4,9 +4,13 @@ import {
   Controller,
   Get,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { LoginService } from './login.service';
-import { formatDateLocal } from 'src/utils/common';
+import { formatDateLocal, validateTokenData } from 'src/utils/common';
+import { JwtAuthGuard } from 'guard/jwt-auth-guard';
+import { TokenData } from 'src/objects/token-data';
 
 @Controller('api')
 export class LoginController {
@@ -30,6 +34,18 @@ export class LoginController {
 
   @Post('login_biometric')
   async loginBiometric(@Body() body: any): Promise<any> {
-    return this.loginService.loginBiometric(body?.user, body?.signature, body?.payload);
+    return this.loginService.loginBiometric(
+      body?.user,
+      body?.signature,
+      body?.payload,
+    );
+  }
+
+  @Get('log_out')
+  @UseGuards(JwtAuthGuard)
+  async logOut(@Request() request): Promise<any> {
+    const data: TokenData = request.payloadData;
+    validateTokenData(data);
+    return this.loginService.logOut(data.idUsuario);
   }
 } //

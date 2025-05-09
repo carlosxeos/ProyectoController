@@ -12,7 +12,7 @@ import Request, { ErrorHandler } from '../networks/request';
 import Snackbar from 'react-native-snackbar';
 import { Porton } from '../objects/porton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { keyStorage, tokenKey } from '../Constants';
+import { checkTokenError, tokenKey } from '../Constants';
 import React from 'react';
 import Usuario from '../db/tables/usuario';
 import { Session } from '../db/tables/session';
@@ -23,6 +23,7 @@ function Menu({ navigation }) {
   const [sessionUser, setsessionUser] = useState<Session | null>();
   const [idOpciones, setidOpciones] = useState([0]);
   const { showLoading, hideLoading, showAlertError, showAlertWarning } = useContext(ModalContext);
+  const request = new Request(navigation);
   useEffect(() => {
     handleData();
   }, []);
@@ -47,7 +48,6 @@ function Menu({ navigation }) {
     });
   };
   const handlePuerta = async () => {
-    const request = new Request();
     const token = await AsyncStorage.getItem(tokenKey);
     if (sessionUser.metadataObject.porton.length === 1) {
       showLoading();
@@ -60,8 +60,12 @@ function Menu({ navigation }) {
         }
         hideLoading();
       }).catch((e) => {
-        showAlertError('Hubo un error al obtener los portones, intente más tarde');
-        console.error('error puerta ', e);
+        console.log('handle puerta err ', e);
+
+        if (!checkTokenError(e)) {
+          showAlertError('Hubo un error al obtener los portones, intente más tarde');
+          console.error('error puerta ', e);
+        }
       });
     } else {
       navigation.navigate('DoorsList', { token });
@@ -74,8 +78,10 @@ function Menu({ navigation }) {
       navigation.navigate('ListUsers');
       return;
     }
-    const request = new Request();
     request.getListUsers().then(async (value) => {
+      if (checkTokenError(value)) {
+        return;
+      }
       if (value instanceof ErrorHandler) {
         Snackbar.show({
           text: `Hubo un error, comuniquese con el administrador: ${value.error}`,
@@ -93,23 +99,38 @@ function Menu({ navigation }) {
     });
   };
 
+  const showSplash = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'SplashScreen' }],
+    });
+  };
+
   const handleLogOut = async () => {
     const callbackConfirm: AlertDialogCallback = {
       onClick: async () => {
         await (new Session().removeSession());
         // eliminamos los biometric de sesion
         // await AsyncStorage.multiRemove([keyStorage.biometricUUID, keyStorage.biometricKey]);
-        const request: Request = new Request();
-        await request.logOut();
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'SplashScreen' }],
-        });
-        return true;
+        const isLogout = await request.logOut();
+        if (isLogout?.delete) {
+          showSplash();
+          return true;
+        }
+        console.log('');
+
+        if (isLogout instanceof ErrorHandler) {
+          if (checkTokenError(isLogout)) {
+            return;
+          }
+        }
+        showAlertError('No se pudo cerrar sesión correctamente, puede que no pueda acceder a la cuenta desde otro dispositivo');
+        showSplash();
+        return false;
       },
       text: 'Si',
     };
-    showAlertWarning('¿Desea cerrar sesión?', callbackConfirm, defaultCancelNoCallback);
+    showAlertWarning('¿Desea cerrar sesión?, Si cierra sesión otros dispositivos pueden entrar con sus credenciales', callbackConfirm, defaultCancelNoCallback);
   };
   const userOptions = [
     {
@@ -121,7 +142,7 @@ function Menu({ navigation }) {
       onClick: () => {
         navigation.navigate('AControllerScreen');
       },
-      show: false
+      show: false,
     },
     {
       /** boton de ver horario registrado */

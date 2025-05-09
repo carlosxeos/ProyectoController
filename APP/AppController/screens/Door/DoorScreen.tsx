@@ -1,18 +1,19 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import socketClient from '../../resources/socketClient';
 import { appStyles, colores } from '../../resources/globalStyles';
 import ImageButton from '../../components/ImageButton';
 import { faGear, faHistory, faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getDateFormatLocal, timeWaitSeconds, timeWaitUnauthorized, wsEvents } from '../../Constants';
+import { getDateFormatLocal, timeWaitSeconds, timeWaitUnauthorized, tokenKey, wsEvents } from '../../Constants';
 import Snackbar from 'react-native-snackbar';
 import moment from 'moment';
 import { Session } from '../../db/tables/session';
 import { Porton } from '../../objects/porton';
 import { getHorarioFormatting } from '../../utils';
+import { ModalContext } from '../../context/modal-provider';
 
 //👇🏻 Import socket from the socket.js file in utils folder
 function DoorScreen({ navigation, route }: any) {
@@ -23,9 +24,22 @@ function DoorScreen({ navigation, route }: any) {
   const [open, setopen] = useState(route?.params?.porton.idtipomodificacion === 1);
   const [horarios, sethorarios] = useState<string[]>([]);
   const [historyButton, sethistoryButton] = useState(false);
+  const { showAlertError } = useContext(ModalContext);
   useEffect(() => {
     //console.log('horario ', moment().day());
     sethorarios(portonHorariosSemana.filter(p => +p[0] === moment().day()));
+    // tracker para obtener errores
+    socketClient.on('errorTracker', async (response) => {
+      console.log('socket invocado ', response);
+      if (response?.authFailed) {
+        await AsyncStorage.removeItem(tokenKey);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Login', params: { closeSession: true } }],
+        });
+      }
+      showAlertError(response?.msg || 'Ha ocurrido un error en la conexión del servicio de ws');
+    });
     socketClient.on('roomDoor', (response) => {
       //console.log('respuesta server ', response);
       setporton((prev) => {
@@ -55,6 +69,9 @@ function DoorScreen({ navigation, route }: any) {
       console.warn('error al obtener la sesion ', e);
     });
     return () => {
+      console.log('sacamdp sesiones');
+      
+      socketClient.off('errorTracker');
       socketClient.off('roomDoor');
       socketClient.off('unauthorizedDoor');
     };
