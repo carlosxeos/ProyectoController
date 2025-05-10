@@ -1,7 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {keyStorage, sessionTimer} from './Constants';
-import {Alert} from 'react-native';
-
 /* eslint-disable prettier/prettier */
 function formatTime(minutes) {
   const hours = Math.floor(minutes / 60);
@@ -54,18 +50,3 @@ export const diaSemana = [
   'Viernes',
   'Sábado',
 ];
-
-export const addSessionExpiration = async () => {
-  await AsyncStorage.setItem(keyStorage.sessionStartTime,JSON.stringify(Date.now()));
-};
-
-export const checkSessionExpiration = async () => {
-  const storedTime = await AsyncStorage.getItem(keyStorage.sessionStartTime);
-  if (storedTime) {
-    const elapsedTime = Date.now() - JSON.parse(storedTime);
-    if (elapsedTime >= sessionTimer * 60000) {
-      // en minutos
-      Alert.alert('Sesión Expirada', 'Por favor, inicia sesión nuevamente.');
-    }
-  }
-};
