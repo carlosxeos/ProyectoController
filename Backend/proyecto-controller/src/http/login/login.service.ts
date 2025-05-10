@@ -149,7 +149,6 @@ export class LoginService {
     }
     const usuario = usuarios[0];
     const publicKey = `-----BEGIN PUBLIC KEY-----\n${usuario['biometric_key']}\n-----END PUBLIC KEY-----`;
-    console.log('publicKey is ', publicKey);
     let isValid = false;
     try {
       const verifier = crypto.createVerify('SHA256');
