@@ -183,6 +183,7 @@ export const getUser = async (logger: Logger, username: string, biometricKey: st
   try {
     await conn.connect();
     const request = new Request(conn);
+    request.input('P_usuario', VarChar(50), username);
     request.input('P_biometric_key', VarChar(MAX), biometricKey);
     resultadoSP = await request.execute('sp_valid_user');
   } catch (error) {
