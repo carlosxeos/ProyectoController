@@ -40,8 +40,6 @@ export class UsuarioController {
   @UseGuards(JwtAuthGuard)
   async addNewUser(@Request() request, @Body() body: UsuarioData) {
     const data = request.payloadData;
-    console.log('body ', body);
-
     validateTokenData(data);
     return this.usuarioService.addNewUser(body, data.idUsuario, data.idEmpresa);
   }

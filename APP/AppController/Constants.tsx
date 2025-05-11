@@ -8,7 +8,6 @@ import { ErrorHandler } from './networks/request';
 export const DeviceiOS = Platform.OS === 'ios';
 export const tokenKey = 'tokenUser';
 export const timeWaitSeconds = 35; // tiempo de espera para coldown en segundos
-export const sessionTimer = 1; // es la cantidad de minutos que va a esperar
 // tiempo de espera cuando pulsamos el boton de abrir/cerrar fuera de horario en segundos
 export const timeWaitUnauthorized = 60; // 10 min (600)
 export const keyStorage = {
@@ -17,8 +16,8 @@ export const keyStorage = {
   biometricUUID: 'biometricUUID',
   sessionStartTime: 'sessionStartTime',
 };
-export const appVersion = '2.3';
 export const testingURL = true; // si esta en true, apunta a localhost
+export const appVersion = '2.4';
 const ipAddressConfigRemote = testingURL ?
   '192.168.1.16' // ip local
   : '1';//'13.68.134.198'; // ip del servidor de omar
@@ -58,8 +57,8 @@ export const WorkerInputs = [ // 0 a 6
   // },
   {
     id: 4, hint: 'Nombre de usuario',
-    maxLength: 13, type: 'input',
-    regex: /((?=.{5,13}$)[a-z0-9]+\.[a-z0-9]+$)/,
+    maxLength: 20, type: 'input',
+    regex: /((?=.{5,20}$)[a-z0-9]+\.[a-z0-9]+$)/,
     error: 'Ingrese un nombre de usuario válido(nombre.apellido) en minúsculas', minLength: 5,
     autocomplete: 'off',
     editable: false,

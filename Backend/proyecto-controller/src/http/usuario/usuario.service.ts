@@ -8,7 +8,7 @@ import { dataBaseConstants, getUser } from 'src/utils/common';
 @Injectable({})
 export class UsuarioService {
   private readonly logger = new Logger(UsuarioService.name);
-  private readonly userRegular = /((?=.{5,13}$)[a-z0-9]+\.[a-z0-9]+$)/;
+  private readonly userRegular = /((?=.{5,20}$)[a-z0-9]+\.[a-z0-9]+$)/;
   /**
    * Obtiene los datos completos del usuario por su id de usuario
    * @param idUsuario id del usuario en bd

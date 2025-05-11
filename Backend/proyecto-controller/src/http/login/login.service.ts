@@ -17,7 +17,7 @@ export class LoginService {
     try {
       await conn.connect();
       const request = new Request(conn);
-      request.input('P_usuario', VarChar(255), username);
+      request.input('P_usuario', VarChar(50), username);
       resultadoSP = await request.execute('sp_valid_user_biometrics');
     } catch (error) {
       this.logger.error('error getUserBiometrics ', error);
@@ -156,7 +156,7 @@ export class LoginService {
       verifier.end();
       isValid = verifier.verify(publicKey, signature, 'base64');
     } catch (e) {
-      console.log('loginBiometric ', e);
+      this.logger.error('loginBiometric ', e);
       isValid = false;
     }
     if (!isValid) {

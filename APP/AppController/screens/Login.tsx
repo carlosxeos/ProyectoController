@@ -249,6 +249,7 @@ function Login({ navigation, route }) {
                     label="Usuario" value={usuario}
                     style={appStyles.textInput} autoCorrect={false} autoCapitalize={'none'}
                     onChangeText={setusuario}
+                    maxLength={20}
                     editable={passwordMethod}
                     mode="outlined" outlineColor={colores.irexcoreDegradadoNegro}
                     activeOutlineColor={colores.Primary} />
@@ -260,6 +261,7 @@ function Login({ navigation, route }) {
                                 editable={passwordMethod}
                                 style={appStyles.textInput} autoCorrect={false} autoCapitalize={'none'}
                                 secureTextEntry
+                                maxLength={20}
                                 onChangeText={setpassword}
                                 mode="outlined" outlineColor={colores.irexcoreDegradadoNegro}
                                 activeOutlineColor={colores.Primary} />

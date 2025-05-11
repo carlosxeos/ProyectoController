@@ -70,7 +70,7 @@ function DoorScreen({ navigation, route }: any) {
     });
     return () => {
       console.log('sacamdp sesiones');
-      
+
       socketClient.off('errorTracker');
       socketClient.off('roomDoor');
       socketClient.off('unauthorizedDoor');
@@ -146,19 +146,14 @@ function DoorScreen({ navigation, route }: any) {
             buttonSize={140}
             borderColor={porton.idtipomodificacion === 1 ? colores.greenLite : colores.redButton}
             textStyle={{ fontSize: 20 }} />
-          <View style={[appStyles.flexRowCenter, { marginTop: 30 }]}>
-            {historyButton &&
-              <View style={estilos.optionsCenter}>
-                <ImageButton faIcon={faHistory} buttonSize={60} onClick={() => handleOption(1)}
-                  buttonColor={colores.white} iconColor={colores.irexcoreDegradadoNegro}
-                  borderColor={colores.irexcoreDegradadoNegro} />
-              </View>
-            }
+          {historyButton && <View style={[appStyles.flexRowCenter, { marginTop: 30 }]}>
             <View style={estilos.optionsCenter}>
-              <ImageButton faIcon={faGear} buttonSize={60} onClick={() => handleOption(2)}
-                buttonColor={colores.white} iconColor={colores.irexcoreDegradadoNegro} borderColor={colores.irexcoreDegradadoNegro} />
+              <ImageButton faIcon={faHistory} buttonSize={60} onClick={() => handleOption(1)}
+                buttonColor={colores.white} iconColor={colores.irexcoreDegradadoNegro}
+                borderColor={colores.irexcoreDegradadoNegro} />
             </View>
           </View>
+          }
         </View>
       </View>
     </SafeAreaView>
