@@ -1,19 +1,29 @@
 /* eslint-disable prettier/prettier */
-import {PermissionsAndroid} from 'react-native';
-import {Platform} from 'react-native';
-import {check, Permission, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
+import { PermissionsAndroid } from 'react-native';
+import { Platform } from 'react-native';
+import { check, Permission, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 
+/**
+ * Revisa si el celular tiene permisos de localización
+ */
+export const hasLocationPermission = async (): Promise<Boolean> => {
+  try {
+    if (Platform.OS === 'ios') {
+      return await iosPermissionRequest(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    }
 
-export const permissionStorage = async (): Promise<Boolean> => {
-  if (Platform.OS === 'ios') {
-    return iOSonPermissions(PERMISSIONS.IOS.PHOTO_LIBRARY);
+    if (+Platform.Version < 23) {
+      return true;
+    }
+    return androidPermissionRequest(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+  } catch (error) {
+    console.log('hasLocationPermission ', error);
   }
-  return onPermissionRequest(
-    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-  );
+  return false;
 };
 
-const onPermissionRequest = async (permission: any): Promise<Boolean> => {
+
+const androidPermissionRequest = async (permission: any): Promise<Boolean> => {
   const granted = await PermissionsAndroid.check(permission);
   if (granted) {
     return true;
@@ -23,7 +33,7 @@ const onPermissionRequest = async (permission: any): Promise<Boolean> => {
   return status === 'granted';
 };
 
-const iOSonPermissions = (permiso: Permission): Promise<Boolean> => {
+const iosPermissionRequest = (permiso: Permission): Promise<Boolean> => {
   return check(permiso).then(result => {
     console.log('resultado >: ', result);
     if (RESULTS.GRANTED === result || result === RESULTS.LIMITED) {
