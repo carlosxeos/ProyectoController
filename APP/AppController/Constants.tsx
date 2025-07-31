@@ -19,7 +19,7 @@ export const keyStorage = {
 export const testingURL = true; // si esta en true, apunta a localhost
 export const appVersion = '2.4';
 const ipAddressConfigRemote = testingURL ?
-  '192.168.1.16' // ip local
+  '192.168.1.12' // ip local
   : '1';//'13.68.134.198'; // ip del servidor de omar
 export const getApiURL = () => {
   return `http://${ipAddressConfigRemote}:3001/api/`;

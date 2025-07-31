@@ -6,3 +6,5 @@ export const decodeToken = (token: string) => {
 };
 
 export const coldDownDoor = 31000; // tiempo en millis
+
+export const geoMetters = 15;

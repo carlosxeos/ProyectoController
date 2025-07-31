@@ -4,6 +4,7 @@ import { ConnectionPool, Request, VarChar, Numeric } from 'mssql';
 import { MetaData } from 'src/objects/meta-data';
 import { dataBaseConstants } from 'src/utils/common';
 import { UsuarioService } from '../usuario/usuario.service';
+import { PortonesResponse } from 'src/objects/response/portones-response';
 @Injectable({})
 export class DoorService {
   private readonly logger = new Logger(DoorService.name);
@@ -13,19 +14,12 @@ export class DoorService {
    * Obtiene el dato de todos los portones que tiene disponible tu usuario
    * @param idUsuario id del usuario
    * @param idTipoUsuario tipo de usuario
-   * @returns array de portones [{
-   *   ultmodificacion!: string;
-   *   idtipomodificacion!: number;
-   *   descripcion!: string;
-   *   uuid!: string;
-   *   nombre!: string;
-   *   horario: string;
-   *}]
+   * @returns array de portones PortonesResponse[]
    */
   private async getPortones(
     idUsuario: number,
     idTipoUsuario: number,
-  ): Promise<any[]> {
+  ): Promise<PortonesResponse[]> {
     const usuarios = await this.usuarioService.getUserById(idUsuario);
     if (usuarios?.length == 0) {
       throw new HttpException('Usuario no registrado', HttpStatus.BAD_REQUEST, {
@@ -37,7 +31,7 @@ export class DoorService {
     const json = JSON.parse(usuario.metadata);
     metadata.porton = json?.porton || [];
 
-    const data = await this.getPortonUuid(
+    const data: PortonesResponse[] = await this.getPortonUuid(
       idUsuario,
       idTipoUsuario,
       metadata.porton.map((v) => v.uuid).join('&'),
@@ -85,9 +79,9 @@ export class DoorService {
    * se obtienen todos los portones
    * @param idUsuario id del usuario
    * @param idTipoUsuario tipo de usuario
-   * @returns array de portones
+   * @returns array de portones tipo {@link PortonesResponse} 
    */
-  async getPorton(idUsuario: number, idTipoUsuario: number) {
+  async getPorton(idUsuario: number, idTipoUsuario: number): Promise<PortonesResponse[]> {
     return this.getPortones(idUsuario, idTipoUsuario);
   }
 
@@ -110,6 +104,5 @@ export class DoorService {
       conn.close();
     }
     return resultadoSP['recordset'];
-
   }
 }

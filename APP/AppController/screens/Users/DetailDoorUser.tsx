@@ -17,8 +17,9 @@ import Request from '../../networks/request';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { listUserKey } from '../Menu';
 import { ModalContext } from '../../context/modal-provider';
-import { AlertDialogCallback } from '../../objects/alertdialog-callback';
+import { AlertDialogCallback, defaultCancelNoCallback } from '../../objects/alertdialog-callback';
 import Usuario from '../../db/tables/usuario';
+import CheckBox from '@react-native-community/checkbox';
 
 /**
  *
@@ -42,10 +43,11 @@ export function DetailDoorUser({ route, navigation }) {
                 const index = json.porton.findIndex(f => f.uuid === p.uuid);
                 if (index !== -1) {
                     const hr = json.porton[index].horario;
-                    return { uuid: p.uuid, horario: hr.length === 0 ? [] : hr.split(','), text: p.text};
+                    const remote = json.porton[index].remote;
+                    return { uuid: p.uuid, horario: hr.length === 0 ? [] : hr.split(','), text: p.text, remote: remote === 'y' } as Horario;
                 }
             }
-            return { uuid: p.uuid, horario: [], text: p.text } as Horario;
+            return { uuid: p.uuid, horario: [], text: p.text, remote: false } as Horario;
 
         }) as Horario[]);
     }, []);
@@ -82,8 +84,40 @@ export function DetailDoorUser({ route, navigation }) {
     };
 
     const cardPortones = ({ text, uuid }) => {
+        const horarioFilter = horariosList.filter(v => v.uuid === uuid)[0];
+        const handleCheckBox = (value: boolean) => {
+            if (value) {
+                const callbackAccept: AlertDialogCallback = {
+                    onClick: async () => {
+                        sethorariosList(v => {
+                            const position = v.findIndex(ind => ind.uuid === uuid);
+                            if (position === -1) {
+                                return v;
+                            }
+                            v[position].remote = value;
+                            return v;
+                        });
+                        return true;
+                    },
+                    text: 'Si',
+                };
+                showAlertWarning('¿Está seguro de dar acceso remoto? El usuario podrá abrir/cerrar este porton en cualquier lugar',
+                    callbackAccept,
+                    defaultCancelNoCallback);
+            } else {
+                sethorariosList(v => {
+                    const position = v.findIndex(ind => ind.uuid === uuid);
+                    if (position === -1) {
+                        return v;
+                    }
+                    v[position].remote = value;
+                    setModal({ ...modal, visible: false });
+                    return v;
+                });
+            }
+        };
         return (
-            <View style={estilos.container}>
+            <View style={estilos.container} key={uuid}>
                 <View style={[estilos.titleCardContainer]}>
                     <Text style={[estilos.titleCard, { color: colores.white, flex: 0.75, alignSelf: 'center' }]}>{text}</Text>
                     <TouchableOpacity style={[appStyles.buttonRound, { flex: 0.25, paddingVertical: 10, backgroundColor: colores.redDotech }]}
@@ -94,10 +128,24 @@ export function DetailDoorUser({ route, navigation }) {
                 <KeyboardAwareFlatList
                     scrollEnabled
                     removeClippedSubviews={!DeviceiOS}
-                    style={{ padding: 10 }} data={horariosList.filter(v => v.uuid === uuid)[0]?.horario}
+                    style={{ padding: 10 }} data={horarioFilter?.horario}
                     renderItem={(item) => itemHorarios(uuid, item.item, item.index)}
                     ListEmptyComponent={emptyHorariosList}
-                    keyExtractor={item => item.id} />
+                    keyExtractor={(_, index) => index.toString()} // Using index as the key
+                />
+                <View style={[appStyles.flexRowCenter]} key={uuid + '0'}>
+                    <Text key={uuid + '1'} style={[estilos.checkBoxText, { marginBottom: 5 }]}>¿Acceso remoto?</Text>
+                    <CheckBox
+                        key={uuid + '2'}
+                        boxType={'square'}
+                        animationDuration={0.5}
+                        style={estilos.checkBoxSt}
+                        onCheckColor={colores.grayBackgrounds}
+                        tintColors={{ true: colores.redDotech, false: colores.irexcoreDegradadoNegro }}
+                        value={horarioFilter?.remote}
+                        onValueChange={handleCheckBox}
+                    />
+                </View>
             </View >
         );
     };
@@ -170,6 +218,7 @@ export function DetailDoorUser({ route, navigation }) {
                             text: h.text,
                             uuid: h.uuid,
                             horario: allHorariosList,
+                            remote: h.remote,
                         };
                     });
                 };
@@ -183,7 +232,7 @@ export function DetailDoorUser({ route, navigation }) {
         };
         const msgAlert = () => {
             console.log('horariosEmpty ', horariosEmpty);
-            
+
             if (horariosEmpty.length !== 0) {
                 return `El usuario tendrá acceso sin limite de tiempo a los portones: \n${horariosEmpty.map(h => h.text).join(',')}\n ¿Desea continuar?`;
             }
@@ -290,5 +339,17 @@ const estilos = StyleSheet.create({
     },
     titleImageContainer: {
         flex: 0.1,
+    },
+    checkBoxText: {
+        marginTop: 2,
+        marginBottom: -5,
+        color: colores.black,
+        fontSize: 14,
+    },
+    checkBoxSt: {
+        transform: [
+            { scaleX: DeviceiOS ? 0.8 : 1 }, { scaleY: DeviceiOS ? 0.8 : 1 },
+        ],
+        marginLeft: 3,
     },
 });

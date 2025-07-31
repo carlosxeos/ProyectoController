@@ -1,13 +1,9 @@
 /* eslint-disable prettier/prettier */
-import {
-  Controller,
-  Get,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Request, UseGuards } from '@nestjs/common';
 import { DoorService } from './door.service';
 import { JwtAuthGuard } from 'guard/jwt-auth-guard';
 import { validateTokenData } from 'src/utils/common';
+import { PortonesResponse } from 'src/objects/response/portones-response';
 
 @Controller('api/door')
 export class DoorController {
@@ -16,16 +12,16 @@ export class DoorController {
   @Get('getPortonesEmpresa')
   @UseGuards(JwtAuthGuard)
   async getPortonesEmpresa(@Request() request) {
-    const data = request.payloadData;    
+    const data = request.payloadData;
     validateTokenData(data);
     return this.doorService.getPortonesEmpresa(data.idUsuario);
   }
 
   @Get('getPorton')
   @UseGuards(JwtAuthGuard)
-  async getPorton(@Request() request) {
+  async getPorton(@Request() request): Promise<PortonesResponse[]> {
     const data = request.payloadData;
     validateTokenData(data);
     return this.doorService.getPorton(data.idUsuario, data.idTipoUsuario);
-  }  
+  }
 } //

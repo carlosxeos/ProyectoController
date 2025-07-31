@@ -18,6 +18,7 @@ import { coldDownDoor } from 'src/utils/utils';
 import { isPrd, sendSMS } from 'src/utils/common';
 import { DoorService } from 'src/http/door/door.service';
 import { CatalogsService } from 'src/http/catalogs/catalogs.service';
+import { SetDoorPayload } from 'src/objects/ws/payloads/set-door-payload';
 @WebSocketGateway(81, {
   cors: { origin: '*' },
 })
@@ -106,30 +107,39 @@ export class WSGateway
   }
 
   @SubscribeMessage('set/door')
-  setDoorValue(client: Socket, payLoad: any) {
+  setDoorValue(client: Socket, payLoad: SetDoorPayload) {
     // console.log('payload ', payLoad);
     this.guardWS
       .checkToken(payLoad.token)
       .then(async (response) => {
-        const isEnabled = await this.doorService.userIsAuthorized(
+        const isEnabled: number = await this.doorService.userIsAuthorized(
           response.idUsuario,
           payLoad.uuid,
+          payLoad?.lat || 1998,
+          payLoad?.long || 1998,
+          payLoad?.mock
         );
-        if (!isEnabled) {
+        // si no esta autorizado en cuanto a horarios o permisos por latitud y longitud, envia un sms de alerta
+        if (isEnabled !== 0) {
           const usuarios = await this.catalogService.getDataSmsById(
             response.idUsuario,
             payLoad.uuid,
           );
-          const username = usuarios[0]?.userName;
-          const doorName = usuarios[0]?.descripcion;
-          const text = `${username} intenta abrir/cerrar sin autorizacion en porton ${doorName}`;
+          const username = usuarios[0]?.userName || 'vacio';
+          const doorName = usuarios[0]?.descripcion || 'n/a';
+          const text: { sms: string; user: string } =
+            this.doorService.getMessageUserAuthByError(
+              username,
+              doorName,
+              isEnabled,
+            );
           if (isPrd) {
-            sendSMS(text);
+            sendSMS(text.sms);
           } else {
             this.logger.error(text);
           }
           // enviamos una mensaje al usuario que realizo la accion que no tiene permiso en este horario
-          this.server.to(payLoad.uuid).emit('unauthorizedDoor', {});
+          this.server.to(payLoad.uuid).emit('unauthorizedDoor', {msg: text.user});
           return;
         }
         const tmpstmp = this.timeStampMap.get(payLoad.uuid);

@@ -33,7 +33,7 @@ export default function AlertDialog({ setVisible = undefined, visible, handlePos
             <>
                 <TouchableOpacity activeOpacity={0.9} style={[
                     estilos.buttonStyle, inlineStyle,
-                ]} onPress={async() => { if (await handle.onClick()) { setVisible(false); } }}>
+                ]} onPress={async () => { if (await handle.onClick()) { setVisible(false); } }}>
                     <Text style={[estilos.textBtn, { color: textColor }]}>{handle.text}</Text>
                 </TouchableOpacity>
             </>
@@ -47,7 +47,13 @@ export default function AlertDialog({ setVisible = undefined, visible, handlePos
         visible ?
             <Modal animationType="fade" transparent={true} visible onRequestClose={() => loading ? null : setVisible(false)}>
                 <View style={estilos.alertDialog}>
-                    {loading ? <ActivityIndicator size="large" color={colores.white} /> :
+                    {loading
+                        ?
+                        <View style={[appStyles.cardView, {backgroundColor: 'white'}]}>
+                            <ActivityIndicator size="large" color={colores.PrimaryDark} />
+                            <Text style={appStyles.smallTextView}>Cargando..</Text>
+                        </View>
+                        :
                         <View style={estilos.alertContent}>
                             <View style={estilos.viewContainerCard}>
                                 {

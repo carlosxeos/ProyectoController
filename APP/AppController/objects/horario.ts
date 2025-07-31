@@ -4,5 +4,6 @@
 interface Horario {
   uuid: string;
   horario: string[]; // Aquí ajusta el tipo de horario según tus necesidades
-  text: string;
+  text: string; // es el nombre del porton o descripcion
+  remote: boolean;
 }

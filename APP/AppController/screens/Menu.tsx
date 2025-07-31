@@ -18,6 +18,9 @@ import Usuario from '../db/tables/usuario';
 import { Session } from '../db/tables/session';
 import { ModalContext } from '../context/modal-provider';
 import { AlertDialogCallback, defaultCancelNoCallback } from '../objects/alertdialog-callback';
+import { hasLocationPermission } from '../resources/PermissionFunctions';
+import { isIOS } from 'react-native-elements/dist/helpers';
+
 export const listUserKey = 'usrKeyTimer';
 function Menu({ navigation }) {
   const [sessionUser, setsessionUser] = useState<Session | null>();
@@ -48,6 +51,15 @@ function Menu({ navigation }) {
     });
   };
   const handlePuerta = async () => {
+    const hasPermission = await hasLocationPermission();
+    if (!hasPermission) {
+      if (isIOS) {
+        showAlertWarning('Se necesitan permisos de ubicacion para usar esta app');
+      } else {
+        showAlertWarning('Se necesitan permisos de ubicación precisa y aproximada para usar esta aplicación');
+      }
+      return;
+    }
     const token = await AsyncStorage.getItem(tokenKey);
     if (sessionUser.metadataObject.porton.length === 1) {
       showLoading();

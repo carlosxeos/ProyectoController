@@ -273,6 +273,7 @@ class Request {
         return {
           horario: m.horario.join(','),
           uuid: m.uuid,
+          remote: m.remote ? 'y' : 'n',
         };
       });
       const result = await this.requestPostMethod<any>(
@@ -312,6 +313,7 @@ class Request {
         return {
           horario: m.horario.join(','),
           uuid: m.uuid,
+          remote: m.remote ? 'y' : 'n',
         };
       });
       const result = await this.requestPostMethod<any>(

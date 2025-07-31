@@ -18,7 +18,6 @@
     "@react-native-community/checkbox": "^0.5.17",
     "@react-navigation/native": "^6.1.14",
     "@react-navigation/native-stack": "^6.9.17",
-    "geolib": "^3.3.4",
     "lottie-react-native": "^6.7.2",
     "moment": "^2.30.1",
     "react": "18.2.0",

@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import socketClient from '../../resources/socketClient';
 import { appStyles, colores } from '../../resources/globalStyles';
 import ImageButton from '../../components/ImageButton';
-import { faGear, faHistory, faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
+import { faHistory, faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getDateFormatLocal, timeWaitSeconds, timeWaitUnauthorized, tokenKey, wsEvents } from '../../Constants';
 import Snackbar from 'react-native-snackbar';
@@ -14,6 +15,9 @@ import { Session } from '../../db/tables/session';
 import { Porton } from '../../objects/porton';
 import { getHorarioFormatting } from '../../utils';
 import { ModalContext } from '../../context/modal-provider';
+import Geolocation from 'react-native-geolocation-service';
+import { hasLocationPermission } from '../../resources/PermissionFunctions';
+import { isIOS } from 'react-native-elements/dist/helpers';
 
 //👇🏻 Import socket from the socket.js file in utils folder
 function DoorScreen({ navigation, route }: any) {
@@ -24,10 +28,17 @@ function DoorScreen({ navigation, route }: any) {
   const [open, setopen] = useState(route?.params?.porton.idtipomodificacion === 1);
   const [horarios, sethorarios] = useState<string[]>([]);
   const [historyButton, sethistoryButton] = useState(false);
-  const { showAlertError } = useContext(ModalContext);
+  const { showAlertError, showAlertWarning, showLoading, hideLoading } = useContext(ModalContext);
+  const [sessionUserData, setsessionUserData] = useState<Session>();
   useEffect(() => {
     //console.log('horario ', moment().day());
     sethorarios(portonHorariosSemana.filter(p => +p[0] === moment().day()));
+    const session = new Session();
+    session.getSession()
+      .then(s => setsessionUserData(s))
+      .catch(e => {
+        console.error('error al obtener data ', e);
+      });
     // tracker para obtener errores
     socketClient.on('errorTracker', async (response) => {
       console.log('socket invocado ', response);
@@ -51,9 +62,9 @@ function DoorScreen({ navigation, route }: any) {
       // setServerState(val);
       setopen(response.idtipomodificacion === 1);
     });
-    socketClient.on('unauthorizedDoor', (_) => {
-      console.warn('puerta sin autorizacion');
-      Alert.alert('Aviso', 'No es permitido abrir/cerrar el porton en este horario');
+    socketClient.on('unauthorizedDoor', (response) => {
+      console.warn('puerta sin autorizacion', new Date());
+      showAlertError(response.msg || 'No es permitido abrir/cerrar el porton por algun motivo, contacte al administrador');
       AsyncStorage.setItem(`${timeKey}-${porton.uuid}`, '' + (Date.now() + (timeWaitUnauthorized * 1000)));
     });
     // enviamos la reunion al uuid correspondiente
@@ -75,39 +86,56 @@ function DoorScreen({ navigation, route }: any) {
       socketClient.off('roomDoor');
       socketClient.off('unauthorizedDoor');
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  const handleButtonDoor = async () => {
-    const session = new Session();
-    const data = await session.getSession();
-    if (data?.accionesPorton !== 1) {
-      Snackbar.show({
-        text: 'No tiene los permisos para abrir o cerrar portones',
-        duration: Snackbar.LENGTH_LONG,
-      });
+  const openCloseWsDoor = async () => {
+    showLoading();
+    const permisos = await hasLocationPermission();
+    if (!permisos) {
+      if (isIOS) {
+        showAlertWarning('Se necesitan permisos de ubicacion para usar esta app');
+      } else {
+        showAlertWarning('Se necesitan permisos de ubicación precisa y aproximada para usar esta aplicación');
+      }
       return;
     }
-    let timer = await AsyncStorage.getItem(`${timeKey}-${porton.uuid}`);
-    if (!timer) {
-      timer = '0';
-    }
-    if (Date.now() > +timer) {
-      console.log('abriendo');
-      await AsyncStorage.setItem(`${timeKey}-${porton.uuid}`, '' + (Date.now() + (timeWaitSeconds * 1000)));
-      setopen(prev => {
-        socketClient.emit(`${wsEvents.set.door}`, {
-          uuid: porton.uuid,
-          token: token,
-          type: porton.idtipomodificacion === 1 ? '0' : '1', // abrir(1) o cerrar(0)
+    console.log('init ', new Date());
+    Geolocation.getCurrentPosition(
+      async (position) => {
+        await AsyncStorage.setItem(`${timeKey}-${porton.uuid}`, '' + (Date.now() + (timeWaitSeconds * 1000)));
+        setopen(prev => {
+          console.log('emit msg', new Date());
+          console.log('position.mocked ', position.mocked);
+          socketClient.emit(`${wsEvents.set.door}`, {
+            uuid: porton.uuid,
+            token: token,
+            type: porton.idtipomodificacion === 1 ? '0' : '1', // abrir(1) o cerrar(0)
+            lat: position.coords.latitude,
+            long: position.coords.longitude,
+            mock: position.mocked,
+          });
+          return !prev;
         });
-        return !prev;
-      });
+        hideLoading();
+      },
+      (error) => {
+        console.log(error.message);
+        showAlertWarning('Hubo un error al obtener la ubicación, revise si tiene los permisos de ubicación activados y vuelva a intentar');
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000, accuracy: { ios: 'best', android: 'high' } }
+    );
+  };
+
+  const handleButtonDoor = async () => {
+    if (sessionUserData?.accionesPorton !== 1) {
+      showAlertError('No tiene los permisos para abrir o cerrar portones');
+      return;
+    }
+    const timer = await AsyncStorage.getItem(`${timeKey}-${porton.uuid}`) || '0';
+    if (Date.now() > +timer) {
+      openCloseWsDoor();
     } else {
-      let seconds = Math.trunc(((+timer) - Date.now()) / 1000);
-      if (seconds === 0) {
-        seconds = 1;
-      }
+      const seconds = Math.max(Math.trunc(((+timer) - Date.now()) / 1000), 1);
       Snackbar.show({
         text: `Espere ${seconds} segundo(s) para volver a enviar una acción al portón`,
         duration: Snackbar.LENGTH_LONG,
