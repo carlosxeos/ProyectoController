@@ -2,7 +2,7 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import socketClient from '../../resources/socketClient';
 import { appStyles, colores } from '../../resources/globalStyles';
 import ImageButton from '../../components/ImageButton';
@@ -19,7 +19,8 @@ import Geolocation from 'react-native-geolocation-service';
 import { hasLocationPermission } from '../../resources/PermissionFunctions';
 import { isIOS } from 'react-native-elements/dist/helpers';
 
-//👇🏻 Import socket from the socket.js file in utils folder
+
+let initialEnvio = 0;
 function DoorScreen({ navigation, route }: any) {
   const { token } = route?.params; // id
   const timeKey = 'doorTimer';
@@ -49,7 +50,9 @@ function DoorScreen({ navigation, route }: any) {
           routes: [{ name: 'Login', params: { closeSession: true } }],
         });
       }
-      showAlertError(response?.msg || 'Ha ocurrido un error en la conexión del servicio de ws');
+      setTimeout(() => {
+        showAlertError(response?.msg || 'Ha ocurrido un error en la conexión del servicio de ws');
+      }, Math.max(initialEnvio - Date.now(), 0));
     });
     socketClient.on('roomDoor', (response) => {
       //console.log('respuesta server ', response);
@@ -63,8 +66,10 @@ function DoorScreen({ navigation, route }: any) {
       setopen(response.idtipomodificacion === 1);
     });
     socketClient.on('unauthorizedDoor', (response) => {
-      console.warn('puerta sin autorizacion', new Date());
-      showAlertError(response.msg || 'No es permitido abrir/cerrar el porton por algun motivo, contacte al administrador');
+      console.warn('puerta sin autorizacion ' + new Date() + ' initial = ', initialEnvio);
+      setTimeout(() => {
+        showAlertError(response.msg || 'No es permitido abrir/cerrar el porton por algun motivo, contacte al administrador');
+      }, Math.max(initialEnvio - Date.now(), 0));
       AsyncStorage.setItem(`${timeKey}-${porton.uuid}`, '' + (Date.now() + (timeWaitUnauthorized * 1000)));
     });
     // enviamos la reunion al uuid correspondiente
@@ -90,6 +95,7 @@ function DoorScreen({ navigation, route }: any) {
 
   const openCloseWsDoor = async () => {
     showLoading();
+    initialEnvio = Date.now() + 700;
     const permisos = await hasLocationPermission();
     if (!permisos) {
       if (isIOS) {
@@ -114,9 +120,9 @@ function DoorScreen({ navigation, route }: any) {
             long: position.coords.longitude,
             mock: position.mocked,
           });
+          hideLoading();
           return !prev;
         });
-        hideLoading();
       },
       (error) => {
         console.log(error.message);
