@@ -81,6 +81,20 @@ export class LoginService {
       };
     }
     const usuario = usuarios[0];
+    if (usuario?.error) {
+      const code = usuario?.error;
+      let errorText = '';
+      if (code === 'USER_NOT_FOUND') {
+        errorText = 'No existe este usuario o se encuentra dado de baja';
+      }
+      if (code === 'BIOMETRIC_INVALID') {
+        errorText = 'Se ha iniciado sesión con esta cuenta en otro dispositivo, revise con el administrador';
+      }
+      return {
+        auth: false,
+        error: errorText,
+      };
+    }
     const contraseñaValida = await bcrypt.compare(
       password,
       usuario['password'],
@@ -163,7 +177,7 @@ export class LoginService {
       return {
         auth: false,
         error:
-          'No se pudo validar la firma, puede que se haya iniciado sesión con otro dispositivo',
+          'No se pudo validar la firma, puede que se haya iniciado sesión con otro dispositivo, intente iniciando sesión con contraseña',
       };
     }
     const payload = {
@@ -219,6 +233,6 @@ export class LoginService {
     if (resultadoSP.recordset.length <= 0) {
       return { delete: false };
     }
-    return { delete: resultadoSP.recordset[0]?.deleted > 0};
+    return { delete: resultadoSP.recordset[0]?.deleted > 0 };
   }
 }

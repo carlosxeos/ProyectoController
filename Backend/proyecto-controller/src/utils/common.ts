@@ -12,6 +12,7 @@ import { TokenData } from 'src/objects/token-data';
 export const isPrd = false;
 // localhost
 
+/**
 export const dataBaseConstants = {
   user: 'sa',
   password: '123',
@@ -20,7 +21,7 @@ export const dataBaseConstants = {
   port: 1433,
   encrypt: false,
 };
-/**
+*/
 // prd CAMBIAR VBARIABLE isPrd tambien 
 export const dataBaseConstants = {
   user: 'lucio',
@@ -33,7 +34,6 @@ export const dataBaseConstants = {
     useUTC: true,
   },
 };
-**/
 
 /**
  * informacion de modo server de mqtt
